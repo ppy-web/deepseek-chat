@@ -1,0 +1,11 @@
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import "normalize.css";
+import "highlight.js/styles/github.css";
+import "animate.css";
+import "./index.scss";
+import App from "./App.vue";
+import router from "./router.js";
+const pinia = createPinia();
+const app = createApp(App);
+app.use(pinia).use(router).mount("#app");
