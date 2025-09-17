@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "homepage": "https://github.com/ppy-web/deepseek-chat",
   "scripts": {
     "dev": "vite",
-    "beta": "vite build --emptyOutDir --mode beta",
     "build": "vite build --emptyOutDir --mode prod",
-    "build:light": "vite build --emptyOutDir --mode light",
-    "preview": "vite preview --port 8080"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@vitejs/plugin-legacy": "^6.1.1",
     "@vitejs/plugin-vue": "^6.0.1",
+    "gh-pages": "^6.3.0",
     "rollup-plugin-visualizer": "^5.9.0",
     "sass": "^1.89.2",
     "semver": "^7.3.8",

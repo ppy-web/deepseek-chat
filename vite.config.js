@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins,
     root: "src",
-    base: "./",
+    base: '/deepseek-chat/',
     publicDir: "public",
     build: {
       outDir: resolve(__dirname, "dist"),
