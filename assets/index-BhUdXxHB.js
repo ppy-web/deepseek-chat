@@ -77882,7 +77882,7 @@ let __tla = (async () => {
       }
     }
   ], router = createRouter({
-    history: createWebHistory("/"),
+    history: createWebHistory("/deepseek-chat/"),
     routes
   }), pinia = createPinia(), app = createApp(_sfc_main$h);
   app.use(pinia).use(router).mount("#app");
