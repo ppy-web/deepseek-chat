@@ -3,8 +3,7 @@
  * 定义了系统支持的所有AI对话模型及其元信息
  * 包含模型名称、标识符、描述和图标等信息
  */
-import deepseek from "@/assets/img/deepseek.png";
-import deepseekV3 from "@/assets/img/deepseek.png";
+import deepseek from "@/assets/img/deepseek.svg";
 
 /**
  * AI模型配置数组
@@ -13,15 +12,15 @@ import deepseekV3 from "@/assets/img/deepseek.png";
  */
 const models = [
   {
-    text: "DeepSeek-R1",
-    value: "deepSeek-r1",
-    description: "深度思考，大幅度提升了在数学、代码、自然语言能力的推理模型",
+    text: "V3.1效率优先",
+    value: "deepseek-chat",
+    description: "全面升级，效率、速度优先",
     icon: deepseek,
   },
   {
-    text: "DeepSeek-V3",
-    value: "deepSeek-v3",
-    description: "全面升级，效率、速度优先",
+    text: "V3.1深度思考",
+    value: "deepseek-reasoner",
+    description: "深度思考，逻辑推理，更精准",
     icon: deepseek,
   },
 ];

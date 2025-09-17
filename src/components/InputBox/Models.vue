@@ -47,7 +47,6 @@ const showChangeModel = ref(false);
 const localModelIndex = computed(() => app.info.localModelIndex);
 const modelName = computed(() => models[localModelIndex.value].text);
 const model = computed(() => models[localModelIndex.value].value);
-const verifyLogin = inject("verifyLogin");
 
 const handleShowChangeModel = () => {
   if (showChangeModel.value) {
@@ -58,7 +57,6 @@ const handleShowChangeModel = () => {
 };
 
 const onConfirmModel = (e, index) => {
-  verifyLogin();
   if (e.value === model.value) {
     showChangeModel.value = false;
     return;

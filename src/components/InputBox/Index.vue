@@ -59,7 +59,6 @@ const serviceName = computed(() => config.info.serviceName);
 const netWorking = computed(() => config.info.netWorking);
 const showBigModelList = computed(() => config.info.showBigModelList);
 const isNewDialog = computed(() => app.info.isNewDialog); // 是否是新对话
-const isLogin = computed(() => user.info.hasLogin); // 是否登录
 const props = defineProps({
   isAgent: {
     type: Boolean,
@@ -70,24 +69,11 @@ const props = defineProps({
     default: true,
   },
 });
-const verifyLogin = () => {
-  if (!isLogin.value) {
-    mitt.emit(EVENT_TYPE.SHOW_LOGIN);
-    return false;
-  } else {
-    return true;
-  }
-};
-provide("verifyLogin", verifyLogin);
 // 输入框的值
 const inputVal = ref("");
 const inputRef = ref(null);
 const isComposing = ref(false); // 用于处理中文输入法状态
-const placeHolder = computed(() => {
-  return isLogin.value
-    ? "试试与我互动吧~ Enter发送，Shit+Enter换行"
-    : "登录后可继续对话";
-}); // 输入框placeholder
+const placeHolder = ref("试试与我互动吧~ Enter发送，Shit+Enter换行"); // 输入框placeholder
 const fileList = ref([]); // 文件上传列表
 const showInterruptBtn = computed(() => app.info.showInterruptBtn); // 中断按钮是否展示
 
@@ -140,11 +126,6 @@ const handlePaste = (e) => {
 };
 // 发送
 const sendInput = () => {
-  if (!verifyLogin()) return;
-  if (!props.isFill) {
-    message.warning("请填写对话设置");
-    return;
-  }
   if (fileList.value.length) {
     const fileUrl = fileList.value[0].link;
     app.set({

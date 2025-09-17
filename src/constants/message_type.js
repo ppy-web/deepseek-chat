@@ -1,6 +1,6 @@
 const MESSAGE_TYPE = {
-  USER: "User",
-  BOT: "Bot",
+  USER: "user",
+  BOT: "assistant",
 };
 
 export default MESSAGE_TYPE;

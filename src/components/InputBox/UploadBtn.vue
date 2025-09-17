@@ -7,13 +7,8 @@ import { useStore } from "@/hooks/useStore";
 import { genFileId } from "element-plus";
 const { user } = useStore();
 const emit = defineEmits(["fileUploaded"]);
-const verifyLogin = inject("verifyLogin");
 const upload = ref(null);
-const isLogin = computed(() => user.info.hasLogin); // 是否登录
 const loading = ref(false);
-const handleClick = () => {
-  if (!verifyLogin()) return;
-};
 const fileChange = (file) => {
   if (file.status === "ready") {
     upload.value?.submit();
@@ -74,11 +69,10 @@ const handleHttpRequest = async (options) => {
         :http-request="handleHttpRequest"
         :on-exceed="handleExceed"
         :before-upload="beforeUpload"
-        :disabled="!isLogin"
         :on-change="fileChange"
         :limit="1"
       >
-        <div class="plus-icon" @click.prevent="handleClick">
+        <div class="plus-icon">
           <img src="@/assets/img/paper.png" />
         </div>
       </el-upload>

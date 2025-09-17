@@ -143,7 +143,6 @@ const onHandleCopy = async () => {
 };
 
 const onHandleLike = () => {
-  // console.log("赞！！！！！！！");
   isClickLike.value = true;
   emit("like");
   setTimeout(() => {

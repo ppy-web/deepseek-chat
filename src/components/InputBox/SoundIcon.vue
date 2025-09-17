@@ -121,10 +121,8 @@ const voiceStatusText = computed(() => {
   }
 });
 
-const verifyLogin = inject("verifyLogin");
 // 切换录音状态
 const changeType = () => {
-  if (!verifyLogin()) return;
   if (speechStatus.value === 1) {
     stopRecordVoice();
     stopListening();

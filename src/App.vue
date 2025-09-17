@@ -79,7 +79,7 @@ onMounted(() => {
       needTransition: true,
     });
     if (document.querySelector(".chat-box .chat-component")) {
-      if (browser.width - 300 < 800) {
+      if (browser.width - 300 < 960) {
         document.querySelector(".chat-box .chat-component").style.padding =
           "0 16px";
         document.querySelector(".chat-box .input-container").style.padding =

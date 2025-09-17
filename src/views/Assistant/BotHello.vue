@@ -3,6 +3,7 @@
 import { ref, computed, onMounted } from "vue";
 import Typed from "typed.js";
 import { useStore } from "@/hooks/useStore";
+import deepseek from '@/assets/img/deepseek.svg';
 const { config } = useStore();
 const welcome = computed(
   () => config.info.welcomeMessage || "Hi，我是DeepSeek，很高兴为您服务～"
@@ -30,7 +31,9 @@ onMounted(() => {
 <template>
   <div class="hello-container">
     <div class="hello">
-      <div class="image-people"></div>
+      <div class="image-people">
+        <img :src="deepseek" alt="deepseek" />
+      </div>
       <div class="welcome">{{ welcome }}</div>
     </div>
     <div class="desc" id="desc"></div>

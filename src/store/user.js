@@ -18,7 +18,7 @@ export const useUserStore = defineStore("user", function () {
   });
 
   const accessToken = ref(storage.get("accessToken"));
-
+  const options = reactive({});
   // 设置用户信息
   function set(data) {
     merge(info, data);

@@ -28,20 +28,13 @@ export default defineConfig(({ mode }) => {
     root: "src",
     base: "./",
     publicDir: "public",
-    server: {
-      host: true,
-      port: 8090,
-      proxy: {
-        // "/apis": {
-        //   target: "https://",
-        //   changeOrigin: true,
-        //   rewrite: (path) => path.replace(/^\/apis/, ""),
-        // },
-      },
-    },
     build: {
       outDir: resolve(__dirname, "dist"),
       sourcemap: false,
+    },
+    server: {
+      port: 3010,
+      open: true,
     },
     resolve: {
       alias: {

@@ -14,10 +14,8 @@ import { computed, inject } from "vue";
 import { useStore } from "@/hooks/useStore";
 const { config, app } = useStore();
 const networkStatus = computed(() => app.info.networkStatus);
-const verifyLogin = inject("verifyLogin");
 
 const changeNStatus = () => {
-  verifyLogin();
   app.set({
     networkStatus: !networkStatus.value,
   });

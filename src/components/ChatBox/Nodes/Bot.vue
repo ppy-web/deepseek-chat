@@ -18,7 +18,6 @@
           class="rich-text"
           :class="{ 'text-end': isTextStreamEnd }"
           v-html="htmlStr"
-          @click="jumpA($event)"
         ></span>
       </div>
       <!-- 操作栏 -->
@@ -91,29 +90,10 @@ const showThinking = ref(true);
 const refContent = ref({});
 const evaluate = inject("evaluate");
 const onHandleLike = () => {
-  const res = evaluate({
-    question: msg.content,
-    ask: msg.ask,
-    uuid: msg.uuid,
-    chatType: msg.chatType,
-    status: "1",
-  });
-  res && message.success("评价成功");
-  !res && message.error("评价失败");
+  message.success("评价成功");
 };
 const onHandleUnlike = (params) => {
-  console.log(params);
-  const res = evaluate({
-    question: msg.content,
-    ask: msg.ask,
-    uuid: msg.uuid,
-    chatType: msg.chatType,
-    status: "2",
-    feedType: params.feedType,
-    content: params.content,
-  });
-  res && message.success("评价成功");
-  !res && message.error("评价失败");
+  message.warning("评价成功，我们会持续改进！");
 };
 
 const onSendSuggest = (item) => {

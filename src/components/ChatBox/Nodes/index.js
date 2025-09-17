@@ -5,11 +5,11 @@ const Nodes = shallowRef([]);
 Nodes.value = [
   {
     component: User,
-    type: "User",
+    type: "user",
   },
   {
     component: Bot,
-    type: "Bot",
+    type: "assistant",
   },
 ];
 
