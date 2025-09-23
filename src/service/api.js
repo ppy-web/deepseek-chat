@@ -22,9 +22,9 @@ export function sessionLogList(data) {
   });
 }
 
-export function sessionLogDetail(id) {
+export function getUserBalance() {
   return request({
-    url: `/detail`,
+    url: 'https://api.deepseek.com/user/balance',
     method: "get",
   });
 }

@@ -3,6 +3,7 @@
   <el-aside @mouseleave="handleFixed">
     <div class="sidebar-toggle" @click="toggleSideBar" />
     <TopInfo />
+    <CallWord />
     <div class="sidebar-history">
       <History v-if="hasLogin" />
     </div>
@@ -16,6 +17,7 @@ import { useStore } from "@/hooks/useStore";
 import TopInfo from "./TopInfo.vue";
 import AddBtn from "./AddBtn.vue";
 import History from "./History.vue";
+import CallWord from "./CallWord.vue";
 
 const { app, user } = useStore();
 const isSideBarVisible = computed(() => app.info.isSideBarVisible);

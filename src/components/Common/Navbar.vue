@@ -4,6 +4,7 @@
     <div class="left">{{ props.title }}</div>
     <div class="right" v-if="showVoice">
       <slot></slot>
+      <div class="balance">余额 ￥{{ balance.total_balance  }}</div>
       <div
         class="voice"
         v-if="voicePlayFlag !== 3"
@@ -15,7 +16,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useStore } from "@/hooks/useStore";
 import { useStreamPlayer } from "@/hooks/useStreamPlayer.js";
 
@@ -34,8 +35,10 @@ const props = defineProps({
 
 // 麦克风
 const voicePlayFlag = computed(() => config.info.voicePlayFlag);
+const balance = computed(() => app.info.balanceInfo);
 const muted = computed(() => app.info.muted);
 const toggleMuted = () => {
+  alert('功能拼命开发中~');
   app.set({
     muted: !muted.value,
   });
@@ -70,11 +73,12 @@ const toggleMuted = () => {
       background-image: url("@/assets/img/voice1.png");
       background-size: 100% 100%;
     }
-    .muted {
-      width: 30px;
+    .balance {
       height: 30px;
-      background-image: url("@/assets/img/voice0.png");
-      background-size: 100% 100%;
+      line-height: 30px;
+      font-size: 14px;
+      color: #333;
+      margin-right: 10px;
     }
   }
 }

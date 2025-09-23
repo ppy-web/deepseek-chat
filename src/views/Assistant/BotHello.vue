@@ -1,9 +1,9 @@
 <!-- 新对话的欢迎语 -->
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, inject } from "vue";
 import Typed from "typed.js";
 import { useStore } from "@/hooks/useStore";
-import deepseek from '@/assets/img/deepseek.svg';
+import deepseek from "@/assets/img/deepseek.svg";
 const { config } = useStore();
 const welcome = computed(
   () => config.info.welcomeMessage || "Hi，我是DeepSeek，很高兴为您服务～"
@@ -53,14 +53,15 @@ onMounted(() => {
     .image-people {
       display: inline-block;
       width: 40px;
+      margin-right: 10px;
       img {
         width: 40px;
-        height: 40px;
+        vertical-align: middle;
       }
     }
     .welcome {
-      font-size: 30px;
-      font-weight: bold;
+      font-size: 26px;
+      font-weight: 500;
     }
   }
   .desc {
