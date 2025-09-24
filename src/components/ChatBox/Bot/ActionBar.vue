@@ -93,11 +93,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "@/hooks/useStore";
-import { useStreamPlayer } from "@/hooks/useStreamPlayer.js";
-import { addTokenToUrl, jumpHttp } from "@/utils/index";
 import { smartCopy } from "@/utils";
-import { result } from "lodash";
-
 import copyImg from "@/assets/img/copypc.png";
 import notgoodImg from "@/assets/img/notgood.png";
 import notgoodActiveImg from "@/assets/img/notgood1.png";

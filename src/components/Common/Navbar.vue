@@ -2,51 +2,25 @@
 <template>
   <div class="navbar-container">
     <div class="left">{{ props.title }}</div>
-    <div class="right" v-if="showVoice">
+    <div class="right">
       <slot></slot>
       <div class="balance">余额 ￥{{ balance.total_balance  }}</div>
-      <div
-        class="voice"
-        v-if="voicePlayFlag !== 3"
-        :class="{ muted: muted }"
-        @click="toggleMuted"
-      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "@/hooks/useStore";
-import { useStreamPlayer } from "@/hooks/useStreamPlayer.js";
 
-const { app, config } = useStore();
-const { setVolume } = useStreamPlayer();
+const { app } = useStore();
 const props = defineProps({
   title: {
     type: String,
     default: "",
   },
-  showVoice: {
-    type: Boolean,
-    default: false,
-  },
 });
-
-// 麦克风
-const voicePlayFlag = computed(() => config.info.voicePlayFlag);
 const balance = computed(() => app.info.balanceInfo);
-const muted = computed(() => app.info.muted);
-const toggleMuted = () => {
-  alert('功能拼命开发中~');
-  app.set({
-    muted: !muted.value,
-  });
-  // 流式播放设置静音  nextTick 是为了保证  stream_buffer.play 的stream 已经初始化（用户进入页面 直接点击静音按钮的情况，  因为stream是 根据点击事件初始化的）
-  nextTick(() => {
-    setVolume(muted.value ? 0 : 1);
-  });
-};
 </script>
 
 <style lang="scss" scoped>

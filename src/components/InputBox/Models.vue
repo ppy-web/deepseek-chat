@@ -11,7 +11,7 @@
     <div class="popover-content">
       <div
         class="model-item"
-        v-for="(item, index) in models"
+        v-for="(item, index) in MODELS"
         :key="index"
         :class="{ active: localModelIndex === index }"
         @click="onConfirmModel(item, index)"
@@ -39,14 +39,14 @@
 <script setup>
 import { ref, computed, inject } from "vue";
 import { useStore } from "@/hooks/useStore";
-import { models } from "@/constants/models";
+import { MODELS } from "@/constants";
 
 const { config, app } = useStore();
 const showBigModelList = computed(() => config.info.showBigModelList);
 const showChangeModel = ref(false);
 const localModelIndex = computed(() => app.info.localModelIndex);
-const modelName = computed(() => models[localModelIndex.value].text);
-const model = computed(() => models[localModelIndex.value].value);
+const modelName = computed(() => MODELS[localModelIndex.value].text);
+const model = computed(() => MODELS[localModelIndex.value].value);
 
 const handleShowChangeModel = () => {
   if (showChangeModel.value) {

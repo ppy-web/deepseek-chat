@@ -65,8 +65,7 @@ const props = defineProps({
   },
 });
 
-const { markdown } = useMarkdown();
-const { user, app } = useStore();
+const { app } = useStore();
 const { msg } = props;
 
 const showWatermark = computed(() => app.info.showWatermark);
@@ -84,11 +83,7 @@ const htmlThinking = computed(() => msg.htmlThinking);
 const thinkFinished = computed(() => msg.thinkFinished);
 const thinkTime = computed(() => msg.thinkTime);
 const isTextStreamEnd = computed(() => msg.isTextStreamEnd);
-const botMessageType = computed(() => msg.botMessageType);
 const suggestArray = computed(() => msg.suggestArray);
-const showThinking = ref(true);
-const refContent = ref({});
-const evaluate = inject("evaluate");
 const onHandleLike = () => {
   message.success("评价成功");
 };

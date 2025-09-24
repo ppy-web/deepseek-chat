@@ -21,8 +21,7 @@
           <Network />
         </div>
         <div class="input-bottom-wrapper-right">
-          <UploadBtn v-if="!props.isAgent" @fileUploaded="handleFileUploaded" />
-          <SoundIcon @send="sendVoiceText" />
+          <UploadBtn @fileUploaded="handleFileUploaded" />
           <span
             class="stop"
             @click.stop="cancelAnswer"
@@ -39,36 +38,17 @@
 
 <script setup>
 import { onMounted, onUnmounted, computed, ref, provide } from "vue";
-import { useVoiceRecord } from "@/hooks/useVoiceRecord";
 
 import Models from "./Models.vue";
 import Network from "./Network.vue";
-import SpeechBtn from "./SpeechBtn.vue";
-import SoundIcon from "./SoundIcon.vue";
 import UploadBtn from "./UploadBtn.vue";
 
 import { useStore } from "@/hooks/useStore";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
-import message from "@/hooks/useMessage";
 
 const mitt = useMitt();
-const { app, config, user } = useStore();
-
-const serviceName = computed(() => config.info.serviceName);
-const netWorking = computed(() => config.info.netWorking);
-const showBigModelList = computed(() => config.info.showBigModelList);
-const isNewDialog = computed(() => app.info.isNewDialog); // 是否是新对话
-const props = defineProps({
-  isAgent: {
-    type: Boolean,
-    default: false,
-  },
-  isFill: {
-    type: Boolean,
-    default: true,
-  },
-});
+const { app } = useStore();
 // 输入框的值
 const inputVal = ref("");
 const inputRef = ref(null);
@@ -111,10 +91,6 @@ const handleKeydown = (e) => {
     e.preventDefault();
     sendInput();
   }
-  // if (e.ctrlKey && e.key === "Enter") {
-  //   e.preventDefault();
-  //   sendInput();
-  // }
 };
 // 处理粘贴事件（去除格式）
 const handlePaste = (e) => {
@@ -126,14 +102,6 @@ const handlePaste = (e) => {
 };
 // 发送
 const sendInput = () => {
-  if (fileList.value.length) {
-    const fileUrl = fileList.value[0].link;
-    app.set({
-      uploadUrl: fileUrl,
-    });
-    mitt.emit(EVENT_TYPE.PUSH_FILE, fileList.value[0]);
-    fileList.value = [];
-  }
   if (inputVal.value.trim()) {
     mitt.emit(EVENT_TYPE.SEND_MESSAGE, inputVal.value.trim());
     inputRef.value.innerText = "";
@@ -148,9 +116,6 @@ const cancelAnswer = () => {
 
 const handleFileUploaded = (list) => {
   fileList.value = list;
-};
-const handleDeleteFile = () => {
-  fileList.value = [];
 };
 
 onMounted(() => {
@@ -168,12 +133,10 @@ onUnmounted(() => {
 
 <style lang="scss" scope>
 .input-container {
-  // position: relative;
   width: 100%;
   position: sticky;
   bottom: 40px;
   width: 100%;
-  // background-color: #fff;
   .input-wrapper {
     position: relative;
     background: #ffffff;

@@ -6,7 +6,6 @@ export function useStore() {
   const app = useAppStore();
   const user = useUserStore();
   const config = useConfigStore();
-
   return {
     app,
     user,

@@ -8,13 +8,11 @@ import { merge } from "lodash-es";
 import * as service from "@/service/api";
 import { storage } from "@/utils";
 import { useMitt } from "@/hooks/useMitt";
-import EVENT_TYPE from "@/constants/event_type";
 
 export const useUserStore = defineStore("user", function () {
   const mitt = useMitt();
 
   const info = reactive(merge({}, storage.get("userInfo")), {
-    hasLogin: false,
   });
 
   const accessToken = ref(storage.get("accessToken"));

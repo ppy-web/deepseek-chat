@@ -1,24 +1,13 @@
 <!-- 新对话的欢迎语 -->
 <script setup>
-import { ref, computed, onMounted, inject } from "vue";
+import {onMounted } from "vue";
 import Typed from "typed.js";
-import { useStore } from "@/hooks/useStore";
 import deepseek from "@/assets/img/deepseek.svg";
-const { config } = useStore();
-const welcome = computed(
-  () => config.info.welcomeMessage || "Hi，我是DeepSeek，很高兴为您服务～"
-);
-const desc = computed(
-  () =>
-    config.info.joinTips ||
-    "作为你的智能伙伴，我既能写文案、想点子，又能陪你聊天～"
-);
-
-const showImagePeople = ref(false);
-
+const welcome = "Hi，我是DeepSeek，很高兴为您服务～";
+const desc = "我是DeepSeek，一个基于大模型开发的智能对话机器人，我可以回答您的问题，提供信息，甚至帮助您解决问题。";
 onMounted(() => {
   new Typed("#desc", {
-    strings: [desc.value],
+    strings: [desc],
     typeSpeed: 100,
     backSpeed: 100,
     backDelay: 1000,

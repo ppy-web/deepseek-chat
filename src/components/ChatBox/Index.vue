@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, computed, provide } from "vue";
+import { nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useEventListener } from "@vueuse/core";
 import { useMitt } from "@/hooks/useMitt";
 import { useChat } from "@/hooks/useChat";
@@ -21,34 +21,26 @@ import { useRefs } from "@/hooks/useRefs";
 import { useStore } from "@/hooks/useStore";
 import { useBrowser } from "@/hooks/useBrowser";
 import { Nodes } from "./Nodes";
-import { STREAM_PALYER_INIT_TIMEOUT } from "@/constants/index";
 import EVENT_TYPE from "@/constants/event_type";
 
 const mitt = useMitt();
 const { browser } = useBrowser();
 const { refs, setRefs } = useRefs();
-const { config, app } = useStore();
+const { app } = useStore();
 const {
   messages,
   sendMessage,
   setAutoScroll,
   cancelAnswer,
-  showChatHistory,
-  pushCard,
-  pushFile,
+  switchSession,
   evaluateMessage,
   checkToStopMessage,
 } = useChat();
-
-const voicePlayFlag = computed(() => config.info.voicePlayFlag);
-const hasInitStreamPlayer = computed(() => app.info.hasInitStreamPlayer);
-
 const component = (item) => {
   return Nodes.value.find((e) => e.type == item.type).component;
 };
 
 provide("evaluate", evaluateMessage);
-
 let autoScroll;
 onMounted(() => {
   nextTick(() => {
@@ -60,6 +52,7 @@ onMounted(() => {
           "0 16px";
       } else {
         let p = (browser.width - 300 - 960) / 2;
+        p = p < 16 ? 16 : p;
         document.querySelector(
           ".chat-box .chat-component"
         ).style.padding = `0px ${p}px`;
@@ -75,32 +68,14 @@ onMounted(() => {
   });
   // 发送消息
   mitt.on(EVENT_TYPE.SEND_MESSAGE, (msg) => {
-    if (voicePlayFlag.value !== 3) {
-      if (hasInitStreamPlayer.value) {
-        sendMessage(msg);
-      } else {
-        setTimeout(() => {
-          sendMessage(msg);
-        }, STREAM_PALYER_INIT_TIMEOUT);
-      }
-    } else {
-      sendMessage(msg);
-    }
     app.set({
       isNewDialog: false,
     });
-  });
-  // 推送卡片
-  mitt.on(EVENT_TYPE.PUSH_CARD, (card) => {
-    pushCard(card);
-  });
-  // 推送文件
-  mitt.on(EVENT_TYPE.PUSH_FILE, (file) => {
-    pushFile(file);
+    sendMessage(msg);
   });
   // 显示对话记录
-  mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (list) => {
-    showChatHistory(list);
+  mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (id) => {
+    switchSession(id);
   });
   autoScroll = useEventListener(
     refs.messageBoxRef,
@@ -115,10 +90,7 @@ onUnmounted(() => {
   checkToStopMessage();
   mitt.off(EVENT_TYPE.CANCEL_ANSWER);
   mitt.off(EVENT_TYPE.SEND_MESSAGE);
-  mitt.off(EVENT_TYPE.PUSH_CARD);
   mitt.off(EVENT_TYPE.SHOW_CHAT_HISTORY);
-  mitt.off(EVENT_TYPE.PUSH_FILE);
-  autoScroll();
 });
 </script>
 

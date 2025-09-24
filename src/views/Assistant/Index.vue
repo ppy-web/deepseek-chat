@@ -1,6 +1,6 @@
 <template>
   <div class="assistant">
-    <Navbar :show-voice="true" v-if="!isNewDialog" />
+    <Navbar v-if="!isNewDialog" />
     <div
       class="new-dialog animate__animated animate__fadeIn"
       v-if="isNewDialog"
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, provide } from "vue";
+import { computed, provide } from "vue";
 import { useStore } from "@/hooks/useStore";
 
 import HeaderBox from "./HeaderBox.vue";
@@ -31,7 +31,7 @@ import ChatBox from "@/components/ChatBox/Index.vue";
 import AiTips from "@/components/Common/AiTips.vue";
 import Navbar from "@/components/Common/Navbar.vue";
 
-const { user, app, config } = useStore();
+const { app, config } = useStore();
 
 const isNewDialog = computed(() => app.info.isNewDialog); // 是否是新对话
 const sessionId = computed(() => app.info.sessionId); // 会话id

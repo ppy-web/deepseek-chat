@@ -25,7 +25,6 @@ const mitt = useMitt();
 const { app, config, user } = useStore();
 const { clearMessages, checkToStopMessage } = useChat();
 
-const hasLogin = computed(() => user.info.hasLogin);
 const logo = computed(() => config.info.customerLogo || doubao);
 const assistantName = computed(() => config.info.serviceName || "智能助手");
 const assistantDesc = computed(() => config.info.customerName || "");
@@ -35,7 +34,6 @@ const handleImageError = (e) => {
 };
 
 const handleClick = () => {
-  if (hasLogin.value) {
     if (route.path !== "/") {
       checkToStopMessage();
       clearMessages();
@@ -47,9 +45,6 @@ const handleClick = () => {
         uploadUrl: "",
       });
     }
-  } else {
-    mitt.emit(EVENT_TYPE.SHOW_LOGIN);
-  }
 };
 </script>
 

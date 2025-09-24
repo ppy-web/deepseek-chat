@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import "normalize.css";
-import "highlight.js/styles/github.css";
+import "highlight.js/styles/github-dark.css";
 import "animate.css";
 import "./index.scss";
 import App from "./App.vue";

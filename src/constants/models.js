@@ -4,13 +4,7 @@
  * 包含模型名称、标识符、描述和图标等信息
  */
 import deepseek from "@/assets/img/deepseek.svg";
-
-/**
- * AI模型配置数组
- * @type {Array<Object>} 包含各模型详细配置的数组
- * 每个模型对象包含:text(显示名称), value(唯一标识), description(功能描述), icon(显示图标)
- */
-const models = [
+const MODELS = [
   {
     text: "V3.1效率优先",
     value: "deepseek-chat",
@@ -25,4 +19,4 @@ const models = [
   },
 ];
 
-export { models };
+export default MODELS;

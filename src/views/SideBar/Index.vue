@@ -5,7 +5,7 @@
     <TopInfo />
     <CallWord />
     <div class="sidebar-history">
-      <History v-if="hasLogin" />
+      <History />
     </div>
     <AddBtn />
   </el-aside>
@@ -22,7 +22,6 @@ import CallWord from "./CallWord.vue";
 const { app, user } = useStore();
 const isSideBarVisible = computed(() => app.info.isSideBarVisible);
 const isSmallPage = computed(() => app.info.isSmallPage);
-const hasLogin = computed(() => user.info.hasLogin);
 
 const toggleSideBar = () => {
   if (isSmallPage.value) {

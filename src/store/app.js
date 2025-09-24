@@ -27,22 +27,15 @@ export const useAppStore = defineStore("app", function () {
   const insistance = storage.get("appInfo");
 
   const info = reactive({
-    sessionId: insistance?.sessionId || "",
+    sessionId: "",
     isSideBarVisible: true,
     isSmallPage: false,
     isSidebarFixed: false,
     isNewDialog: true,
     needTransition: true,
-    voicePlayFlag: 1,
-    muted: null,
-    voiceRecordIsOpen: false,
-    voiceRecordOpenType: 0,
     showInterruptBtn: false,
     localModelIndex: insistance?.localModelIndex || 0,
     networkStatus: insistance?.networkStatus || false,
-    isPlayMp3: false,
-    isPlayStream: false,
-    hasInitStreamPlayer: false,
     isPageHide: false,
     showWatermark: false,
   });

@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { onMounted, onUnmounted, computed } from "vue";
 
 import SideBar from "@/views/SideBar/Index.vue";
 import MainContent from "@/views/MainContent.vue";
@@ -56,9 +56,11 @@ const isSidebarFixed = computed(() => app.info.isSidebarFixed);
 const needTransition = computed(() => app.info.needTransition);
 // 获取初始化配置
 const getInitParam = async (type) => {
-  document.title = "deepseek";
+  // document.title = "deepseek";
   const { is_available, balance_infos } = await service.getUserBalance();
-  config.set({});
+  config.set({
+    
+  });
   app.set({
     isAvailable: is_available,
     balanceInfo: balance_infos[0],
@@ -70,7 +72,6 @@ onMounted(() => {
   mitt.on(EVENT_TYPE.INIT_SUCCESS, () => {
     app.set({
       sessionId: "",
-      agentSessionId: "",
     });
     getInitParam();
   });
