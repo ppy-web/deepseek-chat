@@ -25,6 +25,7 @@ export function useChat() {
   const timeoutHint = computed(() => config.info.timeoutHint); // 超时提示文本
   const localModelIndex = computed(() => app.info.localModelIndex); // 当前选中模型索引
   const model = computed(() => MODELS[localModelIndex.value].value); // 当前模型名称
+  const sessionId = computed(() => app.info.sessionId);
   const baseURL = computed(() => config.baseURL);
   const apiKey = computed(() => config.apiKey);
   const options = computed(() => user.options);
@@ -35,7 +36,6 @@ export function useChat() {
     const messages = ref([]); // 消息列表
     const message = ref(null); // 当前消息
     const autoScroll = ref(true); // 是否自动滚动
-    const currentSessionId = ref(null); // 当前会话ID
     let controller = null; // 请求控制器
     let timer = null; // 计时器
     // 创建会话
@@ -46,7 +46,9 @@ export function useChat() {
         timestamp: Date.now(),
       };
       sessions.value.push(session);
-      currentSessionId.value = session.id;
+      app.set({
+        sessionId: session.id,
+      })
       saveToStorage();
     };
     const loadFromStorage = () => {
@@ -55,8 +57,10 @@ export function useChat() {
         if (savedSessions) {
           sessions.value = JSON.parse(savedSessions);
           if (sessions.value.length > 0) {
-            currentSessionId.value = sessions.value[0].id;
-            loadSessionMessages(currentSessionId.value);
+            app.set({
+              sessionId: sessions.value[0].id,
+            })
+            loadSessionMessages(sessions.value[0].id);
           } else {
             createSession();
           }
@@ -85,9 +89,9 @@ export function useChat() {
     const saveToStorage = () => {
       try {
         storage.set("chat-sessions", JSON.stringify(sessions.value));
-        if (currentSessionId.value) {
+        if (sessionId.value) {
           storage.set(
-            `chat-messages-${currentSessionId.value}`,
+            `chat-messages-${sessionId.value}`,
             JSON.stringify(messages.value)
           );
         }
@@ -96,14 +100,14 @@ export function useChat() {
       }
     };
     // 删除会话
-    const deleteSession = (sessionId) => {
+    const deleteSession = (id) => {
       const index = sessions.value.findIndex((s) => s.id === sessionId);
       if (index > -1) {
         sessions.value.splice(index, 1);
-        storage.remove(`chat-messages-${sessionId}`);
-        if (currentSessionId.value === sessionId) {
+        storage.remove(`chat-messages-${id}`);
+        if (sessionId.value === id) {
           if (sessions.value.length > 0) {
-            currentSessionId.value = sessions.value[0].id;
+            sessionId.value = sessions.value[0].id;
             loadSessionMessages(sessions.value[0].id);
           } else {
             createSession();
@@ -114,7 +118,7 @@ export function useChat() {
     };
     // 新增消息
     const pushMessage = (msg) => {
-      if (!currentSessionId.value) {
+      if (!sessionId.value) {
         createSession();
       }
       messages.value.push(msg);
@@ -124,9 +128,9 @@ export function useChat() {
     const updateLastMessage = (message) => {
       if (messages.value.length > 0) {
         messages.value[messages.value.length - 1] = { ...message };
-        if (currentSessionId.value) {
+        if (sessionId.value) {
           storage.set(
-            `chat-messages-${currentSessionId.value}`,
+            `chat-messages-${sessionId.value}`,
             JSON.stringify(messages.value)
           );
         }
@@ -136,19 +140,19 @@ export function useChat() {
     // 移除最后一条消息
     const removeLastMessage = () => {
       messages.value.pop();
-      if (currentSessionId.value) {
+      if (sessionId.value) {
         storage.set(
-          `chat-messages-${currentSessionId.value}`,
+          `chat-messages-${sessionId.value}`,
           JSON.stringify(messages.value)
         );
       }
     };
     // 保存会话消息
     const saveSessionMessages = () => {
-      if (currentSessionId.value) {
+      if (sessionId.value) {
         try {
           storage.set(
-            `chat-messages-${currentSessionId.value}`,
+            `chat-messages-${sessionId.value}`,
             JSON.stringify(messages.value)
           );
         } catch (error) {
@@ -163,7 +167,9 @@ export function useChat() {
     // 清空消息列表
     const clearMessages = () => {
       messages.value = [];
-      currentSessionId.value = null;
+      app.set({
+        sessionId: '',
+      })
     };
 
     // 清空当前会话
@@ -178,16 +184,16 @@ export function useChat() {
             type: "warning",
           }
         );
-        if (currentSessionId.value) {
+        if (sessionId.value) {
           // 清空消息
           messages.value = [];
           storage.set(
-            `chat-messages-${currentSessionId.value}`,
+            `chat-messages-${sessionId.value}`,
             JSON.stringify([])
           );
           // 更新会话名称
           const currentSession = sessions.value.find(
-            (s) => s.id === currentSessionId.value
+            (s) => s.id === sessionId.value
           );
           if (currentSession) {
             currentSession.name = `会话 ${
@@ -365,10 +371,12 @@ export function useChat() {
       scrollMessageBox(250);
     };
     // 切换会话
-    const switchSession = (sessionId) => {
-      if (currentSessionId.value !== sessionId) {
-        currentSessionId.value = sessionId;
-        loadSessionMessages(sessionId);
+    const switchSession = (id) => {
+      if (sessionId.value !== id) {
+        app.set({
+          sessionId: id
+        })
+        loadSessionMessages(id);
       }
     };
     // 取消当前回答请求
@@ -398,7 +406,7 @@ export function useChat() {
     return {
       messages,
       sessions,
-      currentSessionId,
+      sessionId,
       clearMessages,
       switchSession,
       setMessage,

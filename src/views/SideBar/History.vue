@@ -7,43 +7,62 @@
       <div v-if="item.type === 'title'" class="history-title">
         {{ item.content }}
       </div>
-      <div v-else class="history-content" :class='{ active: curId == item.id }'>
-        <span class="h-content oneline" @click.stop="handleClickDialog(item)">{{
-          item.name
-        }}
-
+      <div v-else class="history-content bg-" :class="{ active: curId == item.id }">
+        <span class="h-content oneline" @click.stop="handleClickDialog(item)"
+          >{{ item.name }}
         </span>
-        <span class="options" :class="{ selected: selectedId == item.id }" @click="selectedId = item.id">
-          <el-popover :show-arrow="false" trigger="click" @hide="selectedId = ''" popper-class="history-item-popover"
-            placement="bottom-start">
+        <span
+          class="options"
+          :class="{ selected: selectedId == item.id }"
+          @click="selectedId = item.id"
+        >
+          <el-popover
+            :show-arrow="false"
+            trigger="click"
+            @hide="selectedId = ''"
+            popper-class="history-item-popover"
+            placement="bottom-start"
+          >
             <div class="history-item-popover-content">
               <div class="options-item" @click.stop="handleRename(item)">
                 <el-icon size="18" color="#1C1C1C">
                   <Edit />
                 </el-icon>
-                <span style="
+                <span
+                  style="
                     padding: 0 5px 0 20px;
                     color: #1c1c1c;
                     font-weight: 500;
-                  ">重命名</span>
+                  "
+                  >重命名</span
+                >
               </div>
               <div class="options-item" @click.stop="handleDelete(item)">
                 <el-icon color="#FF3b30" size="18">
                   <Delete />
                 </el-icon>
-                <span style="
+                <span
+                  style="
                     color: #ff3b30;
                     padding: 0 5px 0 20px;
                     font-weight: 500;
-                  ">删除</span>
+                  "
+                  >删除</span
+                >
               </div>
             </div>
 
             <template #reference>
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" fill="#616161">
+              <svg
+                class="icon"
+                viewBox="0 0 1024 1024"
+                width="16"
+                height="16"
+                fill="#616161"
+              >
                 <path
-                  d="M415.93 223.79c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.003-95.984-95.984zM415.93 511.742c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.004-95.984-95.984zM415.93 799.866c0-52.98 43.004-95.984 95.984-95.984s95.984 43.003 95.984 95.984-43.004 95.983-95.984 95.983-95.984-43.175-95.984-95.983z">
-                </path>
+                  d="M415.93 223.79c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.003-95.984-95.984zM415.93 511.742c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.004-95.984-95.984zM415.93 799.866c0-52.98 43.004-95.984 95.984-95.984s95.984 43.003 95.984 95.984-43.004 95.983-95.984 95.983-95.984-43.175-95.984-95.983z"
+                ></path>
               </svg>
               <!-- <el-icon color="#616161"><MoreFilled />   </el-icon> -->
             </template>
@@ -54,40 +73,75 @@
     <div class="finished">
       {{ list.length > 0 ? "没有更多了~" : "" }}
     </div>
-    <el-dialog v-model="show" class="dialog-round-confirm" width="411px" align-center :show-close="false"
-      :destroy-on-close="true" append-to-body header-class="dialog-header">
+    <el-dialog
+      v-model="show"
+      class="dialog-round-confirm"
+      width="411px"
+      align-center
+      :show-close="false"
+      :destroy-on-close="true"
+      append-to-body
+      header-class="dialog-header"
+    >
       <template #header="{ close }">
-        <DialogTitle title="编辑对话名称" @close="
-          close();
-        renameValue = '';
-        " />
+        <DialogTitle
+          title="编辑对话名称"
+          @close="
+            close();
+            renameValue = '';
+          "
+        />
       </template>
       <div class="confirm-content">
-        <el-input ref="renameRef" v-model="renameValue" type="text" placeholder="请输入对话名称" :maxlength="20"
-          style="height: 44px; --el-input-border-radius: 6px" show-word-limit :autofocus="true" />
+        <el-input
+          ref="renameRef"
+          v-model="renameValue"
+          type="text"
+          placeholder="请输入对话名称"
+          :maxlength="20"
+          style="height: 44px; --el-input-border-radius: 6px"
+          show-word-limit
+          :autofocus="true"
+        />
       </div>
 
       <template #footer>
         <div style="padding-bottom: 20px">
-          <el-button type="default" style="height: 32px; border-radius: 4px" @click="
-            show = false;
-          renameValue = '';
-          ">
+          <el-button
+            type="default"
+            style="height: 32px; border-radius: 4px"
+            @click="
+              show = false;
+              renameValue = '';
+            "
+          >
             取消
           </el-button>
-          <el-button type="primary" style="
+          <el-button
+            type="primary"
+            style="
               height: 32px;
               border-radius: 4px;
               background: linear-gradient(90deg, #269efd 0%, #1677fe 100%);
               border: none;
-            " @click="handleConfirm">
+            "
+            @click="handleConfirm"
+          >
             确认
           </el-button>
         </div>
       </template>
     </el-dialog>
-    <el-dialog v-model="showDel" class="dialog-round-confirm" width="420px" align-center :show-close="false"
-      :destroy-on-close="true" append-to-body header-class="dialog-header">
+    <el-dialog
+      v-model="showDel"
+      class="dialog-round-confirm"
+      width="420px"
+      align-center
+      :show-close="false"
+      :destroy-on-close="true"
+      append-to-body
+      header-class="dialog-header"
+    >
       <template #header="{ close }">
         <div class="header-container">
           <div class="header-l">
@@ -104,15 +158,24 @@
       <div class="confirm-content">删除后的对话不可恢复。</div>
       <template #footer>
         <div style="padding-bottom: 20px">
-          <el-button type="default" style="height: 32px; border-radius: 4px" @click="showDel = false">
+          <el-button
+            type="default"
+            style="height: 32px; border-radius: 4px"
+            @click="showDel = false"
+          >
             取消
           </el-button>
-          <el-button type="primary" style="
+          <el-button
+            type="primary"
+            style="
               height: 32px;
               border-radius: 4px;
               background: #ff3b30;
               border: none;
-            " @click="handleConfirmDelete" :disabled="handleLoading">
+            "
+            @click="handleConfirmDelete"
+            :disabled="handleLoading"
+          >
             删除
           </el-button>
         </div>
@@ -132,7 +195,7 @@ import { successMsg, errorMsg, warningMsg } from "@/hooks/useMessage";
 import * as service from "@/service/api";
 import DialogTitle from "@/components/Common/DialogTitle.vue";
 
-const { sessions, switchSession, currentSessionId } = useChat();
+const { sessions, switchSession } = useChat();
 const { app } = useStore();
 const router = useRouter();
 const selectedId = ref(""); // 当前选中二级菜单的会话id
@@ -143,24 +206,27 @@ const showDel = ref(false); // 是否显示删除弹窗
 const activeDialog = ref(null); // 当前点击的对话项
 const handleLoading = ref(false); // 是否显示加载中
 let currentDateType = null; // 对话列表当前日期类型
-const curId = ref(currentSessionId);
+const curId = computed(() => {
+  app.info.sessionId;
+});
 const list = computed(() => {
   // 对话列表
   const data = [];
-  sessions && sessions.forEach((item) => {
-    const { timestamp } = item;
-    const dateType = getDayjsCategory(timestamp);
-    if (dateType !== currentDateType) {
-      data.push({
-        type: "title",
-        content: dateType,
-      });
-      currentDateType = dateType;
-    } else {
-      item.active = false;
-    }
-    data.push(item);
-  });
+  sessions &&
+    sessions.forEach((item) => {
+      const { timestamp } = item;
+      const dateType = getDayjsCategory(timestamp);
+      if (dateType !== currentDateType) {
+        data.push({
+          type: "title",
+          content: dateType,
+        });
+        currentDateType = dateType;
+      } else {
+        item.active = false;
+      }
+      data.push(item);
+    });
   return data;
 });
 

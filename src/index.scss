@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --van-border-color: #eee;
 }
@@ -36,8 +32,8 @@ body {
 #app {
   width: 100%;
   height: 100%;
-  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑", "宋体",
-    "Arial", "Helvetica", "sans-serif";
+  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑", "宋体", "Arial",
+    "Helvetica", "sans-serif";
   color: #222;
   font-size: 16px;
   background: white;

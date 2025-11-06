@@ -7,7 +7,6 @@ import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import legacy from "@vitejs/plugin-legacy";
 import topLevelAwait from "vite-plugin-top-level-await";
 import AutoImport from "unplugin-auto-import/vite";
-import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => {
   const plugins = [
@@ -17,7 +16,6 @@ export default defineConfig(({ mode }) => {
     }),
     topLevelAwait(),
     vue(),
-    tailwindcss(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
@@ -28,7 +26,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins,
     root: "src",
-    base: '/deepseek-chat/',
+    base: "/deepseek-chat/",
     publicDir: "public",
     build: {
       outDir: resolve(__dirname, "dist"),

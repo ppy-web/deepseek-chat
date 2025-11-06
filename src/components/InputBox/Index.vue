@@ -2,31 +2,16 @@
 <template>
   <div class="input-container">
     <div class="input-wrapper">
-      <div
-        ref="inputRef"
-        class="textarea"
-        contenteditable="true"
-        rows="2"
-        :data-placeholder="placeHolder"
-        @input="onInput"
-        @keydown="handleKeydown"
-        @blur="onBlur"
-        @paste="handlePaste"
-        @compositionstart="isComposing = true"
-        @compositionend="isComposing = false"
-      />
+      <div ref="inputRef" class="textarea" contenteditable="true" rows="2" :data-placeholder="placeHolder"
+        @input="onInput" @keydown="handleKeydown" @blur="onBlur" @paste="handlePaste"
+        @compositionstart="isComposing = true" @compositionend="isComposing = false" />
       <div class="input-bottom-wrapper">
         <div class="input-bottom-wrapper-left">
           <Models />
-          <Network />
         </div>
         <div class="input-bottom-wrapper-right">
           <UploadBtn @fileUploaded="handleFileUploaded" />
-          <span
-            class="stop"
-            @click.stop="cancelAnswer"
-            v-if="showInterruptBtn"
-          />
+          <span class="stop" @click.stop="cancelAnswer" v-if="showInterruptBtn" />
           <template v-else>
             <span class="send" @click.stop="sendInput" />
           </template>
@@ -37,12 +22,9 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, computed, ref, provide } from "vue";
-
+import { onMounted, onUnmounted, computed, ref } from "vue";
 import Models from "./Models.vue";
-import Network from "./Network.vue";
 import UploadBtn from "./UploadBtn.vue";
-
 import { useStore } from "@/hooks/useStore";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
@@ -137,6 +119,7 @@ onUnmounted(() => {
   position: sticky;
   bottom: 40px;
   width: 100%;
+
   .input-wrapper {
     position: relative;
     background: #ffffff;
@@ -145,6 +128,7 @@ onUnmounted(() => {
     border: 1px solid #dedede;
     overflow: hidden;
     cursor: pointer;
+
     .textarea {
       word-break: break-word;
       margin: 14px;
@@ -157,31 +141,37 @@ onUnmounted(() => {
       overflow: auto;
       box-sizing: border-box;
     }
+
     .textarea[data-placeholder]:empty::before {
       content: attr(data-placeholder);
       color: #bab7d2;
       cursor: text;
       font-size: 14px;
     }
+
     .input-bottom-wrapper {
       margin: 16px;
       margin-top: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       .input-bottom-wrapper-left {
         flex: 1;
         display: flex;
       }
+
       .input-bottom-wrapper-right {
         display: flex;
         align-items: center;
+
         .stop {
           width: 58px;
           height: 32px;
           background: #191919;
           border-radius: 17px;
           position: relative;
+
           &::after {
             content: " ";
             position: absolute;
@@ -194,6 +184,7 @@ onUnmounted(() => {
             transform: translate(-50%, -50%);
           }
         }
+
         .send {
           width: 58px;
           height: 32px;
@@ -201,6 +192,7 @@ onUnmounted(() => {
           background-size: 100% 100%;
           cursor: pointer;
         }
+
         .disabled {
           cursor: not-allowed;
           opacity: 0.5;

@@ -1,7 +1,7 @@
 <template>
   <el-container style="background-color: #fcfcfc">
     <div
-      class="main-sidebar-toggle"
+      class="main-sidebar-toggle bg-t"
       @click="clickToggleSideBar"
       @mouseenter="hoverToggleSideBar"
       v-if="isSmallPage || !isSideBarVisible"
