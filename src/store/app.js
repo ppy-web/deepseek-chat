@@ -1,47 +1,63 @@
-/**
- * isSideBarVisible: 侧边栏是否可见
- * isSmallPage: 是否是小页面(宽度小于768)
- * isNewDialog: 是否为新对话
- * isSidebarFixed: 侧边栏是否是固定
- * needTransition: 主区域是否需要过渡动画
- * showInterruptBtn: 输入框是否展示中断按钮
- * showWatermark: 是否展示水印
- */
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { merge } from "lodash-es";
 import { storage } from "@/utils";
-
-export const useAppStore = defineStore("app", function () {
+import { API_CONFIG } from "@/constants";
+import doubao from "@/assets/img/doubao.png";
+const useAppStore = defineStore("app", function () {
   // 从本地存储中获取数据
   const insistance = storage.get("appInfo");
-
+  const localInfo = storage.get("apiConfig");
   const info = reactive({
-    sessionId: "",
+    logo: doubao,
+    appName: "袁小漫",
     isSideBarVisible: true,
     isSmallPage: false,
     isSidebarFixed: false,
-    isNewDialog: true,
-    needTransition: true,
-    showInterruptBtn: false,
-    localModelIndex: insistance?.localModelIndex || 0,
-    networkStatus: insistance?.networkStatus || false,
     isPageHide: false,
-    showWatermark: false,
+    isAvailable: true,
+    showWatermark: insistance?.showWatermark || false,
+    balanceInfo: {},
   });
+  const apiConfig = reactive({
+    ...API_CONFIG,
+    ...localInfo,
+  })
+
+  const apiInfo = computed(() => apiConfig);
+  const logo = computed(() => info.logo);
+  const balanceInfo = computed(() => info.balanceInfo);
+  const isSideBarVisible = computed(() => info.isSideBarVisible);
+  const isSidebarFixed = computed(() => info.isSidebarFixed);
+  const isSmallPage = computed(() => info.isSmallPage);
 
   function set(data) {
     merge(info, data);
     storage.set("appInfo", info);
   }
-
+  function setApiConfig(data) {
+    merge(apiConfig, data);
+    storage.set("apiConfig", info);
+  }
   function clear() {
     storage.remove("appInfo");
+    storage.remove("apiConfig");
   }
-
   return {
-    info,
+    logo,
+    apiInfo,
+    balanceInfo,
+    isSideBarVisible,
+    isSidebarFixed,
+    isSmallPage,
+    appName: computed(() => info.appName),
+    useModel: computed(() => apiConfig.model),
+    baseURL: computed(() => apiConfig.baseURL),
+    apiKey: computed(() => apiConfig.apiKey),
+    defaultParams: computed(() => apiConfig.defaultParams),
     set,
+    setApiConfig,
     clear,
   };
 });
+export default useAppStore

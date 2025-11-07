@@ -1,19 +1,24 @@
+<script setup>
+import BotHello from "./BotHello.vue";
+import InputBox from "@/components/InputBox/Index.vue";
+import ChatBox from "@/components/ChatBox/Index.vue";
+import AiTips from "@/components/Common/AiTips.vue";
+import Navbar from "@/components/Common/Navbar.vue";
+import { useChatStore } from "@/store";
+const chat = useChatStore();
+
+</script>
+
 <template>
   <div class="assistant">
-    <Navbar v-if="!isNewDialog" />
-    <div
-      class="new-dialog animate__animated animate__fadeIn"
-      v-if="isNewDialog"
-    >
-      <HeaderBox />
+    <Navbar v-if="chat.sessionId" />
+    <div class="new-dialog animate__animated animate__fadeIn" v-if="!chat.sessionId">
+      <BotHello />
       <InputBox />
     </div>
     <!-- 对话 -->
-    <div
-      class="chat-box animate__animated animate__fadeIn"
-      v-show="!isNewDialog"
-    >
-      <ChatBox :key="sessionId" />
+    <div class="chat-box animate__animated animate__fadeIn" v-else>
+      <ChatBox />
       <InputBox />
     </div>
     <!-- 提示信息  -->
@@ -21,25 +26,7 @@
   </div>
 </template>
 
-<script setup>
-import { computed, provide } from "vue";
-import { useStore } from "@/hooks/useStore";
-
-import HeaderBox from "./HeaderBox.vue";
-import InputBox from "@/components/InputBox/Index.vue";
-import ChatBox from "@/components/ChatBox/Index.vue";
-import AiTips from "@/components/Common/AiTips.vue";
-import Navbar from "@/components/Common/Navbar.vue";
-
-const { app, config } = useStore();
-
-const isNewDialog = computed(() => app.info.isNewDialog); // 是否是新对话
-const sessionId = computed(() => app.info.sessionId); // 会话id
-const customerBigLogo = computed(() => config.info.customerBigLogo); // 客户logo
-provide("customerBigLogo", customerBigLogo);
-</script>
-
-<style lang="scss">
+<style lang="scss" scoped>
 .assistant {
   display: flex;
   position: relative;
@@ -48,6 +35,7 @@ provide("customerBigLogo", customerBigLogo);
   justify-content: center;
   width: 100%;
   background-color: #fcfcfc;
+
   // height: calc(100% - 40px);
   // border: 1px solid #89b773;
   .new-dialog {
@@ -56,6 +44,7 @@ provide("customerBigLogo", customerBigLogo);
     min-width: 400px;
     padding: 16px;
   }
+
   .chat-box {
     display: flex;
     flex-direction: column;

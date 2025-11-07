@@ -1,21 +1,14 @@
 <template>
-  <el-container
-    class="app-container"
-    :class="{
-      'small-page': isSmallPage,
-      'hide-sidebar': !isSideBarVisible,
-      'sidebar-fixed': isSidebarFixed,
-    }"
-  >
+  <el-container class="app-container" :class="{
+    'small-page': app.isSmallPage,
+    'hide-sidebar': !app.isSideBarVisible,
+    'sidebar-fixed': app.isSidebarFixed,
+  }">
     <SideBar class="sidebar-area" />
-    <MainContent class="main-area" :need-transition="needTransition">
+    <MainContent class="main-area" :need-transition="true">
       <router-view v-slot="{ Component, route }">
         <keep-alive>
-          <component
-            :is="Component"
-            :key="route.path"
-            v-if="route.meta.keepAlive"
-          />
+          <component :is="Component" :key="route.path" v-if="route.meta.keepAlive" />
         </keep-alive>
         <component :is="Component" v-if="!route.meta.keepAlive" />
       </router-view>
@@ -24,14 +17,13 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, computed } from "vue";
+import { onMounted, onUnmounted } from "vue";
 
 import SideBar from "@/views/SideBar/Index.vue";
 import MainContent from "@/views/MainContent.vue";
 import { useBrowser } from "@/hooks/useBrowser.js";
-import { useStore } from "@/hooks/useStore";
+import { useAppStore } from "@/store";
 import { useMitt } from "@/hooks/useMitt.js";
-import { useRouter } from "vue-router";
 
 import {
   NARROW_SCREEN_WIDTH,
@@ -40,27 +32,14 @@ import EVENT_TYPE from "@/constants/event_type";
 
 import * as service from "@/service/api";
 
-const router = useRouter();
-const { user, app, config } = useStore();
+const app = useAppStore();
 const { browser, onScreenChange } = useBrowser();
 const mitt = useMitt();
-// 是否初始化流式播放器
-const hasInitStreamPlayer = computed(() => app.info.hasInitStreamPlayer);
-// 是否展示侧边栏
-const isSideBarVisible = computed(() => app.info.isSideBarVisible);
-// 屏幕宽度是否小于NARROW_SCREEN_WIDTH
-const isSmallPage = computed(() => app.info.isSmallPage);
-// 是否是fixed定位Siderbar
-const isSidebarFixed = computed(() => app.info.isSidebarFixed);
-// 主区域MainContent是否需要过渡动画
-const needTransition = computed(() => app.info.needTransition);
 // 获取初始化配置
-const getInitParam = async (type) => {
-  // document.title = "deepseek";
+const getInitParam = async () => {
   const { is_available, balance_infos } = await service.getUserBalance();
-  config.set({
-    
-  });
+  const data = await service.getModels();
+  console.log('modeldata', data);
   app.set({
     isAvailable: is_available,
     balanceInfo: balance_infos[0],
@@ -68,17 +47,12 @@ const getInitParam = async (type) => {
 };
 
 onMounted(() => {
-  getInitParam();
   mitt.on(EVENT_TYPE.INIT_SUCCESS, () => {
-    app.set({
-      sessionId: "",
-    });
     getInitParam();
   });
   onScreenChange(() => {
     app.set({
       isSmallPage: browser.width < NARROW_SCREEN_WIDTH,
-      needTransition: true,
     });
     if (document.querySelector(".chat-box .chat-component")) {
       if (browser.width - 300 < 960) {

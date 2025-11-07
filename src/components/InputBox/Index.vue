@@ -7,10 +7,9 @@
         @compositionstart="isComposing = true" @compositionend="isComposing = false" />
       <div class="input-bottom-wrapper">
         <div class="input-bottom-wrapper-left">
-          <Models />
+          <div class="deep-button" :class="{ active: deepThinking }" @click="deepThinking = !deepThinking">深度思考</div>
         </div>
         <div class="input-bottom-wrapper-right">
-          <UploadBtn @fileUploaded="handleFileUploaded" />
           <span class="stop" @click.stop="cancelAnswer" v-if="showInterruptBtn" />
           <template v-else>
             <span class="send" @click.stop="sendInput" />
@@ -22,39 +21,23 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, computed, ref } from "vue";
-import Models from "./Models.vue";
-import UploadBtn from "./UploadBtn.vue";
-import { useStore } from "@/hooks/useStore";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
-
+import { useChatStore } from "@/store";
 const mitt = useMitt();
-const { app } = useStore();
+const chat = useChatStore()
+
 // 输入框的值
 const inputVal = ref("");
 const inputRef = ref(null);
 const isComposing = ref(false); // 用于处理中文输入法状态
 const placeHolder = ref("试试与我互动吧~ Enter发送，Shit+Enter换行"); // 输入框placeholder
-const fileList = ref([]); // 文件上传列表
-const showInterruptBtn = computed(() => app.info.showInterruptBtn); // 中断按钮是否展示
-
+const showInterruptBtn = ref(false); // 是否显示中断按钮
+const deepThinking = ref(false); // 是否深度思考
 // 输入
 const onInput = (e) => {
   inputVal.value = e.target.innerText;
-};
-
-const sendVoiceText = (val) => {
-  inputRef.value.innerText = val;
-  inputVal.value = val;
-  inputRef.value?.focus();
-  // 创建 Range 对象  聚焦到文字末尾
-  const range = document.createRange();
-  const selection = window.getSelection();
-  range.selectNodeContents(inputRef.value);
-  range.collapse(false);
-  selection.removeAllRanges();
-  selection.addRange(range);
 };
 
 // 失焦
@@ -85,7 +68,8 @@ const handlePaste = (e) => {
 // 发送
 const sendInput = () => {
   if (inputVal.value.trim()) {
-    mitt.emit(EVENT_TYPE.SEND_MESSAGE, inputVal.value.trim());
+    // mitt.emit(EVENT_TYPE.SEND_MESSAGE, inputVal.value.trim());
+    chat.sendMessage(inputVal.value.trim());
     inputRef.value.innerText = "";
     inputVal.value = "";
   }
@@ -94,10 +78,6 @@ const sendInput = () => {
 const cancelAnswer = () => {
   mitt.emit(EVENT_TYPE.CANCEL_ANSWER);
   inputVal.value = "";
-};
-
-const handleFileUploaded = (list) => {
-  fileList.value = list;
 };
 
 onMounted(() => {
@@ -123,10 +103,8 @@ onUnmounted(() => {
   .input-wrapper {
     position: relative;
     background: #ffffff;
-    box-shadow: 0px 1px 2px 0px rgba(102, 102, 102, 0.1);
     border-radius: 16px;
-    border: 1px solid #dedede;
-    overflow: hidden;
+    padding: 1px 0;
     cursor: pointer;
 
     .textarea {
@@ -159,6 +137,40 @@ onUnmounted(() => {
       .input-bottom-wrapper-left {
         flex: 1;
         display: flex;
+
+        .deep-button {
+          transition: all .3s ease-in-out;
+          width: 100px;
+          height: 32px;
+          border-radius: 17px;
+          border: #bab7d2 1px solid;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          background: linear-gradient(to right, #21f05f, #21aef0 50%,
+              #cd85f7 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          user-select: none;
+          cursor: pointer;
+        }
+
+        .deep-button:hover {
+          opacity: .5;
+        }
+
+        .deep-button:active {
+          background: #bab7d2;
+          opacity: .5;
+        }
+
+        .active {
+          background: linear-gradient(to right, #21f05f 0%, #21aef0 50%, #cd85f7 100%);
+          color: #fff;
+          border: #bab7d2;
+        }
       }
 
       .input-bottom-wrapper-right {
@@ -199,6 +211,18 @@ onUnmounted(() => {
         }
       }
     }
+  }
+
+  .input-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    border-radius: 16px;
+    z-index: -1;
   }
 }
 </style>

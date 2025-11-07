@@ -4,23 +4,21 @@
     <div class="left">{{ props.title }}</div>
     <div class="right">
       <slot></slot>
-      <div class="balance">余额 ￥{{ balance.total_balance  }}</div>
+      <div class="balance">余额 ￥{{ app.balanceInfo.total_balance }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useStore } from "@/hooks/useStore";
+import { useAppStore } from "@/store";
 
-const { app } = useStore();
+const app = useAppStore();
 const props = defineProps({
   title: {
     type: String,
     default: "",
   },
 });
-const balance = computed(() => app.info.balanceInfo);
 </script>
 
 <style lang="scss" scoped>
@@ -31,22 +29,26 @@ const balance = computed(() => app.info.balanceInfo);
   line-height: 48px;
   width: 100%;
   padding-right: 16px;
+
   .left {
     flex: 1;
     font-weight: 700;
     font-size: 24px;
     color: #333;
   }
+
   .right {
     display: flex;
     margin-left: 10px;
     align-items: center;
+
     .voice {
       width: 30px;
       height: 30px;
       background-image: url("@/assets/img/voice1.png");
       background-size: 100% 100%;
     }
+
     .balance {
       height: 30px;
       line-height: 30px;

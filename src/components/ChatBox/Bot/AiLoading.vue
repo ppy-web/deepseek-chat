@@ -14,11 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useStore } from "@/hooks/useStore";
 import botDefault from "@/assets/img/doubao.png";
-
-const { config, app } = useStore();
 const props = defineProps({
   pending: {
     type: Boolean,
@@ -35,15 +31,19 @@ const props = defineProps({
   font-size: 14px;
   color: #333;
   height: 100%;
+
   .avatar {
-    align-self: flex-start; /* 靠上对齐 */
+    align-self: flex-start;
+    /* 靠上对齐 */
     width: 28px;
     height: 28px;
     border-radius: 50%;
   }
+
   span {
     margin-left: 10px;
   }
+
   @keyframes brighten {
     50% {
       background-color: #9ac5f3;
@@ -53,13 +53,16 @@ const props = defineProps({
       background-color: #6ca4f4;
     }
   }
+
   .loadwrap {
     display: flex;
+
     .loader {
       display: flex;
       transition: all 0.4s;
       align-items: center;
     }
+
     .loader div {
       margin-left: 5px;
       background-color: #b6d9f2;
@@ -67,13 +70,16 @@ const props = defineProps({
       height: 5px;
       width: 5px;
     }
+
     .box-load1 {
       animation: brighten 1.2s infinite;
     }
+
     .box-load2 {
       animation: brighten 1.2s infinite;
       animation-delay: 0.3s;
     }
+
     .box-load3 {
       animation: brighten 1.2s infinite;
       animation-delay: 0.6s;

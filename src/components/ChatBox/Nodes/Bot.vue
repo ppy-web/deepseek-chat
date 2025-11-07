@@ -7,46 +7,24 @@
     </div>
     <div class="message" :class="{ pending: !isPending }">
       <!-- 思考过程 -->
-      <ThinkingWrap
-        :html="htmlThinking"
-        :finished="thinkFinished"
-        :second="thinkTime"
-      />
+      <ThinkingWrap :html="htmlThinking" :finished="thinkFinished" :second="thinkTime" />
       <!-- 大模型回答 -->
       <div class="watermark" :class="{ [mClass]: true }">
-        <span
-          class="rich-text"
-          :class="{ 'text-end': isTextStreamEnd }"
-          v-html="htmlStr"
-        ></span>
+        <span class="rich-text" :class="{ 'text-end': isTextStreamEnd }" v-html="htmlStr"></span>
       </div>
       <!-- 操作栏 -->
-      <ActionBar
-        v-if="!isPending && isTextStreamEnd && isLast"
-        :content="msg.htmlStr"
-        :status="msg.opsStatus"
-        @like="onHandleLike"
-        @unlike="onHandleUnlike"
-        class="action-bar"
-      />
-      <TryAsking
-        v-if="isTextStreamEnd && isLast"
-        :list="suggestArray"
-        @send="onSendSuggest"
-      />
+      <ActionBar v-if="!isPending && isTextStreamEnd && isLast" :content="msg.htmlStr" :status="msg.opsStatus"
+        @like="onHandleLike" @unlike="onHandleUnlike" class="action-bar" />
+      <TryAsking v-if="isTextStreamEnd && isLast" :list="suggestArray" @send="onSendSuggest" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, inject } from "vue";
+import { computed, onMounted } from "vue";
 import { Watermark } from "watermark-js-plus";
-import { useStore } from "@/hooks/useStore";
-import { jumpHttp } from "@/utils";
-import { useMarkdown } from "@/hooks/useMarkdown"; // Markdown渲染
 import { useMitt } from "@/hooks/useMitt";
-
-import message from "@/hooks/useMessage.js";
+import message from "@/hooks/useMsg";
 import AiLoading from "../Bot/AiLoading.vue";
 import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
@@ -65,15 +43,10 @@ const props = defineProps({
   },
 });
 
-const { app } = useStore();
 const { msg } = props;
 
-const showWatermark = computed(() => app.info.showWatermark);
 const markText = computed(() => {
-  if (showWatermark.value) {
-    return "仅用于测试，请勿转载";
-  }
-  return "";
+  return "仅用于测试，请勿转载";
 });
 
 const mClass = computed(() => `message-${msg.mid}`);
@@ -87,7 +60,7 @@ const suggestArray = computed(() => msg.suggestArray);
 const onHandleLike = () => {
   message.success("评价成功");
 };
-const onHandleUnlike = (params) => {
+const onHandleUnlike = () => {
   message.warning("评价成功，我们会持续改进！");
 };
 
@@ -118,6 +91,7 @@ onMounted(() => {
 <style lang="scss">
 .bot {
   max-width: 100%;
+
   & .message {
     border-radius: 8px;
     font-size: 16px;
@@ -126,23 +100,29 @@ onMounted(() => {
     font-weight: 400;
     font-size: 16px;
     color: #333333;
+
     &.pending {
       background-color: #fcfcfc;
     }
+
     .watermark {
       position: relative;
     }
+
     .rich-text {
       user-select: text;
+
       img {
         display: none;
       }
+
       // text-end 时图片显示
       &.text-end {
         img {
           display: block;
         }
       }
+
       // 角标样式
       .highlight-text {
         cursor: pointer !important;
@@ -159,6 +139,7 @@ onMounted(() => {
       color: #979797;
     }
   }
+
   // 控制操作栏显隐
   // .action-bar {
   //   opacity: 0;

@@ -1,6 +1,6 @@
 <template>
   <div class="call-word">
-    <div class="text-3xl font-bold underline" @click="alertEffects">提示词设置</div>
+    <div class="text-3xl font-bold underline" @click="alertEffects">性格设置</div>
   </div>
 </template>
 
@@ -21,6 +21,4 @@ function alertEffects() {
   user-select: none;
   cursor: pointer;
 }
-
-
 </style>

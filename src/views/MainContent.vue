@@ -1,23 +1,15 @@
 <template>
   <el-container style="background-color: #fcfcfc">
-    <div
-      class="main-sidebar-toggle bg-t"
-      @click="clickToggleSideBar"
-      @mouseenter="hoverToggleSideBar"
-      v-if="isSmallPage || !isSideBarVisible"
-    ></div>
+    <div class="main-sidebar-toggle bg-t" @click="clickToggleSideBar" @mouseenter="hoverToggleSideBar"
+      v-if="app.isSmallPage || !app.isSideBarVisible"></div>
     <slot></slot>
   </el-container>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useStore } from "@/hooks/useStore";
+import { useAppStore } from "@/store";
 
-const { app } = useStore();
-const isSideBarVisible = computed(() => app.info.isSideBarVisible);
-const isSmallPage = computed(() => app.info.isSmallPage);
-
+const app = useAppStore();
 const clickToggleSideBar = () => {
   app.set({
     isSideBarVisible: true,
@@ -25,7 +17,7 @@ const clickToggleSideBar = () => {
 };
 
 const hoverToggleSideBar = () => {
-  if (isSmallPage.value) {
+  if (app.isSmallPage) {
     app.set({
       isSideBarVisible: true,
       isSidebarFixed: true,
@@ -50,6 +42,7 @@ const hoverToggleSideBar = () => {
   border-radius: 8px;
   transition: all 0.3s;
   z-index: 100;
+
   &:hover {
     background-color: #eee;
   }

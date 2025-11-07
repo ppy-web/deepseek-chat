@@ -1,203 +1,14 @@
-<template>
-  <div class="sidebar-history-title">
-    <span>历史会话</span> <img src="@/assets/img/history.png" alt="" />
-  </div>
-  <div class="history-list">
-    <div class="history-item" v-for="item in list" :key="item.id">
-      <div v-if="item.type === 'title'" class="history-title">
-        {{ item.content }}
-      </div>
-      <div v-else class="history-content bg-" :class="{ active: curId == item.id }">
-        <span class="h-content oneline" @click.stop="handleClickDialog(item)"
-          >{{ item.name }}
-        </span>
-        <span
-          class="options"
-          :class="{ selected: selectedId == item.id }"
-          @click="selectedId = item.id"
-        >
-          <el-popover
-            :show-arrow="false"
-            trigger="click"
-            @hide="selectedId = ''"
-            popper-class="history-item-popover"
-            placement="bottom-start"
-          >
-            <div class="history-item-popover-content">
-              <div class="options-item" @click.stop="handleRename(item)">
-                <el-icon size="18" color="#1C1C1C">
-                  <Edit />
-                </el-icon>
-                <span
-                  style="
-                    padding: 0 5px 0 20px;
-                    color: #1c1c1c;
-                    font-weight: 500;
-                  "
-                  >重命名</span
-                >
-              </div>
-              <div class="options-item" @click.stop="handleDelete(item)">
-                <el-icon color="#FF3b30" size="18">
-                  <Delete />
-                </el-icon>
-                <span
-                  style="
-                    color: #ff3b30;
-                    padding: 0 5px 0 20px;
-                    font-weight: 500;
-                  "
-                  >删除</span
-                >
-              </div>
-            </div>
-
-            <template #reference>
-              <svg
-                class="icon"
-                viewBox="0 0 1024 1024"
-                width="16"
-                height="16"
-                fill="#616161"
-              >
-                <path
-                  d="M415.93 223.79c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.003-95.984-95.984zM415.93 511.742c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.004-95.984-95.984zM415.93 799.866c0-52.98 43.004-95.984 95.984-95.984s95.984 43.003 95.984 95.984-43.004 95.983-95.984 95.983-95.984-43.175-95.984-95.983z"
-                ></path>
-              </svg>
-              <!-- <el-icon color="#616161"><MoreFilled />   </el-icon> -->
-            </template>
-          </el-popover>
-        </span>
-      </div>
-    </div>
-    <div class="finished">
-      {{ list.length > 0 ? "没有更多了~" : "" }}
-    </div>
-    <el-dialog
-      v-model="show"
-      class="dialog-round-confirm"
-      width="411px"
-      align-center
-      :show-close="false"
-      :destroy-on-close="true"
-      append-to-body
-      header-class="dialog-header"
-    >
-      <template #header="{ close }">
-        <DialogTitle
-          title="编辑对话名称"
-          @close="
-            close();
-            renameValue = '';
-          "
-        />
-      </template>
-      <div class="confirm-content">
-        <el-input
-          ref="renameRef"
-          v-model="renameValue"
-          type="text"
-          placeholder="请输入对话名称"
-          :maxlength="20"
-          style="height: 44px; --el-input-border-radius: 6px"
-          show-word-limit
-          :autofocus="true"
-        />
-      </div>
-
-      <template #footer>
-        <div style="padding-bottom: 20px">
-          <el-button
-            type="default"
-            style="height: 32px; border-radius: 4px"
-            @click="
-              show = false;
-              renameValue = '';
-            "
-          >
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            style="
-              height: 32px;
-              border-radius: 4px;
-              background: linear-gradient(90deg, #269efd 0%, #1677fe 100%);
-              border: none;
-            "
-            @click="handleConfirm"
-          >
-            确认
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-    <el-dialog
-      v-model="showDel"
-      class="dialog-round-confirm"
-      width="420px"
-      align-center
-      :show-close="false"
-      :destroy-on-close="true"
-      append-to-body
-      header-class="dialog-header"
-    >
-      <template #header="{ close }">
-        <div class="header-container">
-          <div class="header-l">
-            <img src="@/assets/img/warning.png" />
-            <span class="title" style="font-size: 18px">确定删除对话？</span>
-          </div>
-          <div class="header-r">
-            <el-icon>
-              <CloseBold @click="close()" />
-            </el-icon>
-          </div>
-        </div>
-      </template>
-      <div class="confirm-content">删除后的对话不可恢复。</div>
-      <template #footer>
-        <div style="padding-bottom: 20px">
-          <el-button
-            type="default"
-            style="height: 32px; border-radius: 4px"
-            @click="showDel = false"
-          >
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            style="
-              height: 32px;
-              border-radius: 4px;
-              background: #ff3b30;
-              border: none;
-            "
-            @click="handleConfirmDelete"
-            :disabled="handleLoading"
-          >
-            删除
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
 <script setup>
 import { ref, nextTick, computed } from "vue";
 import { Edit, Delete, CloseBold } from "@element-plus/icons-vue";
 import { getDayjsCategory } from "@/utils/index";
-import { useRouter } from "vue-router";
-import { useStore } from "@/hooks/useStore";
-import { useChat } from "@/hooks/useChat";
-import { successMsg, errorMsg, warningMsg } from "@/hooks/useMessage";
+import { useChatStore, useHistoryStore } from "@/store";
+import { successMsg, errorMsg, warningMsg } from "@/hooks/useMsg";
 import * as service from "@/service/api";
 import DialogTitle from "@/components/Common/DialogTitle.vue";
 
-const { sessions, switchSession } = useChat();
-const { app } = useStore();
-const router = useRouter();
+const { initMessages, deleteSession, sessionId } = useChatStore();
+const { sessions } = useHistoryStore();
 const selectedId = ref(""); // 当前选中二级菜单的会话id
 const renameValue = ref(""); // 重命名输入框的值
 const show = ref(false); // 是否显示重命名弹窗
@@ -206,9 +17,7 @@ const showDel = ref(false); // 是否显示删除弹窗
 const activeDialog = ref(null); // 当前点击的对话项
 const handleLoading = ref(false); // 是否显示加载中
 let currentDateType = null; // 对话列表当前日期类型
-const curId = computed(() => {
-  app.info.sessionId;
-});
+const currendId = undefined
 const list = computed(() => {
   // 对话列表
   const data = [];
@@ -231,18 +40,10 @@ const list = computed(() => {
 });
 
 const handleClickDialog = (item) => {
+  console.log(item);
   try {
-    // 点击对话列表的对话详情sessionId
     const { id } = item;
-    app.set({
-      isNewDialog: false,
-      sessionId: id,
-    });
-    curId.value = id;
-    setTimeout(() => {
-      switchSession(id);
-      router.push("/");
-    }, 100);
+    initMessages(id);
   } catch (err) {
     console.log("获取对话记录失败", err);
   }
@@ -285,14 +86,12 @@ const handleConfirm = async () => {
     handleLoading.value = false;
   }
 };
-const handleConfirmDelete = () => {
+const handleConfirmDelete = async () => {
   try {
     handleLoading.value = true;
+    await deleteSession(activeDialog.value.id)
     successMsg("删除成功");
     showDel.value = false;
-    sessions.value = sessions.value.filter(
-      (item) => item.sessionId !== activeDialog.value.sessionId
-    );
   } catch (error) {
     errorMsg(error);
   } finally {
@@ -300,6 +99,127 @@ const handleConfirmDelete = () => {
   }
 };
 </script>
+
+<template>
+  <div class="sidebar-history-title">
+    <span>历史会话</span> <img src="@/assets/img/history.png" alt="" />
+  </div>
+  <div class="history-list">
+    <div class="history-item" v-for="item in list" :key="item.id">
+      <div v-if="item.type === 'title'" class="history-title">
+        {{ item.content }}
+      </div>
+      <div v-else class="history-content" :class="{ active: sessionId == item.id }">
+        <span class="h-content oneline" @click.stop="handleClickDialog(item)">{{ item.name }}
+        </span>
+        <span class="options" :class="{ selected: selectedId == item.id }" @click="selectedId = item.id">
+          <el-popover :show-arrow="false" trigger="click" @hide="selectedId = ''" popper-class="history-item-popover"
+            placement="bottom-start">
+            <div class="history-item-popover-content">
+              <div class="options-item" @click.stop="handleRename(item)">
+                <el-icon size="18" color="#1C1C1C">
+                  <Edit />
+                </el-icon>
+                <span style="
+                    padding: 0 5px 0 20px;
+                    color: #1c1c1c;
+                    font-weight: 500;
+                  ">重命名</span>
+              </div>
+              <div class="options-item" @click.stop="handleDelete(item)">
+                <el-icon color="#FF3b30" size="18">
+                  <Delete />
+                </el-icon>
+                <span style="
+                    color: #ff3b30;
+                    padding: 0 5px 0 20px;
+                    font-weight: 500;
+                  ">删除</span>
+              </div>
+            </div>
+
+            <template #reference>
+              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" fill="#616161">
+                <path
+                  d="M415.93 223.79c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.003-95.984-95.984zM415.93 511.742c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.004-95.984-95.984zM415.93 799.866c0-52.98 43.004-95.984 95.984-95.984s95.984 43.003 95.984 95.984-43.004 95.983-95.984 95.983-95.984-43.175-95.984-95.983z">
+                </path>
+              </svg>
+              <!-- <el-icon color="#616161"><MoreFilled />   </el-icon> -->
+            </template>
+          </el-popover>
+        </span>
+      </div>
+    </div>
+    <div class="finished">
+      {{ list.length > 0 ? "没有更多了~" : "" }}
+    </div>
+    <el-dialog v-model="show" class="dialog-round-confirm" width="411px" align-center :show-close="false"
+      :destroy-on-close="true" append-to-body header-class="dialog-header">
+      <template #header="{ close }">
+        <DialogTitle title="编辑对话名称" @close="
+          close();
+        renameValue = '';
+        " />
+      </template>
+      <div class="confirm-content">
+        <el-input ref="renameRef" v-model="renameValue" type="text" placeholder="请输入对话名称" :maxlength="20"
+          style="height: 44px; --el-input-border-radius: 6px" show-word-limit :autofocus="true" />
+      </div>
+
+      <template #footer>
+        <div style="padding-bottom: 20px">
+          <el-button type="default" style="height: 32px; border-radius: 4px" @click="
+            show = false;
+          renameValue = '';
+          ">
+            取消
+          </el-button>
+          <el-button type="primary" style="
+              height: 32px;
+              border-radius: 4px;
+              background: linear-gradient(90deg, #269efd 0%, #1677fe 100%);
+              border: none;
+            " @click="handleConfirm">
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <el-dialog v-model="showDel" class="dialog-round-confirm" width="420px" align-center :show-close="false"
+      :destroy-on-close="true" append-to-body header-class="dialog-header">
+      <template #header="{ close }">
+        <div class="header-container">
+          <div class="header-l">
+            <img src="@/assets/img/warning.png" />
+            <span class="title" style="font-size: 18px">删除对话？</span>
+          </div>
+          <div class="header-r">
+            <el-icon>
+              <CloseBold @click="close()" />
+            </el-icon>
+          </div>
+        </div>
+      </template>
+      <div class="confirm-content">删除后不可恢复。</div>
+      <template #footer>
+        <div style="padding-bottom: 20px">
+          <el-button type="default" style="height: 32px; border-radius: 4px" @click="showDel = false">
+            取消
+          </el-button>
+          <el-button type="primary" style="
+              height: 32px;
+              border-radius: 4px;
+              background: #ff3b30;
+              border: none;
+            " @click="handleConfirmDelete" :disabled="handleLoading">
+            删除
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
 
 <style lang="scss" scoped>
 .sidebar-history-title {
@@ -395,6 +315,7 @@ const handleConfirmDelete = () => {
         }
       }
     }
+
     .active {
       background-color: #e4edfd;
       color: #3964fe;

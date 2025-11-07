@@ -2,7 +2,6 @@ import vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import { resolve } from "path";
-import { visualizer } from "rollup-plugin-visualizer";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import legacy from "@vitejs/plugin-legacy";
 import topLevelAwait from "vite-plugin-top-level-await";

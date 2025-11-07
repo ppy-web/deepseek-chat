@@ -2,12 +2,8 @@
 <template>
   <el-scrollbar class="chat-component" :ref="setRefs('messageBoxRef')">
     <template v-for="item in messages" :key="item.mid">
-      <component
-        class="message-wrap"
-        :is="component(item)"
-        :msg="item"
-        :is-last="messages[messages.length - 1].mid == item.mid"
-      ></component>
+      <component class="message-wrap" :is="component(item)" :msg="item"
+        :is-last="messages[messages.length - 1].mid == item.mid"></component>
     </template>
   </el-scrollbar>
 </template>
@@ -16,9 +12,8 @@
 import { nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useEventListener } from "@vueuse/core";
 import { useMitt } from "@/hooks/useMitt";
-import { useChat } from "@/hooks/useChat";
 import { useRefs } from "@/hooks/useRefs";
-import { useStore } from "@/hooks/useStore";
+import { useChatStore } from "@/store";
 import { useBrowser } from "@/hooks/useBrowser";
 import { Nodes } from "./Nodes";
 import EVENT_TYPE from "@/constants/event_type";
@@ -26,16 +21,13 @@ import EVENT_TYPE from "@/constants/event_type";
 const mitt = useMitt();
 const { browser } = useBrowser();
 const { refs, setRefs } = useRefs();
-const { app } = useStore();
 const {
   messages,
-  sendMessage,
   setAutoScroll,
   cancelAnswer,
-  switchSession,
   evaluateMessage,
   checkToStopMessage,
-} = useChat();
+} = useChatStore();
 const component = (item) => {
   return Nodes.value.find((e) => e.type == item.type).component;
 };
@@ -66,17 +58,10 @@ onMounted(() => {
   mitt.on(EVENT_TYPE.CANCEL_ANSWER, () => {
     cancelAnswer();
   });
-  // 发送消息
-  mitt.on(EVENT_TYPE.SEND_MESSAGE, (msg) => {
-    app.set({
-      isNewDialog: false,
-    });
-    sendMessage(msg);
-  });
   // 显示对话记录
-  mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (id) => {
-    switchSession(id);
-  });
+  // mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (id) => {
+  //   switchSession(id);
+  // });
   autoScroll = useEventListener(
     refs.messageBoxRef,
     "wheel",
@@ -102,9 +87,11 @@ onUnmounted(() => {
   flex: 1;
   overflow-y: hidden !important;
   margin-bottom: 40px;
+
   .message-wrap {
     display: flex;
     margin-bottom: 12px;
+
     .message {
       word-wrap: break-word;
     }

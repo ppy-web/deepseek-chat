@@ -1,12 +1,8 @@
 <!-- 用于展示试着问问 推荐问题 -->
 <template>
   <div class="try-container">
-    <div
-      class="try-item animate__animated animate__zoomInLeft"
-      v-for="(item, index) in list"
-      :key="index"
-      @click="emit('send', item)"
-    >
+    <div class="try-item animate__animated animate__zoomInLeft" v-for="(item, index) in list" :key="index"
+      @click="emit('send', item)">
       <img class="try-item-img" :src="turnImg" alt="" />
       <span class="try-item-text" v-html="markdown.render(item)"></span>
     </div>
@@ -14,7 +10,6 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
 import { useMarkdown } from "@/hooks/useMarkdown"; // Markdown渲染
 import turnImg from "@/assets/img/turnrightdown.png";
 const { markdown } = useMarkdown();
@@ -34,6 +29,7 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   .try-item {
     margin: 4px 0;
     font-size: 14px;
@@ -44,6 +40,7 @@ const props = defineProps({
     display: flex;
     align-items: center;
     cursor: pointer;
+
     &-img {
       width: 20px;
       height: 15px;

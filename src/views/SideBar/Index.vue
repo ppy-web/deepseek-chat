@@ -12,30 +12,27 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useStore } from "@/hooks/useStore";
+import { useAppStore } from "@/store";
 import TopInfo from "./TopInfo.vue";
 import AddBtn from "./AddBtn.vue";
 import History from "./History.vue";
 import CallWord from "./CallWord.vue";
 
-const { app, user } = useStore();
-const isSideBarVisible = computed(() => app.info.isSideBarVisible);
-const isSmallPage = computed(() => app.info.isSmallPage);
+const app = useAppStore();
 
 const toggleSideBar = () => {
-  if (isSmallPage.value) {
+  if (app.isSmallPage) {
     app.set({
       isSideBarVisible: false,
     });
     return;
   }
   app.set({
-    isSideBarVisible: !isSideBarVisible.value,
+    isSideBarVisible: !app.isSideBarVisible,
   });
 };
 const handleFixed = () => {
-  if (!isSmallPage.value) {
+  if (!app.isSmallPage) {
     return;
   }
   app.set({
@@ -48,6 +45,7 @@ const handleFixed = () => {
 .el-aside {
   letter-spacing: 0.1em;
 }
+
 .sidebar-toggle {
   position: absolute;
   top: 12px;
@@ -61,10 +59,12 @@ const handleFixed = () => {
   height: 28px;
   border-radius: 8px;
   transition: all 0.3s;
+
   &:hover {
     background-color: #eee;
   }
 }
+
 .sidebar-history {
   flex: 1;
   overflow: hidden;

@@ -6,14 +6,13 @@
 </template>
 
 <script setup>
-import { useStore } from "@/hooks/useStore";
-import { useChat } from "@/hooks/useChat";
+import { useAppStore, useChatStore } from "@/store";
 import { useMitt } from "@/hooks/useMitt";
 import { useRoute } from "vue-router";
 import { EVENT_TYPE } from "@/constants";
 
-const { app } = useStore();
-const { clearMessages, checkToStopMessage } = useChat();
+const app = useAppStore();
+const { clearMessages, checkToStopMessage } = useChatStore();
 const route = useRoute();
 const mitt = useMitt();
 
@@ -22,15 +21,11 @@ const handleClick = () => {
   if (route.path == "/") {
     clearMessages();
     mitt.emit(EVENT_TYPE.INIT_SUCCESS);
-    app.set({
-      showInterruptBtn: false,
-      isNewDialog: true,
-    });
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .sidebar-add-btn {
   &:active {
     transform: scale(0.99);
