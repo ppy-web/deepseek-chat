@@ -17,24 +17,17 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from "vue";
+import { onMounted } from "vue";
+import { useBrowser } from "@/hooks/useBrowser.js";
+import { useAppStore } from "@/store";
+import { NARROW_SCREEN_WIDTH } from "@/constants/index";
 
 import SideBar from "@/views/SideBar/Index.vue";
 import MainContent from "@/views/MainContent.vue";
-import { useBrowser } from "@/hooks/useBrowser.js";
-import { useAppStore } from "@/store";
-import { useMitt } from "@/hooks/useMitt.js";
-
-import {
-  NARROW_SCREEN_WIDTH,
-} from "@/constants/index";
-import EVENT_TYPE from "@/constants/event_type";
-
 import * as service from "@/service/api";
 
 const app = useAppStore();
 const { browser, onScreenChange } = useBrowser();
-const mitt = useMitt();
 // 获取初始化配置
 const getInitParam = async () => {
   const { is_available, balance_infos } = await service.getUserBalance();
@@ -47,9 +40,7 @@ const getInitParam = async () => {
 };
 
 onMounted(() => {
-  mitt.on(EVENT_TYPE.INIT_SUCCESS, () => {
-    getInitParam();
-  });
+  getInitParam();
   onScreenChange(() => {
     app.set({
       isSmallPage: browser.width < NARROW_SCREEN_WIDTH,
@@ -75,10 +66,6 @@ onMounted(() => {
       }
     }
   });
-});
-
-onUnmounted(() => {
-  mitt.off(EVENT_TYPE.INIT_SUCCESS);
 });
 </script>
 

@@ -25,14 +25,14 @@ export function handleNetworkError(error) {
 export function handleApiError(error) {
   const errorCode = error.response?.data?.error?.code
   const errorMessage = error.response?.data?.error?.message
-  
+
   return ERROR_CODES[errorCode] || errorMessage || '未知错误'
 }
 
 // 统一错误处理
 export function showError(error, type = 'error') {
   let message = ''
-  
+
   if (error.isAxiosError) {
     message = handleNetworkError(error)
   } else if (error.response) {

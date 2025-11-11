@@ -4,7 +4,7 @@
     <div class="left">{{ props.title }}</div>
     <div class="right">
       <slot></slot>
-      <div class="balance">余额 ￥{{ app.balanceInfo.total_balance }}</div>
+      <div class="balance">余额￥{{ app.balanceInfo.total_balance }}</div>
     </div>
   </div>
 </template>

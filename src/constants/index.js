@@ -13,7 +13,11 @@ const API_CONFIG = {
   defaultParams: {
     temperature: 1.5,
     max_tokens: 2000,
-    top_p: 0.95,
+    top_p: 1, // 默认值为1，不建议与temperature同时修改
+    stream: true,
+    stream_options: {
+      include_usage: true,
+    },
     frequency_penalty: 0,
     presence_penalty: 0,
   },

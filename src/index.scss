@@ -1,6 +1,6 @@
-:root {
-  --van-border-color: #eee;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   box-sizing: border-box;
@@ -319,15 +319,15 @@ input::-webkit-input-placeholder {
 
 .dialog-header {
   padding-bottom: 0 !important;
-  // .dialog-title-close {
-  //   display: inline-block;
-  //   width: 40px;
-  //   height: 40px;
-  //   line-height: 40px;
-  //   text-align: center;
-  //   background: #f4f9fd;
-  //   border-radius: 8px;
-  // }
+  .dialog-title-close {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background: #f4f9fd;
+    border-radius: 8px;
+  }
   .close {
     display: inline-block;
     width: 40px;

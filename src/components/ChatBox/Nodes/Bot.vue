@@ -10,12 +10,11 @@
       <ThinkingWrap :html="htmlThinking" :finished="thinkFinished" :second="thinkTime" />
       <!-- 大模型回答 -->
       <div class="watermark" :class="{ [mClass]: true }">
-        <span class="rich-text" :class="{ 'text-end': isTextStreamEnd }" v-html="htmlStr"></span>
+        <span class="rich-text" v-html="htmlStr"></span>
       </div>
       <!-- 操作栏 -->
-      <ActionBar v-if="!isPending && isTextStreamEnd && isLast" :content="msg.htmlStr" :status="msg.opsStatus"
+      <ActionBar v-if="!isPending && isTextStreamEnd" :content="msg.htmlStr" :status="msg.opsStatus"
         @like="onHandleLike" @unlike="onHandleUnlike" class="action-bar" />
-      <TryAsking v-if="isTextStreamEnd && isLast" :list="suggestArray" @send="onSendSuggest" />
     </div>
   </div>
 </template>
@@ -28,7 +27,6 @@ import message from "@/hooks/useMsg";
 import AiLoading from "../Bot/AiLoading.vue";
 import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
-import TryAsking from "../Bot/TryAsking.vue";
 import EVENT_TYPE from "@/constants/event_type";
 
 const mitt = useMitt();
@@ -36,10 +34,6 @@ const props = defineProps({
   msg: {
     type: Object,
     required: true,
-  },
-  isLast: {
-    type: Boolean,
-    default: false,
   },
 });
 
@@ -56,7 +50,6 @@ const htmlThinking = computed(() => msg.htmlThinking);
 const thinkFinished = computed(() => msg.thinkFinished);
 const thinkTime = computed(() => msg.thinkTime);
 const isTextStreamEnd = computed(() => msg.isTextStreamEnd);
-const suggestArray = computed(() => msg.suggestArray);
 const onHandleLike = () => {
   message.success("评价成功");
 };
@@ -76,19 +69,18 @@ onMounted(() => {
     height: 100,
     rotate: 30,
     fontSize: "12px",
-    fontColor: "rgba(0, 0, 0, 0.5)",
+    fontColor: "rgba(0, 0, 0, 0.2)",
     layout: "grid",
     gridLayoutOptions: {
       gap: [30, 30],
     },
     zIndex: 1000,
   });
-
   watermark.create();
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bot {
   max-width: 100%;
 
@@ -116,13 +108,6 @@ onMounted(() => {
         display: none;
       }
 
-      // text-end 时图片显示
-      &.text-end {
-        img {
-          display: block;
-        }
-      }
-
       // 角标样式
       .highlight-text {
         cursor: pointer !important;
@@ -141,14 +126,15 @@ onMounted(() => {
   }
 
   // 控制操作栏显隐
-  // .action-bar {
-  //   opacity: 0;
-  //   transition: opacity 0.4s ease;
-  // }
-  // &:hover {
-  //   .action-bar {
-  //     opacity: 1;
-  //   }
-  // }
+  .action-bar {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    .action-bar {
+      opacity: 1;
+    }
+  }
 }
 </style>

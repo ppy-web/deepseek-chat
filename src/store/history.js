@@ -62,7 +62,7 @@ export const useHistoryStore = defineStore("history", () => {
           // if (history.sessionId === id) {
           //   createSession();
           // }
-          saveToStorage();
+          saveSessions();
           resolve('删除成功');
         } else {
           reject(new Error("会话不存在"));

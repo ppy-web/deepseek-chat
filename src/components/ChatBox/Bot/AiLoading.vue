@@ -34,8 +34,7 @@ const props = defineProps({
 
   .avatar {
     align-self: flex-start;
-    /* 靠上对齐 */
-    width: 28px;
+    min-width: 28px;
     height: 28px;
     border-radius: 50%;
   }

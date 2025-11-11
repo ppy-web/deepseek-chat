@@ -7,12 +7,14 @@
         @compositionstart="isComposing = true" @compositionend="isComposing = false" />
       <div class="input-bottom-wrapper">
         <div class="input-bottom-wrapper-left">
-          <div class="deep-button" :class="{ active: deepThinking }" @click="deepThinking = !deepThinking">深度思考</div>
+          <div class="deep-button" :class="{ active: app.deepseek }" @click="checkTink">深度思考</div>
         </div>
         <div class="input-bottom-wrapper-right">
-          <span class="stop" @click.stop="cancelAnswer" v-if="showInterruptBtn" />
+          <!-- <span class="stop" @click.stop="cancelAnswer" v-if="showInterruptBtn" /> -->
+          <span class="stop" @click.stop="cancelAnswer" v-if="chat.isRunning" />
           <template v-else>
-            <span class="send" @click.stop="sendInput" />
+            <span class="send" @click.stop="sendInput"> <i-streamline-stickies-color:sent-from-computer-duo
+                class="mr-2" />发送</span>
           </template>
         </div>
       </div>
@@ -24,17 +26,26 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
-import { useChatStore } from "@/store";
+import { useChatStore, useAppStore } from "@/store";
 const mitt = useMitt();
 const chat = useChatStore()
+const app = useAppStore()
 
 // 输入框的值
 const inputVal = ref("");
 const inputRef = ref(null);
 const isComposing = ref(false); // 用于处理中文输入法状态
 const placeHolder = ref("试试与我互动吧~ Enter发送，Shit+Enter换行"); // 输入框placeholder
-const showInterruptBtn = ref(false); // 是否显示中断按钮
-const deepThinking = ref(false); // 是否深度思考
+
+const checkTink = () => {
+  app.set({
+    deepseek: !app.deepseek
+  })
+  app.setApiConfig({
+    model: app.deepseek ? 'deepseek-reasoner' : 'deepseek-chat'
+  })
+}
+
 // 输入
 const onInput = (e) => {
   inputVal.value = e.target.innerText;
@@ -198,11 +209,14 @@ onUnmounted(() => {
         }
 
         .send {
-          width: 58px;
+          display: inline-flex;
+          align-items: center;
+          background-color: #83d8d4;
           height: 32px;
-          background-image: url("@/assets/img/send.png");
-          background-size: 100% 100%;
+          border-radius: 16px;
+          padding: 10px 16px;
           cursor: pointer;
+          color: #131313;
         }
 
         .disabled {

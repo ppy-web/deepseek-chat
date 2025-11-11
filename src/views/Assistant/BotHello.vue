@@ -2,8 +2,9 @@
 <script setup>
 import { onMounted } from "vue";
 import Typed from "typed.js";
-import deepseek from "@/assets/img/deepseek.svg";
-const welcome = "Hi，我是小漫";
+import { useAppStore } from "@/store"
+
+const app = useAppStore()
 const desc = "今天想聊些什么？";
 onMounted(() => {
   new Typed("#desc", {
@@ -20,12 +21,11 @@ onMounted(() => {
 <template>
   <div class="hello-container">
     <div class="hello">
-      <div class="image-people">
-        <img :src="deepseek" alt="deepseek" />
-      </div>
-      <div class="welcome">{{ welcome }}</div>
+      <i-streamline-stickies-color:snowman class="mr-2" />
+      <div class="welcome">Hi，我是 {{ app.appName }}</div>
+      <div class="desc" id="desc"></div>
     </div>
-    <div class="desc" id="desc"></div>
+
   </div>
 </template>
 
@@ -41,31 +41,27 @@ onMounted(() => {
     justify-content: center;
     margin-bottom: 5px;
 
-    .image-people {
-      display: inline-block;
-      width: 40px;
-      margin-right: 10px;
-
-      img {
-        width: 40px;
-        vertical-align: middle;
-      }
-    }
-
     .welcome {
       font-size: 26px;
       font-weight: 500;
+      color: #999;
     }
   }
 
   .desc {
-
-    font-weight: 400;
-    font-size: 16px;
-    color: rgba(0, 0, 0, 0.55);
-    letter-spacing: 1px;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    transition: all .3s ease-in-out;
+    background: linear-gradient(to right, #21f05f, #21aef0 50%,
+        #cd85f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    user-select: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 26px;
+    letter-spacing: 2px;
+    display: inline-block;
+    margin: 16px 5px;
   }
 
   .typed-cursor {

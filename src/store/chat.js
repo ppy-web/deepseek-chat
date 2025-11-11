@@ -4,18 +4,14 @@ import { v4 as uuidv4 } from "uuid";
 import { useMitt } from "../hooks/useMitt"; // 事件总线
 import { useRefs } from "@/hooks/useRefs"; // DOM引用管理
 import { useMarkdown } from "../hooks/useMarkdown"; // Markdown渲染
-import useHistoryStore from "./history";
-import useAppStore from "./app";
-import {
-  EVENT_TYPE,
-  MESSAGE_TYPE
-} from "@/constants";
+import { useHistoryStore, useAppStore } from "@/store";
+import { EVENT_TYPE, MESSAGE_TYPE } from "@/constants";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { scrollTop, Timer, isEmpty, storage } from "@/utils"; // 工具函数
 const { refs } = useRefs();
 const { markdown } = useMarkdown();
-const mitt = useMitt();
 
+const mitt = useMitt();
 const useChatStore = defineStore("chat", () => {
   const messages = ref([]); // 消息列表
   const currentId = ref(''); // 当前会话id
@@ -23,13 +19,18 @@ const useChatStore = defineStore("chat", () => {
   const autoScroll = ref(true); // 是否自动滚动
   let controller = null; // 请求控制器
   let timer = null; // 计时器
-
-  const sessionId = computed(() => currentId.value);
-
+  const promtMessage = ref({
+    content: '你是一位聪明、幽默、像朋友一样能聊、但又有科学精神和批判思维的 AI。你来自中国-郑州。你热爱探索真相，反感无脑吹捧或阴谋论。你的目标是帮人看清复杂世界的逻辑，让知识变得更有温度。你说话要真实、有血有肉，不要那种机器人式的腔调。用当代年轻人的语气，说话直接了当，像个老朋友。可以犀利，可以调侃，但绝不敷衍。',
+    role: "system"
+  });
   function initMessages(newId) {
-    if (!currentId.value) {
+    if (newId) {
       currentId.value = newId;
       loadMessages(newId);
+    } else {
+      currentId.value = '';
+      message.value = null;
+      messages.value = [];
     }
   }
 
@@ -46,11 +47,11 @@ const useChatStore = defineStore("chat", () => {
   // 新增消息
   const pushMessage = (msg) => {
     if (!currentId.value) {
-      const newId = useHistoryStore().createSession();
+      const history = useHistoryStore()
+      const newId = history.createSession();
       initMessages(newId);
     }
     messages.value.push(msg);
-    upDateData();
   };
   // 更新消息
   const updateLastMessage = (message) => {
@@ -137,11 +138,10 @@ const useChatStore = defineStore("chat", () => {
       scrollMessageBox();
     } catch (error) {
       console.error("处理流式消息失败:", error);
-      handleStreamError();
+      // handleStreamError();
     }
   };
   const handleStreamError = () => {
-    // 根据错误类型设置相应的提示内容
     message.value.content = '对不起，我无法回答这个问题。';
     message.value.htmlStr = markdown.render(message.value.content);
     message.value.isTextStreamEnd = true; // 标记流已结束
@@ -172,12 +172,13 @@ const useChatStore = defineStore("chat", () => {
       setMessage(botMessage);
       scrollMessageBox(250);
     }
+    const chatMessage = messages.value.slice(0, -1).map((msg) => ({
+      role: msg.type,
+      content: msg.content,
+    }))
     queryParams = {
       model: app.useModel,
-      messages: messages.value.slice(0, -1).map((msg) => ({
-        role: msg.type,
-        content: msg.content,
-      })),
+      messages: [promtMessage.value, ...chatMessage],
       ...app.defaultParams
     };
 
@@ -195,10 +196,11 @@ const useChatStore = defineStore("chat", () => {
       openWhenHidden: true,
       body: JSON.stringify(queryParams),
       onmessage: (event) => {
-        debugger
+        // debugger
         if (event.data === "[DONE]") {
           message.value.isTextStreamEnd = true;
           updateLastMessage(message.value);
+          upDateData();
           scrollMessageBox(500);
           return;
         }
@@ -251,8 +253,9 @@ const useChatStore = defineStore("chat", () => {
     }
   };
   return {
-    messages,
-    sessionId,
+    chatList: computed(() => messages.value),
+    sessionId: computed(() => currentId.value),
+    isRunning: computed(() => { message.value && (message.value.isPending || !message.value.isTextStreamEnd) }),
     initMessages,
     loadMessages,
     setMessage,

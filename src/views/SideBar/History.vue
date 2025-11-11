@@ -2,13 +2,10 @@
 import { ref, nextTick, computed } from "vue";
 import { Edit, Delete, CloseBold } from "@element-plus/icons-vue";
 import { getDayjsCategory } from "@/utils/index";
-import { useChatStore, useHistoryStore } from "@/store";
+import { useChatStore, useHistoryStore, useAppStore } from "@/store";
 import { successMsg, errorMsg, warningMsg } from "@/hooks/useMsg";
-import * as service from "@/service/api";
 import DialogTitle from "@/components/Common/DialogTitle.vue";
 
-const { initMessages, deleteSession, sessionId } = useChatStore();
-const { sessions } = useHistoryStore();
 const selectedId = ref(""); // 当前选中二级菜单的会话id
 const renameValue = ref(""); // 重命名输入框的值
 const show = ref(false); // 是否显示重命名弹窗
@@ -17,25 +14,29 @@ const showDel = ref(false); // 是否显示删除弹窗
 const activeDialog = ref(null); // 当前点击的对话项
 const handleLoading = ref(false); // 是否显示加载中
 let currentDateType = null; // 对话列表当前日期类型
-const currendId = undefined
+
+const app = useAppStore();
+const chat = useChatStore();
+const history = useHistoryStore();
+history.loadSessions();
+
+const currendId = app.currentId;
 const list = computed(() => {
-  // 对话列表
   const data = [];
-  sessions &&
-    sessions.forEach((item) => {
-      const { timestamp } = item;
-      const dateType = getDayjsCategory(timestamp);
-      if (dateType !== currentDateType) {
-        data.push({
-          type: "title",
-          content: dateType,
-        });
-        currentDateType = dateType;
-      } else {
-        item.active = false;
-      }
-      data.push(item);
-    });
+  history.sessions.forEach((item) => {
+    const { timestamp } = item;
+    const dateType = getDayjsCategory(timestamp);
+    if (dateType !== currentDateType) {
+      data.push({
+        type: "title",
+        content: dateType,
+      });
+      currentDateType = dateType;
+    } else {
+      item.active = currendId === item.id;
+    }
+    data.push(item);
+  });
   return data;
 });
 
@@ -43,7 +44,7 @@ const handleClickDialog = (item) => {
   console.log(item);
   try {
     const { id } = item;
-    initMessages(id);
+    chat.initMessages(id);
   } catch (err) {
     console.log("获取对话记录失败", err);
   }
@@ -72,11 +73,7 @@ const handleConfirm = async () => {
   }
   try {
     handleLoading.value = true;
-    const res = service.updateSessionLog({
-      id: activeDialog.value.sessionId,
-      title: renameValue.value.trim(),
-    });
-    successMsg("重命名成功");
+    successMsg("重命名功能开发中~");
     activeDialog.value.content = renameValue.value;
     show.value = false;
     renameValue.value = "";
@@ -89,7 +86,7 @@ const handleConfirm = async () => {
 const handleConfirmDelete = async () => {
   try {
     handleLoading.value = true;
-    await deleteSession(activeDialog.value.id)
+    await history.deleteSession(activeDialog.value.id)
     successMsg("删除成功");
     showDel.value = false;
   } catch (error) {
@@ -102,14 +99,14 @@ const handleConfirmDelete = async () => {
 
 <template>
   <div class="sidebar-history-title">
-    <span>历史会话</span> <img src="@/assets/img/history.png" alt="" />
+    <span>历史会话</span> <i-streamline-stickies-color:time />
   </div>
   <div class="history-list">
     <div class="history-item" v-for="item in list" :key="item.id">
       <div v-if="item.type === 'title'" class="history-title">
         {{ item.content }}
       </div>
-      <div v-else class="history-content" :class="{ active: sessionId == item.id }">
+      <div v-else class="history-content" :class="{ active: chat.sessionId == item.id }">
         <span class="h-content oneline" @click.stop="handleClickDialog(item)">{{ item.name }}
         </span>
         <span class="options" :class="{ selected: selectedId == item.id }" @click="selectedId = item.id">
@@ -227,8 +224,7 @@ const handleConfirmDelete = async () => {
   padding-top: 16px;
   padding-bottom: 10px;
   font-size: 14px;
-  color: #aaaaac;
-  margin-bottom: 10px;
+  color: #666;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -279,6 +275,8 @@ const handleConfirmDelete = async () => {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding-left: 16px;
+      margin-bottom: 5px;
 
       .h-content {
         flex: 1;

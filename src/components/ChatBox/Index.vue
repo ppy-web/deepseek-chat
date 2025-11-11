@@ -1,9 +1,8 @@
 <!-- 消息列表 -->
 <template>
   <el-scrollbar class="chat-component" :ref="setRefs('messageBoxRef')">
-    <template v-for="item in messages" :key="item.mid">
-      <component class="message-wrap" :is="component(item)" :msg="item"
-        :is-last="messages[messages.length - 1].mid == item.mid"></component>
+    <template v-for="item in chat.chatList" :key="item.mid">
+      <component class="message-wrap" :is="component(item)" :msg="item" />
     </template>
   </el-scrollbar>
 </template>
@@ -21,18 +20,12 @@ import EVENT_TYPE from "@/constants/event_type";
 const mitt = useMitt();
 const { browser } = useBrowser();
 const { refs, setRefs } = useRefs();
-const {
-  messages,
-  setAutoScroll,
-  cancelAnswer,
-  evaluateMessage,
-  checkToStopMessage,
-} = useChatStore();
+const chat = useChatStore();
 const component = (item) => {
   return Nodes.value.find((e) => e.type == item.type).component;
 };
 
-provide("evaluate", evaluateMessage);
+provide("evaluate", chat.evaluateMessage);
 let autoScroll;
 onMounted(() => {
   nextTick(() => {
@@ -56,7 +49,7 @@ onMounted(() => {
   });
   // 取消回答
   mitt.on(EVENT_TYPE.CANCEL_ANSWER, () => {
-    cancelAnswer();
+    chat.cancelAnswer();
   });
   // 显示对话记录
   // mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (id) => {
@@ -66,13 +59,13 @@ onMounted(() => {
     refs.messageBoxRef,
     "wheel",
     () => {
-      setAutoScroll(false);
+      chat.setAutoScroll(false);
     },
     { passive: true }
   );
 });
 onUnmounted(() => {
-  checkToStopMessage();
+  chat.checkToStopMessage();
   mitt.off(EVENT_TYPE.CANCEL_ANSWER);
   mitt.off(EVENT_TYPE.SEND_MESSAGE);
   mitt.off(EVENT_TYPE.SHOW_CHAT_HISTORY);
