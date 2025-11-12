@@ -1,20 +1,22 @@
 <script setup>
-import { useAppStore } from '@/store'
-const app = useAppStore()
+import { useCallwordStore } from '@/store'
+import { CHARACTHER, COLORS } from '@/constants'
+
+const callword = useCallwordStore()
 const callVisible = ref(false)
+const role = ref({
+  appName: '',
+  character: 1,
+  hobby: '',
+  mood: '',
+  desc: '',
+})
 const transitionConfig = {
   name: 'dialog-custom-object',
   appear: true,
   mode: 'out-in',
   duration: 500,
 }
-const role = ref({
-  appName: '',
-  character: '',
-  hobby: '',
-  localDateTime: '',
-  mood: '',
-})
 const formRules = {
   appName: [
     { required: true, message: '还没有设置昵称', trigger: 'blur' },
@@ -24,61 +26,20 @@ const formRules = {
   ],
 }
 
-const characterOptions = [
-  {
-    label: '温柔',
-    value: '温柔'
-  },
-  {
-    label: '热情',
-    value: '热情'
-  },
-  {
-    label: '幽默',
-    value: '幽默'
-  },
-  {
-    label: '专业',
-    value: '专业'
-  },
-  {
-    label: '沉稳',
-    value: '沉稳'
-  },
-]
-const colors = [{
-  value: '#E63415',
-  label: 'red',
-},
-{
-  value: '#FF6600',
-  label: 'orange',
-},
-{
-  value: '#FFDE0A',
-  label: 'yellow',
-},]
-
-
-const currentName = computed(() => {
-  return role.value.appName
-})
-
-const openDialog = () => {
-  callVisible.value = true
+function onHandleSave() {
+  callVisible.value = false
+  callword.set(role.value)
 }
 
 onMounted(() => {
-  role.value.appName = app.appName
-  role.value.localDateTime = app.localDateTime
-  role.value.hobby = app.hobby
+  role.value.appName = callword.name
 })
 </script>
 
 
 <template>
   <div class="my-2">
-    <div @click="openDialog">
+    <div @click="callVisible = true">
       <i-streamline-stickies-color:control class="cursor-pointer" />
     </div>
     <el-dialog v-model="callVisible" class="dialog-round" header-class="dialog-header" width="611px" align-center
@@ -93,11 +54,10 @@ onMounted(() => {
         <el-form :model="role" :rules="formRules" label-width="120px" label-position="right" class="pr-10"
           size="default" scroll-to-error>
           <el-form-item label="助手昵称" prop="appName">
-            <!-- <div @click="control.name = true" v-if="!control.name">{{ role.appName }}</div> -->
             <el-input v-model="role.appName" placeholder="想要怎么称呼我呢？" clearable maxlength="5" show-word-limit />
           </el-form-item>
           <el-form-item label="助手性格" prop="character">
-            <el-segmented v-model="role.character" :options="characterOptions" />
+            <el-segmented v-model="role.character" :options="CHARACTHER" />
           </el-form-item>
           <el-form-item label="关于你" prop="hobby">
             <el-input v-model="role.hobby" placeholder="请输入你的信息，让我更了解你" clearable maxlength="200" show-word-limit />
@@ -105,7 +65,7 @@ onMounted(() => {
           </el-form-item>
           <el-form-item label="心情" prop="mood">
             <el-select v-model="role.mood" placeholder="你的心情怎么样？">
-              <el-option v-for="item in colors" :key="item.value" :label="item.label" :value="item.value">
+              <el-option v-for="item in COLORS" :key="item.value" :label="item.label" :value="item.value">
                 <div class="flex items-center">
                   <el-tag :color="item.value" style="margin-right: 8px" size="small" />
                   <span :style="{ color: item.value }">{{ item.label }}</span>
@@ -120,16 +80,21 @@ onMounted(() => {
             <el-input v-model="role.desc" type="textarea" :rows="3" placeholder="自定义的提示词，如：你是一个程序员" clearable
               maxlength="500" />
           </el-form-item>
-          <el-form-item label="系统时间">
-            <span>{{ role.localDateTime }}</span>
-          </el-form-item>
         </el-form>
+        <div class="flex flex-row justify-center text-xs text-gray-500 text-center">
+          <i-streamline-stickies-color:android-setting-duo />
+          <span> &nbsp;您设置的数据只储存在本机，不必担心隐私泄露</span>
+        </div>
       </div>
       <template #footer>
-        <el-button @click="callVisible = false">取消</el-button>
-        <el-button type="primary" @click="callVisible = false">
-          保存
-        </el-button>
+        <div class="mx-auto text-center">
+          <el-button type="primary" plain @click="callVisible = false">
+            <i-streamline-stickies-color:cancel-2-duo />
+          </el-button>
+          <el-button type="primary" @click="onHandleSave">
+            <i-streamline-stickies-color:validation-1-duo />
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>

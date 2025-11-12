@@ -2,14 +2,7 @@
 <template>
   <div class="AI">
     <img class="avatar" :src="botDefault" />
-    <div class="loadwrap" v-if="props.pending">
-      <span>AI思考中</span>
-      <div class="loader">
-        <div class="box-load1" />
-        <div class="box-load2" />
-        <div class="box-load3" />
-      </div>
-    </div>
+    <span v-if="props.pending"><i-svg-spinners:blocks-shuffle-3 width="20px" height="20px" /></span>
   </div>
 </template>
 
@@ -37,52 +30,11 @@ const props = defineProps({
     min-width: 28px;
     height: 28px;
     border-radius: 50%;
+    color: #0bb343;
   }
 
   span {
     margin-left: 10px;
-  }
-
-  @keyframes brighten {
-    50% {
-      background-color: #9ac5f3;
-    }
-
-    100% {
-      background-color: #6ca4f4;
-    }
-  }
-
-  .loadwrap {
-    display: flex;
-
-    .loader {
-      display: flex;
-      transition: all 0.4s;
-      align-items: center;
-    }
-
-    .loader div {
-      margin-left: 5px;
-      background-color: #b6d9f2;
-      border-radius: 100%;
-      height: 5px;
-      width: 5px;
-    }
-
-    .box-load1 {
-      animation: brighten 1.2s infinite;
-    }
-
-    .box-load2 {
-      animation: brighten 1.2s infinite;
-      animation-delay: 0.3s;
-    }
-
-    .box-load3 {
-      animation: brighten 1.2s infinite;
-      animation-delay: 0.6s;
-    }
   }
 }
 </style>

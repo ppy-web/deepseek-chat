@@ -19,7 +19,7 @@
 <script setup>
 import { onMounted } from "vue";
 import { useBrowser } from "@/hooks/useBrowser.js";
-import { useAppStore } from "@/store";
+import { useAppStore, useCallwordStore } from "@/store";
 import { NARROW_SCREEN_WIDTH } from "@/constants/index";
 
 import SideBar from "@/views/SideBar/Index.vue";
@@ -27,20 +27,21 @@ import MainContent from "@/views/MainContent.vue";
 import * as service from "@/service/api";
 
 const app = useAppStore();
+const callword = useCallwordStore();
+window.document.title = callword.name;
 const { browser, onScreenChange } = useBrowser();
 // 获取初始化配置
 const getInitParam = async () => {
   const { is_available, balance_infos } = await service.getUserBalance();
-  const data = await service.getModels();
-  console.log('modeldata', data);
+
   app.set({
     isAvailable: is_available,
     balanceInfo: balance_infos[0],
   });
 };
 
+getInitParam();
 onMounted(() => {
-  getInitParam();
   onScreenChange(() => {
     app.set({
       isSmallPage: browser.width < NARROW_SCREEN_WIDTH,

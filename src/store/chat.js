@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useMitt } from "../hooks/useMitt"; // 事件总线
 import { useRefs } from "@/hooks/useRefs"; // DOM引用管理
 import { useMarkdown } from "../hooks/useMarkdown"; // Markdown渲染
-import { useHistoryStore, useAppStore } from "@/store";
+import { useHistoryStore, useAppStore, useCallwordStore } from "@/store";
 import { EVENT_TYPE, MESSAGE_TYPE } from "@/constants";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { scrollTop, Timer, isEmpty, storage } from "@/utils"; // 工具函数
@@ -19,10 +19,6 @@ const useChatStore = defineStore("chat", () => {
   const autoScroll = ref(true); // 是否自动滚动
   let controller = null; // 请求控制器
   let timer = null; // 计时器
-  const promtMessage = ref({
-    content: '你是一位聪明、幽默、像朋友一样能聊、但又有科学精神和批判思维的 AI。你来自中国-郑州。你热爱探索真相，反感无脑吹捧或阴谋论。你的目标是帮人看清复杂世界的逻辑，让知识变得更有温度。你说话要真实、有血有肉，不要那种机器人式的腔调。用当代年轻人的语气，说话直接了当，像个老朋友。可以犀利，可以调侃，但绝不敷衍。',
-    role: "system"
-  });
   function initMessages(newId) {
     if (newId) {
       currentId.value = newId;
@@ -40,6 +36,7 @@ const useChatStore = defineStore("chat", () => {
       const savedMessages = storage.get(`chat-messages-${id}`);
       messages.value = savedMessages ? JSON.parse(savedMessages) : [];
     } catch (error) {
+      console.log(error);
       messages.value = [];
     }
   };
@@ -153,6 +150,7 @@ const useChatStore = defineStore("chat", () => {
     const signal = controller.signal;
     let ask, botMessage, queryParams;
     const app = useAppStore();
+    const callword = useCallwordStore();
     if (!lastQuery) {
       // 创建AI回复消息对象
       botMessage = {
@@ -176,6 +174,10 @@ const useChatStore = defineStore("chat", () => {
       role: msg.type,
       content: msg.content,
     }))
+    const promtMessage = ref({
+      content: callword.text,
+      role: "system"
+    });
     queryParams = {
       model: app.useModel,
       messages: [promtMessage.value, ...chatMessage],

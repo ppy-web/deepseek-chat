@@ -3,6 +3,8 @@ import { computed, reactive } from "vue";
 import { merge } from "lodash-es";
 import { storage } from "@/utils";
 import { API_CONFIG } from "@/constants";
+import { formatDate } from '@/utils'
+
 import doubao from "@/assets/img/doubao.png";
 const useAppStore = defineStore("app", function () {
   // 从本地存储中获取数据
@@ -10,7 +12,6 @@ const useAppStore = defineStore("app", function () {
   const localInfo = storage.get("apiConfig");
   const info = reactive({
     logo: doubao,
-    appName: "袁小漫",
     isSideBarVisible: true,
     isSmallPage: false,
     isSidebarFixed: false,
@@ -53,12 +54,11 @@ const useAppStore = defineStore("app", function () {
     isSidebarFixed,
     isSmallPage,
     deepseek: computed(() => info.deepseek),
-    appName: computed(() => info.appName),
     useModel: computed(() => apiConfig.model),
     baseURL: computed(() => apiConfig.baseURL),
     apiKey: computed(() => apiConfig.apiKey),
     defaultParams: computed(() => apiConfig.defaultParams),
-    localDateTime: computed(() => info.localDateTime),
+    localDateTime: computed(() => formatDate(info.localDateTime)),
     set,
     setApiConfig,
     clear,

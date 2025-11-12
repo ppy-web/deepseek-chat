@@ -325,6 +325,11 @@ export function sleep(duration) {
   });
 }
 
+// 日期格式化
+export function formatDate(date, format) {
+  return dayjs(date).format(format || "YYYY-MM-DD");
+}
+
 // 日期分类
 export function getDayjsCategory(createTime) {
   // 创建一个dayjs日期对象

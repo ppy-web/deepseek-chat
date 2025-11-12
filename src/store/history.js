@@ -6,11 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 export const useHistoryStore = defineStore("history", () => {
   const list = ref([])
 
-  // getter
-  const sessions = computed(() => {
-    return list.value
-  })
-
   // 创建新会话
   const createSession = () => {
     const session = {
@@ -28,8 +23,6 @@ export const useHistoryStore = defineStore("history", () => {
       const savedSessions = storage.get("chat-sessions");
       if (savedSessions) {
         list.value = JSON.parse(savedSessions);
-      } else {
-        createSession();
       }
     } catch (error) {
       console.error("加载会话数据失败:", error);
@@ -75,7 +68,7 @@ export const useHistoryStore = defineStore("history", () => {
   };
 
   return {
-    sessions,
+    sessions: computed(() => (list.value)),
     saveSessions,
     createSession,
     deleteSession,

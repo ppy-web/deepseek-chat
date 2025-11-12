@@ -211,12 +211,13 @@ onUnmounted(() => {
         .send {
           display: inline-flex;
           align-items: center;
-          background-color: #83d8d4;
+          background-color: #86e6be;
           height: 32px;
           border-radius: 16px;
           padding: 10px 16px;
+          font-size: 14px;
           cursor: pointer;
-          color: #131313;
+          color: #5f5f5f;
         }
 
         .disabled {

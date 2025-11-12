@@ -22,14 +22,11 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { Watermark } from "watermark-js-plus";
-import { useMitt } from "@/hooks/useMitt";
 import message from "@/hooks/useMsg";
 import AiLoading from "../Bot/AiLoading.vue";
 import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
-import EVENT_TYPE from "@/constants/event_type";
 
-const mitt = useMitt();
 const props = defineProps({
   msg: {
     type: Object,
@@ -38,10 +35,6 @@ const props = defineProps({
 });
 
 const { msg } = props;
-
-const markText = computed(() => {
-  return "仅用于测试，请勿转载";
-});
 
 const mClass = computed(() => `message-${msg.mid}`);
 const isPending = computed(() => msg.isPending);
@@ -57,19 +50,15 @@ const onHandleUnlike = () => {
   message.warning("评价成功，我们会持续改进！");
 };
 
-const onSendSuggest = (item) => {
-  mitt.emit(EVENT_TYPE.SEND_MESSAGE, item);
-};
-
 onMounted(() => {
   const watermark = new Watermark({
-    content: markText.value,
+    content: 'https://github.com/ppy-web',
     parent: `.${mClass.value}`,
     width: 100,
     height: 100,
     rotate: 30,
-    fontSize: "12px",
-    fontColor: "rgba(0, 0, 0, 0.2)",
+    fontSize: "13px",
+    fontColor: "rgba(122, 0, 0, 0.5)",
     layout: "grid",
     gridLayoutOptions: {
       gap: [30, 30],
