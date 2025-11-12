@@ -42,13 +42,6 @@ const props = defineProps({
     margin-left: 10px;
     align-items: center;
 
-    .voice {
-      width: 30px;
-      height: 30px;
-      background-image: url("@/assets/img/voice1.png");
-      background-size: 100% 100%;
-    }
-
     .balance {
       height: 30px;
       line-height: 30px;
