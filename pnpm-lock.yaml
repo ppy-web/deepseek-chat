@@ -111,6 +111,9 @@ importers:
       '@iconify-json/flat-color-icons':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/fluent-color':
+        specifier: ^1.2.20
+        version: 1.2.20
       '@iconify-json/octicon':
         specifier: ^1.2.18
         version: 1.2.18
@@ -902,6 +905,9 @@ packages:
 
   '@iconify-json/flat-color-icons@1.2.3':
     resolution: {integrity: sha512-KcmJ7CY0TKFv5GuBjiS4/v++jEcNXna1jfY+yq014tnw/MN/jMI2oYpoMHGuIpYtUqDu7eove+WySnOYO8nS3w==}
+
+  '@iconify-json/fluent-color@1.2.20':
+    resolution: {integrity: sha512-rg1WWURAjrJo4eSIz9I6Q+/9/nm6NvGKZal6R9zM71sGoPcQpUTSjeJykMuGDDQCkAjp96MjMX2E6HtLkxs7zg==}
 
   '@iconify-json/octicon@1.2.18':
     resolution: {integrity: sha512-rj94lgRl70HXovRxD+xSOpSql6cj3N8rv3ouSh7UJEuAFim0RcCEt2JQhr8hiS5Lj1D65EQP7oSNMrVOkYi8kg==}
@@ -3920,6 +3926,10 @@ snapshots:
   '@humanwhocodes/retry@0.4.3': {}
 
   '@iconify-json/flat-color-icons@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fluent-color@1.2.20':
     dependencies:
       '@iconify/types': 2.0.0
 

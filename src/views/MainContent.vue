@@ -1,5 +1,5 @@
 <template>
-  <el-container style="background-color: #fcfcfc">
+  <el-container class="noise">
     <div class="main-sidebar-toggle bg-t" @click="clickToggleSideBar" @mouseenter="hoverToggleSideBar"
       v-if="app.isSmallPage || !app.isSideBarVisible"></div>
     <slot></slot>
@@ -42,9 +42,6 @@ const hoverToggleSideBar = () => {
   border-radius: 8px;
   transition: all 0.3s;
   z-index: 100;
-
-  &:hover {
-    background-color: #eee;
-  }
+  background-color: #eee;
 }
 </style>

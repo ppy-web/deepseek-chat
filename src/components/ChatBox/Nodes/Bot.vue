@@ -84,6 +84,7 @@ onMounted(() => {
 
     &.pending {
       background-color: #fcfcfc;
+      padding: 12px;
     }
 
     .watermark {

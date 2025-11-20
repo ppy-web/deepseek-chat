@@ -8,6 +8,7 @@ import { useHistoryStore, useAppStore, useCallwordStore } from "@/store";
 import { EVENT_TYPE, MESSAGE_TYPE } from "@/constants";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { scrollTop, Timer, isEmpty, storage } from "@/utils"; // 工具函数
+import { getTalkTitle } from "@/service/api";
 const { refs } = useRefs();
 const { markdown } = useMarkdown();
 
@@ -55,6 +56,7 @@ const useChatStore = defineStore("chat", () => {
     if (messages.value.length > 0) {
       messages.value[messages.value.length - 1] = { ...message };
     }
+
   };
   // 保存会话消息
   const upDateData = () => {
@@ -203,6 +205,7 @@ const useChatStore = defineStore("chat", () => {
           message.value.isTextStreamEnd = true;
           updateLastMessage(message.value);
           upDateData();
+          getTalkTitleHandle()
           scrollMessageBox(500);
           return;
         }
@@ -254,6 +257,40 @@ const useChatStore = defineStore("chat", () => {
       }
     }
   };
+  // 获取对话标题
+  const getTalkTitleHandle = async () => {
+    const history = useHistoryStore()
+    const sessionInfo = history.getSessionById(currentId.value)
+    let messageText = ''
+    if (!sessionInfo.isSetTitle && messages.value.length > 1) {
+      const forTimes = messages.value.length > 10 ? 10 : messages.value.length
+      for (let i = 0; i < forTimes; i++) {
+        if (messages.value[i].type === MESSAGE_TYPE.USER) {
+          messageText += `提问: ${messages.value[i].content}。`
+        } else {
+          messageText += `回答: ${messages.value[i].content}。`
+        }
+      }
+    } else {
+      return
+    }
+    const param = {
+      messages: [
+        {
+          content: "请根据提问和回答，给出精准、简洁、可读性强的会话主题，尽量控制在5到20字以内，对话内容如下：/n" + messageText + "/n 直接输出对话主题，不要输出其他内容",
+          role: "system"
+        }
+      ],
+      model: "deepseek-chat",
+      stream: false,
+      temperature: 1,
+    }
+    const { choices } = await getTalkTitle(param)
+    if (choices && choices.length > 0) {
+      history.updateSession(currentId.value, choices[0].message.content)
+    }
+  }
+
   return {
     chatList: computed(() => messages.value),
     sessionId: computed(() => currentId.value),

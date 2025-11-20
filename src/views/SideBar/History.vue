@@ -34,6 +34,7 @@ const list = computed(() => {
       currentDateType = dateType;
     } else {
       item.active = currendId === item.id;
+      item.showPopover = false;
     }
     data.push(item);
   });
@@ -44,6 +45,7 @@ const handleClickDialog = (item) => {
   console.log(item);
   try {
     const { id } = item;
+    if (chat.sessionId === id) return;
     chat.initMessages(id);
   } catch (err) {
     console.log("获取对话记录失败", err);
@@ -51,30 +53,27 @@ const handleClickDialog = (item) => {
 };
 const handleRename = (item) => {
   activeDialog.value = item;
-  renameValue.value = item.content;
+  renameValue.value = item.name;
   show.value = true;
-  console.log(renameRef.value);
-  nextTick(() => {
-    renameRef.value?.focus();
-  });
+  item.showPopover = false;
 };
 const handleDelete = (item) => {
   activeDialog.value = item;
   showDel.value = true;
+  item.showPopover = false;
 };
 const handleConfirm = async () => {
   if (renameValue.value.trim() === "") {
     warningMsg("请输入新的对话标题");
     return;
   }
-  if (renameValue.value.trim() === activeDialog.value.content) {
+  if (renameValue.value.trim() === activeDialog.value.name) {
     warningMsg("新标题不能和原标题相同");
     return;
   }
   try {
     handleLoading.value = true;
-    successMsg("重命名功能开发中~");
-    activeDialog.value.content = renameValue.value;
+    history.updateSession(activeDialog.value.id, renameValue.value);
     show.value = false;
     renameValue.value = "";
   } catch (error) {
@@ -86,7 +85,7 @@ const handleConfirm = async () => {
 const handleConfirmDelete = async () => {
   try {
     handleLoading.value = true;
-    await history.deleteSession(activeDialog.value.id)
+    await history.deleteSession(activeDialog.value.id);
     successMsg("删除成功");
     showDel.value = false;
   } catch (error) {
@@ -109,9 +108,9 @@ const handleConfirmDelete = async () => {
       <div v-else class="history-content" :class="{ active: chat.sessionId == item.id }">
         <span class="h-content oneline" @click.stop="handleClickDialog(item)">{{ item.name }}
         </span>
-        <span class="options" :class="{ selected: selectedId == item.id }" @click="selectedId = item.id">
-          <el-popover :show-arrow="false" trigger="click" @hide="selectedId = ''" popper-class="history-item-popover"
-            placement="bottom-start">
+        <span class="options" :class="{ selected: selectedId == item.id }">
+          <el-popover v-model:visible="item.showPopover" trigger="click" @hide="selectedId = ''"
+            popper-class="history-item-popover" placement="bottom-end">
             <div class="history-item-popover-content">
               <div class="options-item" @click.stop="handleRename(item)">
                 <el-icon size="18" color="#1C1C1C">
@@ -136,12 +135,7 @@ const handleConfirmDelete = async () => {
             </div>
 
             <template #reference>
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" fill="#616161">
-                <path
-                  d="M415.93 223.79c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.003-95.984-95.984zM415.93 511.742c0-52.98 43.004-95.984 95.984-95.984s95.984 43.004 95.984 95.984-43.004 95.984-95.984 95.984-95.984-43.004-95.984-95.984zM415.93 799.866c0-52.98 43.004-95.984 95.984-95.984s95.984 43.003 95.984 95.984-43.004 95.983-95.984 95.983-95.984-43.175-95.984-95.983z">
-                </path>
-              </svg>
-              <!-- <el-icon color="#616161"><MoreFilled />   </el-icon> -->
+              <i-streamline-stickies-color:wrench @click="selectedId = item.id" />
             </template>
           </el-popover>
         </span>
@@ -151,7 +145,7 @@ const handleConfirmDelete = async () => {
       {{ list.length > 0 ? "没有更多了~" : "" }}
     </div>
     <el-dialog v-model="show" class="dialog-round-confirm" width="411px" align-center :show-close="false"
-      :destroy-on-close="true" append-to-body header-class="dialog-header">
+      :destroy-on-close="true" append-to-body header-class="dialog-header" @opened="renameRef?.focus()">
       <template #header="{ close }">
         <DialogTitle title="编辑对话名称" @close="
           close();
@@ -216,7 +210,6 @@ const handleConfirmDelete = async () => {
     </el-dialog>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .sidebar-history-title {
@@ -283,34 +276,24 @@ const handleConfirmDelete = async () => {
       }
 
       .options {
-        display: none;
+        opacity: 0;
         margin-right: 10px;
         margin-left: 10px;
-        line-height: 20px;
-        width: 20px;
-        text-align: center;
-        height: 20px;
         border-radius: 4px;
-
-        &:hover {
-          background-color: #cfcfcf;
-        }
-
-        .icon {
-          vertical-align: middle;
-        }
       }
 
-      .selected {
-        display: inline-block;
-      }
+
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.05);
 
         .options {
-          display: inline-block;
+          opacity: 1;
         }
+      }
+
+      .selected {
+        opacity: 1;
       }
     }
 

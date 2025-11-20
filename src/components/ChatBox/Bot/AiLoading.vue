@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import botDefault from "@/assets/img/doubao.png";
+import botDefault from "@/assets/img/manman.png";
 const props = defineProps({
   pending: {
     type: Boolean,
@@ -27,8 +27,8 @@ const props = defineProps({
 
   .avatar {
     align-self: flex-start;
-    min-width: 28px;
-    height: 28px;
+    min-width: 50px;
+    height: 50px;
     border-radius: 50%;
     color: #0bb343;
   }

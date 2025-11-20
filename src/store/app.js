@@ -5,7 +5,7 @@ import { storage } from "@/utils";
 import { API_CONFIG } from "@/constants";
 import { formatDate } from '@/utils'
 
-import doubao from "@/assets/img/doubao.png";
+import doubao from "@/assets/img/manman.png";
 const useAppStore = defineStore("app", function () {
   // 从本地存储中获取数据
   const insistance = storage.get("appInfo");
@@ -15,7 +15,7 @@ const useAppStore = defineStore("app", function () {
     isSideBarVisible: true,
     isSmallPage: false,
     isSidebarFixed: false,
-    isPageHide: false,
+    isPageHide: true,
     isAvailable: true,
     deepseek: false,
     localDateTime: new Date(),

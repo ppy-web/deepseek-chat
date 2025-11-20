@@ -83,7 +83,7 @@ onMounted(() => {
 .sidebar-area {
   width: var(--sidebar-width);
   height: 100vh;
-  background: #f4f5f6;
+  background: #555555;
   padding: 30px 12px 24px;
   display: flex;
   flex-direction: column;

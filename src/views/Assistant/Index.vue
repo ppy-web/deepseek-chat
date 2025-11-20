@@ -10,7 +10,7 @@ const chat = useChatStore();
 </script>
 
 <template>
-  <div class="assistant">
+  <div class="assistant bg-noise noisy">
     <Navbar v-if="chat.sessionId" />
     <div class="new-dialog animate__animated animate__fadeIn" v-if="!chat.sessionId">
       <BotHello />
@@ -34,10 +34,9 @@ const chat = useChatStore();
   align-items: center;
   justify-content: center;
   width: 100%;
-  background-color: #fcfcfc;
-
+  background-image: url("@/assets/img/noise.png");
   // height: calc(100% - 40px);
-  // border: 1px solid #89b773;
+
   .new-dialog {
     width: 100%;
     max-width: 960px;

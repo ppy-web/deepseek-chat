@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.noisy {
+  @apply absolute inset-0 size-full;
+}
+
 * {
   box-sizing: border-box;
   -webkit-touch-callout: none;
@@ -23,6 +27,8 @@ body {
   width: 100%;
   height: 100%;
   -webkit-overflow-scrolling: touch;
+  background-color: #000;
+  // @apply bg-gray-400; /* 换成你喜欢的颜色 */
 }
 
 body {
@@ -36,7 +42,6 @@ body {
     "Helvetica", "sans-serif";
   color: #222;
   font-size: 16px;
-  background: white;
 }
 
 input::-webkit-input-placeholder {
@@ -392,221 +397,11 @@ input::-webkit-input-placeholder {
     margin-bottom: 25px;
   }
 }
-// 登录弹窗
-.dialog-login {
-  border-radius: 12px !important;
-  min-width: 500px;
-  min-height: 320px;
-  padding: 30px 40px !important;
-  .phoneImg {
-    width: 24px;
-  }
-  .codeImg {
-    width: 24px;
-  }
-  .checked {
-    font-size: 13px;
-    .link {
-      color: #3f8cff;
-    }
-  }
-  .other {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 16px;
-    font-size: 14px;
-    color: #999999;
-    * {
-      cursor: pointer;
-      user-select: none;
-    }
-    img {
-      margin-right: 5px;
-      width: 16px;
-    }
-  }
-}
 
-.login-dialog {
-  // border: 1px solid #de1717;
-  .close-icon {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    cursor: pointer;
-  }
-  .el-form-item:last-child {
-    margin-bottom: 0;
-  }
-}
 .dialog-footer {
   display: flex;
   justify-content: center;
 }
-
-.float-drawer {
-  right: 20px !important;
-  height: auto !important;
-  top: 100px !important;
-  bottom: 100px !important;
-  border-radius: 12px;
-  box-shadow: 0px 2 10px 0px rgba(82, 88, 151, 0.25);
-  .el-drawer__body {
-    padding: 0;
-    padding-bottom: 10px;
-  }
-  // 联网搜索展示
-  .source-wrap {
-    flex: 1;
-    padding: 20px;
-    background-color: #fcfcfc;
-    padding-bottom: 10px;
-    overflow-y: auto;
-    .source-item {
-      background-color: #fff;
-      border: 1px solid #eaeaea;
-      box-shadow: 0px 2 10px 0px rgba(82, 88, 151, 0.25);
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-      .source-content {
-        .name {
-          color: #333;
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 10px;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          display: -webkit-box;
-          overflow: hidden;
-        }
-        .content {
-          font-size: 14px;
-          color: #666666;
-          margin-bottom: 10px;
-          padding-bottom: -4px;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          display: -webkit-box;
-          overflow: hidden;
-          height: 3em; /* 控制容器高度，确保能显示两行 */
-          line-height: 1.5em; /* 设置行高 */
-          word-break: break-all;
-        }
-      }
-      .source-bottom {
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        vertical-align: middle;
-        font-size: 15px;
-        .sitename {
-          color: #999;
-          padding-left: 5px;
-          padding-right: 10px;
-          margin-right: 10px;
-          border-right: 1px solid #999;
-          line-height: 15px;
-        }
-        .icon {
-          width: 15px;
-          vertical-align: middle;
-        }
-        .url {
-          padding-right: 10px;
-          flex: 1;
-        }
-      }
-    }
-  }
-  // 引用来源展示
-  .ref-content {
-    padding: 0 16px;
-    .file-title {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      .filename {
-        width: 100%;
-        overflow: hidden;
-        word-break: break-all;
-        font-weight: bold;
-        font-size: 16px;
-        color: #333;
-        line-height: 1.4;
-      }
-      .download {
-        cursor: default;
-        display: inline-block;
-        white-space: nowrap;
-        margin-left: 5px;
-        background: #0281dd;
-        background: linear-gradient(270deg, #269efd 0%, #1677fe 100%);
-        border-radius: 6px;
-        color: #fff;
-        font-size: 14px;
-        height: 26px;
-        line-height: 26px;
-        width: 44px;
-        text-align: center;
-      }
-      .jumpSource {
-        display: inline-block;
-        white-space: nowrap;
-        border-radius: 5px;
-        margin-left: 5px;
-        background: #fff;
-        border: 1px solid #0281dd;
-        color: #0281dd;
-        font-size: 14px;
-        padding: 2px 5px;
-        line-height: 1;
-        img {
-          width: 20px;
-          height: 20px;
-          vertical-align: middle;
-        }
-      }
-    }
-    .source-content {
-      background-color: #fcfcfc;
-      border-radius: 10px;
-      font-size: 14px;
-      flex: 1;
-      overflow-y: auto;
-      .info {
-        font-size: 14px;
-        padding: 10px;
-        background-color: #fff;
-        img {
-          width: 100%;
-        }
-        @include content-style;
-        @include table-style;
-        table {
-          max-width: 100%;
-          width: auto !important; /* 覆盖内联样式 */
-          display: block;
-          overflow-x: auto;
-          white-space: nowrap; /* 保持表格不换行 */
-        }
-      }
-    }
-  }
-}
-.float-modal {
-  background: none;
-  background-color: transparent !important;
-}
-.float-header {
-  padding: 10px 10px 0 16px !important;
-  margin: 0 !important;
-}
-
 // 用于展示评价类型
 .tags-content {
   margin-bottom: 20px;
