@@ -10,11 +10,12 @@
           <div class="deep-button" :class="{ active: app.deepseek }" @click="checkTink">深度思考</div>
         </div>
         <div class="input-bottom-wrapper-right">
-          <!-- <span class="stop" @click.stop="cancelAnswer" v-if="showInterruptBtn" /> -->
-          <span class="stop" @click.stop="cancelAnswer" v-if="chat.isRunning" />
+          <span class="stop" @click.stop="cancelAnswer" v-if="chat.isRunning">
+            <i-svg-spinners:270-ring-with-bg class="mr-2" />
+            停止</span>
           <template v-else>
-            <span class="send" @click.stop="sendInput"> <i-streamline-stickies-color:sent-from-computer-duo
-                class="mr-2" />发送</span>
+            <span class="send" :class="{ disabled: !canSend }" @click.stop="sendInput">
+              <i-streamline-stickies-color:sent-from-computer-duo class="mr-2" />发送</span>
           </template>
         </div>
       </div>
@@ -23,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
 import { useChatStore, useAppStore } from "@/store";
@@ -36,6 +37,9 @@ const inputVal = ref("");
 const inputRef = ref(null);
 const isComposing = ref(false); // 用于处理中文输入法状态
 const placeHolder = ref("试试与我互动吧~ Enter发送，Shit+Enter换行"); // 输入框placeholder
+const canSend = computed(() => {
+  return inputVal.value && inputVal.value.trim().length > 0; // 是否可以发送
+});
 
 const checkTink = () => {
   app.set({
@@ -113,7 +117,7 @@ onUnmounted(() => {
 
   .input-wrapper {
     position: relative;
-    background: #ffffff;
+    background: var(--bg-primary);
     border-radius: 16px;
     padding: 1px 0;
     cursor: pointer;
@@ -133,9 +137,13 @@ onUnmounted(() => {
 
     .textarea[data-placeholder]:empty::before {
       content: attr(data-placeholder);
-      color: #bab7d2;
+      color: var(--text-placeholder);
       cursor: text;
       font-size: 14px;
+    }
+
+    .textarea {
+      color: var(--text-primary);
     }
 
     .input-bottom-wrapper {
@@ -153,34 +161,32 @@ onUnmounted(() => {
           transition: all .3s ease-in-out;
           width: 100px;
           height: 32px;
+          line-height: 32px;
           border-radius: 17px;
-          border: #bab7d2 1px solid;
+          border: var(--text-primary) 1px solid;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 14px;
-          background: linear-gradient(to right, #21f05f, #21aef0 50%,
-              #cd85f7 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
           user-select: none;
           cursor: pointer;
         }
 
         .deep-button:hover {
-          opacity: .5;
+          opacity: .8;
         }
 
         .deep-button:active {
           background: #bab7d2;
-          opacity: .5;
+          opacity: .8;
         }
 
         .active {
           background: linear-gradient(to right, #21f05f 0%, #21aef0 50%, #cd85f7 100%);
-          color: #fff;
-          border: #bab7d2;
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          border: turquoise 1px solid;
         }
       }
 
@@ -189,37 +195,34 @@ onUnmounted(() => {
         align-items: center;
 
         .stop {
-          width: 58px;
+          display: inline-flex;
+          align-items: center;
           height: 32px;
-          background: #191919;
-          border-radius: 17px;
-          position: relative;
-
-          &::after {
-            content: " ";
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: #fff;
-            border-radius: 2px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+          border-radius: 16px;
+          padding: 10px 16px;
+          cursor: pointer;
+          color: #cf4336;
+          font-weight: 500;
+          &:hover {
+            background: var(--hover-bg);
           }
         }
 
         .send {
           display: inline-flex;
           align-items: center;
-          background-color: #86e6be;
           height: 32px;
+          border: turquoise 1px solid;
           border-radius: 16px;
           padding: 10px 16px;
-          font-size: 14px;
           cursor: pointer;
-          color: #5f5f5f;
+          font-weight: 500;
+          color: #4cc666;
+          user-select: none;
+          &:hover {
+            background: var(--hover-bg);
+          }
         }
-
         .disabled {
           cursor: not-allowed;
           opacity: 0.5;

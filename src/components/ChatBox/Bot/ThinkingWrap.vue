@@ -51,6 +51,9 @@ const show = ref(true);
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 14px;
+    // 斜体
+    font-style: italic;
     cursor: pointer;
   }
 

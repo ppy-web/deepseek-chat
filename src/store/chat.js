@@ -36,6 +36,9 @@ const useChatStore = defineStore("chat", () => {
     try {
       const savedMessages = storage.get(`chat-messages-${id}`);
       messages.value = savedMessages ? JSON.parse(savedMessages) : [];
+      nextTick(() => {
+        scrollMessageBox(500);
+      });
     } catch (error) {
       console.log(error);
       messages.value = [];
@@ -294,7 +297,7 @@ const useChatStore = defineStore("chat", () => {
   return {
     chatList: computed(() => messages.value),
     sessionId: computed(() => currentId.value),
-    isRunning: computed(() => { message.value && (message.value.isPending || !message.value.isTextStreamEnd) }),
+    isRunning: computed(() => { return message.value && (message.value.isPending || !message.value.isTextStreamEnd) }),
     initMessages,
     loadMessages,
     setMessage,

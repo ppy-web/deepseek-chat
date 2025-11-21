@@ -114,6 +114,9 @@ importers:
       '@iconify-json/fluent-color':
         specifier: ^1.2.20
         version: 1.2.20
+      '@iconify-json/lucide':
+        specifier: ^1.2.74
+        version: 1.2.74
       '@iconify-json/octicon':
         specifier: ^1.2.18
         version: 1.2.18
@@ -908,6 +911,9 @@ packages:
 
   '@iconify-json/fluent-color@1.2.20':
     resolution: {integrity: sha512-rg1WWURAjrJo4eSIz9I6Q+/9/nm6NvGKZal6R9zM71sGoPcQpUTSjeJykMuGDDQCkAjp96MjMX2E6HtLkxs7zg==}
+
+  '@iconify-json/lucide@1.2.74':
+    resolution: {integrity: sha512-vDoGHcDZdWgUbt9J3TCJlxFzX/Mw0vUIAoZdkfI2mINOi1/cgVZHivgZ8QtiGlepskTL3PcG8t93Ky/vtQgXGA==}
 
   '@iconify-json/octicon@1.2.18':
     resolution: {integrity: sha512-rj94lgRl70HXovRxD+xSOpSql6cj3N8rv3ouSh7UJEuAFim0RcCEt2JQhr8hiS5Lj1D65EQP7oSNMrVOkYi8kg==}
@@ -3930,6 +3936,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/fluent-color@1.2.20':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/lucide@1.2.74':
     dependencies:
       '@iconify/types': 2.0.0
 

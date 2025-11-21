@@ -34,7 +34,7 @@ onMounted(() => {
   font-size: 26px;
   line-height: 32px;
   height: 32px;
-  margin-bottom: 16px;
+  word-wrap: break-word;
 }
 
 .typed-cursor {

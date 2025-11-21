@@ -1,10 +1,14 @@
 <script setup>
-import { useChatStore } from "@/store";
+import { useChatStore, useAppStore } from "@/store";
 const chat = useChatStore();
+const app = useAppStore();
 
 const handleClick = () => {
   chat.checkToStopMessage();
   chat.initMessages()
+  app.set({
+      isSideBarVisible: false,
+  })
 };
 </script>
 
@@ -21,7 +25,7 @@ const handleClick = () => {
   margin-top: 32px;
   width: 276px;
   height: 46px;
-  background: linear-gradient(270deg, #c7d16a 0%, #a2fab5 100%);
+  background: linear-gradient(270deg, #e0e3c4 0%, rgb(203, 239, 211) 100%);
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -38,7 +42,7 @@ const handleClick = () => {
   }
 
   &:hover {
-    background: linear-gradient(270deg, #a2fab5 0%, #c7d16a 100%);
+    background: linear-gradient(90deg, #a2fab5 0%, #c7d16a 100%);
     color: #312f20;
   }
 }

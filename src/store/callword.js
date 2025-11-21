@@ -10,14 +10,17 @@ const useCallwordStore = defineStore("callword", function () {
   const callWord = reactive({
     appName: insistance?.appName || '小漫同学',
     character: 1,
-    hobby: '',
+    hobby: insistance?.hobby ,
     localDateTime: formatDate(new Date()),
-    mood: '',
-    desc: ''
+    mood: insistance?.mood ,
+    desc: insistance?.desc 
   });
   function set(data) {
     merge(callWord, data);
-    storage.set("callWord", info);
+    storage.set("callWord", callWord);
+  }
+  function get() {
+    return callWord;
   }
   function clear() {
     storage.remove("callWord");
@@ -30,6 +33,7 @@ const useCallwordStore = defineStore("callword", function () {
       return `你的代号是${callWord.appName}。 ${text} ${userPrompt}，当前时间：${callWord.localDateTime}。用户要求：${callWord.desc}`
     }),
     set,
+    get,
     clear,
   };
 });

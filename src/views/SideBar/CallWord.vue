@@ -1,6 +1,6 @@
 <script setup>
 import { useCallwordStore } from '@/store'
-import { CHARACTHER, COLORS } from '@/constants'
+import { CHARACTHER } from '@/constants'
 
 const callword = useCallwordStore()
 const callVisible = ref(false)
@@ -8,7 +8,6 @@ const role = ref({
   appName: '',
   character: 1,
   hobby: '',
-  mood: '',
   desc: '',
 })
 const transitionConfig = {
@@ -22,7 +21,7 @@ const formRules = {
     { required: true, message: '还没有设置昵称', trigger: 'blur' },
   ],
   character: [
-    { required: true, message: '还没有选择助手性格', trigger: 'blur' },
+    { required: true, message: '还没有选择性格', trigger: 'blur' },
   ],
 }
 
@@ -31,18 +30,19 @@ function onHandleSave() {
   callword.set(role.value)
 }
 
-onMounted(() => {
-  role.value.appName = callword.name
-})
+function showCallWord() {
+  role.value = callword.get()
+  callVisible.value = true
+}
 </script>
 
 
 <template>
   <div class="my-2">
-    <div @click="callVisible = true">
+    <div @click="showCallWord">
       <i-streamline-stickies-color:control class="cursor-pointer" />
     </div>
-    <el-dialog v-model="callVisible" class="dialog-round" header-class="dialog-header" width="611px" align-center
+    <el-dialog v-model="callVisible" class="dialog-round" header-class="dialog-header" width="600px" align-center
       :show-close="false" :destroy-on-close="true" append-to-body :transition="transitionConfig">
       <template #header="{ close }">
         <div class="flex justify-between items-center mb-5">
@@ -51,7 +51,7 @@ onMounted(() => {
         </div>
       </template>
       <div>
-        <el-form :model="role" :rules="formRules" label-width="120px" label-position="right" class="pr-10"
+        <el-form :model="role" :rules="formRules" label-width="100px" label-position="right"
           size="default" scroll-to-error>
           <el-form-item label="助手昵称" prop="appName">
             <el-input v-model="role.appName" placeholder="想要怎么称呼我呢？" clearable maxlength="5" show-word-limit />
@@ -61,20 +61,6 @@ onMounted(() => {
           </el-form-item>
           <el-form-item label="关于你" prop="hobby">
             <el-input v-model="role.hobby" placeholder="请输入你的信息，让我更了解你" clearable maxlength="200" show-word-limit />
-
-          </el-form-item>
-          <el-form-item label="心情" prop="mood">
-            <el-select v-model="role.mood" placeholder="你的心情怎么样？">
-              <el-option v-for="item in COLORS" :key="item.value" :label="item.label" :value="item.value">
-                <div class="flex items-center">
-                  <el-tag :color="item.value" style="margin-right: 8px" size="small" />
-                  <span :style="{ color: item.value }">{{ item.label }}</span>
-                </div>
-              </el-option>
-              <template #tag>
-                <el-tag v-for="color in value" :key="color" :color="color" />
-              </template>
-            </el-select>
           </el-form-item>
           <el-form-item label="自定义指令" prop="desc">
             <el-input v-model="role.desc" type="textarea" :rows="3" placeholder="自定义的提示词，如：你是一个程序员" clearable

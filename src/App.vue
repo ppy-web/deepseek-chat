@@ -5,31 +5,40 @@
     'sidebar-fixed': app.isSidebarFixed,
   }">
     <SideBar class="sidebar-area" />
-    <MainContent class="main-area" :need-transition="true">
+    <Assistant class="main-area" :need-transition="true">
       <router-view v-slot="{ Component, route }">
         <keep-alive>
           <component :is="Component" :key="route.path" v-if="route.meta.keepAlive" />
         </keep-alive>
         <component :is="Component" v-if="!route.meta.keepAlive" />
       </router-view>
-    </MainContent>
+    </Assistant>
   </el-container>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useBrowser } from "@/hooks/useBrowser.js";
 import { useAppStore, useCallwordStore } from "@/store";
 import { NARROW_SCREEN_WIDTH } from "@/constants/index";
 
 import SideBar from "@/views/SideBar/Index.vue";
-import MainContent from "@/views/MainContent.vue";
+import Assistant from "@/views/Assistant/index.vue";
 import * as service from "@/service/api";
 
 const app = useAppStore();
 const callword = useCallwordStore();
 window.document.title = callword.name;
 const { browser, onScreenChange } = useBrowser();
+
+// 监听主题变化，更新 HTML 根元素的类名
+watch(() => app.theme, (newTheme) => {
+  if (newTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+}, { immediate: true });
 // 获取初始化配置
 const getInitParam = async () => {
   const { is_available, balance_infos } = await service.getUserBalance();
@@ -45,15 +54,17 @@ onMounted(() => {
   onScreenChange(() => {
     app.set({
       isSmallPage: browser.width < NARROW_SCREEN_WIDTH,
+      isSidebarFixed: false,
+      needTransition: true,
     });
     if (document.querySelector(".chat-box .chat-component")) {
-      if (browser.width - 300 < 960) {
+      if (browser.width - 300 < 1200) {
         document.querySelector(".chat-box .chat-component").style.padding =
           "0 16px";
         document.querySelector(".chat-box .input-container").style.padding =
           "0 16px";
       } else {
-        let p = (browser.width - 300 - 960) / 2;
+        let p = (browser.width - 300 - 1200) / 2;
         document.querySelector(
           ".chat-box .chat-component"
         ).style.padding = `0px ${p}px`;
@@ -83,8 +94,8 @@ onMounted(() => {
 .sidebar-area {
   width: var(--sidebar-width);
   height: 100vh;
-  background: #555555;
-  padding: 30px 12px 24px;
+  background: var(--sidebar-bg);
+  padding: 12px 12px 24px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -93,6 +104,7 @@ onMounted(() => {
   transform: translateX(0);
   transition: transform 0.3s cubic-bezier(0.38, 0, 0.24, 1),
     opacity 0.3s cubic-bezier(0.38, 0, 0.24, 1),
+    background-color 0.3s ease,
     -webkit-transform 0.3s cubic-bezier(0.38, 0, 0.24, 1);
 }
 

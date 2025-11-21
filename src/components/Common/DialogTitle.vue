@@ -53,7 +53,7 @@ const props = defineProps({
     }
     .title {
       font-weight: bold;
-      color: #333333;
+      color: --var(--text-primary);
     }
   }
   .hot-header-r {

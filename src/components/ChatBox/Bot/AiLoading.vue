@@ -2,7 +2,8 @@
 <template>
   <div class="AI">
     <img class="avatar" :src="botDefault" />
-    <span v-if="props.pending"><i-svg-spinners:blocks-shuffle-3 width="20px" height="20px" /></span>
+    <span v-if="props.pending"><i-svg-spinners:blocks-shuffle-3 width="20px" height="20px"
+        class="avatar-loading" /></span>
   </div>
 </template>
 
@@ -30,11 +31,12 @@ const props = defineProps({
     min-width: 50px;
     height: 50px;
     border-radius: 50%;
-    color: #0bb343;
   }
 
-  span {
+  .avatar-loading {
     margin-left: 10px;
+    color: var(--text-tertiary);
   }
+
 }
 </style>

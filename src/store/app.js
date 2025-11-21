@@ -12,15 +12,16 @@ const useAppStore = defineStore("app", function () {
   const localInfo = storage.get("apiConfig");
   const info = reactive({
     logo: doubao,
-    isSideBarVisible: true,
+    isSideBarVisible: insistance?.isSideBarVisible || false,
     isSmallPage: false,
     isSidebarFixed: false,
     isPageHide: true,
-    isAvailable: true,
-    deepseek: false,
+    isAvailable: true, // deepseek是否可用
+    deepseek: insistance?.deepseek || false,
     localDateTime: new Date(),
     showWatermark: insistance?.showWatermark || false,
     balanceInfo: {},
+    theme: insistance?.theme || 'light', // 主题：light 或 dark
   });
   const apiConfig = reactive({
     ...API_CONFIG,
@@ -46,6 +47,16 @@ const useAppStore = defineStore("app", function () {
     storage.remove("appInfo");
     storage.remove("apiConfig");
   }
+  const theme = computed(() => info.theme);
+  const isDark = computed(() => info.theme === 'dark');
+  
+  function toggleTheme() {
+    const newTheme = info.theme === 'light' ? 'dark' : 'light';
+    set({ theme: newTheme });
+    // 更新 HTML 根元素的类名
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  }
+
   return {
     logo,
     apiInfo,
@@ -59,6 +70,9 @@ const useAppStore = defineStore("app", function () {
     apiKey: computed(() => apiConfig.apiKey),
     defaultParams: computed(() => apiConfig.defaultParams),
     localDateTime: computed(() => formatDate(info.localDateTime)),
+    theme,
+    isDark,
+    toggleTheme,
     set,
     setApiConfig,
     clear,

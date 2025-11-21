@@ -6,13 +6,8 @@ const app = useAppStore();
 const callword = useCallwordStore();
 
 const toggleSideBar = () => {
-  if (app.isSmallPage) {
-    app.set({
-      isSideBarVisible: false,
-    });
-  }
   app.set({
-    isSideBarVisible: !app.isSideBarVisible,
+    isSideBarVisible: false,
   });
 };
 

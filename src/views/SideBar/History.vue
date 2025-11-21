@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick, computed } from "vue";
+import { ref, computed } from "vue";
 import { Edit, Delete, CloseBold } from "@element-plus/icons-vue";
 import { getDayjsCategory } from "@/utils/index";
 import { useChatStore, useHistoryStore, useAppStore } from "@/store";
@@ -20,7 +20,6 @@ const chat = useChatStore();
 const history = useHistoryStore();
 history.loadSessions();
 
-const currendId = app.currentId;
 const list = computed(() => {
   const data = [];
   history.sessions.forEach((item) => {
@@ -33,7 +32,7 @@ const list = computed(() => {
       });
       currentDateType = dateType;
     } else {
-      item.active = currendId === item.id;
+      item.active = app.currentId === item.id;
       item.showPopover = false;
     }
     data.push(item);
@@ -42,11 +41,13 @@ const list = computed(() => {
 });
 
 const handleClickDialog = (item) => {
-  console.log(item);
   try {
     const { id } = item;
     if (chat.sessionId === id) return;
     chat.initMessages(id);
+    app.set({
+      isSideBarVisible: false,
+    })
   } catch (err) {
     console.log("获取对话记录失败", err);
   }
@@ -118,7 +119,6 @@ const handleConfirmDelete = async () => {
                 </el-icon>
                 <span style="
                     padding: 0 5px 0 20px;
-                    color: #1c1c1c;
                     font-weight: 500;
                   ">重命名</span>
               </div>
@@ -213,11 +213,11 @@ const handleConfirmDelete = async () => {
 
 <style lang="scss" scoped>
 .sidebar-history-title {
-  border-top: 1px solid #e7e7e7;
+  border-top: 1px solid var(--border-color);
   padding-top: 16px;
   padding-bottom: 10px;
   font-size: 14px;
-  color: #666;
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -233,7 +233,7 @@ const handleConfirmDelete = async () => {
   overflow-y: auto;
   scrollbar-width: thin;
   /* auto | thin | none */
-  scrollbar-color: #c1c1c1 #f4f5f6;
+  scrollbar-color: var(--text-tertiary) var(--bg-secondary);
   /* 滑块颜色 轨道颜色 */
 
   &::-webkit-scrollbar {
@@ -241,24 +241,24 @@ const handleConfirmDelete = async () => {
   }
 
   &::-webkit-scrollbar-track {
-    background-color: #f4f5f6;
+    background-color: var(--bg-secondary);
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #c1c1c1;
+    background-color: var(--text-tertiary);
     border-radius: 3px;
   }
 
   .history-item {
     .history-title {
-      color: #999999;
+      color: var(--text-tertiary);
       margin: 12px 0;
       font-size: 12px;
       padding: 0 6px;
     }
 
     .history-content {
-      color: #333;
+      color: var(--sidebar-text);
       cursor: pointer;
       border-radius: 10px;
       padding: 0 6px;
@@ -285,7 +285,7 @@ const handleConfirmDelete = async () => {
 
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--hover-bg);
 
         .options {
           opacity: 1;
@@ -299,20 +299,20 @@ const handleConfirmDelete = async () => {
 
     .active {
       background-color: #e4edfd;
-      color: #3964fe;
+      color: #4b6deb;
     }
   }
 
   .finished {
     margin-top: 20px;
     text-align: center;
-    color: #999;
+    color: var(--text-tertiary);
     font-size: 12px;
   }
 
   .loading {
     text-align: center;
-    color: #999;
+    color: var(--text-tertiary);
     font-size: 12px;
   }
 }

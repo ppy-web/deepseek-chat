@@ -1,12 +1,4 @@
 <!-- 消息列表 -->
-<template>
-  <el-scrollbar class="chat-component" :ref="setRefs('messageBoxRef')">
-    <template v-for="item in chat.chatList" :key="item.mid">
-      <component class="message-wrap" :is="component(item)" :msg="item" />
-    </template>
-  </el-scrollbar>
-</template>
-
 <script setup>
 import { nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useEventListener } from "@vueuse/core";
@@ -16,6 +8,7 @@ import { useChatStore } from "@/store";
 import { useBrowser } from "@/hooks/useBrowser";
 import { Nodes } from "./Nodes";
 import EVENT_TYPE from "@/constants/event_type";
+import Navbar from "@/components/Common/Navbar.vue";
 
 const mitt = useMitt();
 const { browser } = useBrowser();
@@ -72,6 +65,14 @@ onUnmounted(() => {
 });
 </script>
 
+<template>
+  <Navbar />
+  <el-scrollbar class="chat-component" :ref="setRefs('messageBoxRef')">
+    <template v-for="item in chat.chatList" :key="item.mid">
+      <component class="message-wrap" :is="component(item)" :msg="item" />
+    </template>
+  </el-scrollbar>
+</template>
 <style lang="scss">
 .chat-component {
   position: relative;
@@ -80,7 +81,6 @@ onUnmounted(() => {
   flex: 1;
   overflow-y: hidden !important;
   margin-bottom: 40px;
-
   .message-wrap {
     display: flex;
     margin-bottom: 12px;

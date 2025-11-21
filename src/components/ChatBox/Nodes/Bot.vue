@@ -12,10 +12,10 @@
       <div class="watermark" :class="{ [mClass]: true }">
         <span class="rich-text" v-html="htmlStr"></span>
       </div>
-      <!-- 操作栏 -->
-      <ActionBar v-if="!isPending && isTextStreamEnd" :content="msg.htmlStr" :status="msg.opsStatus"
-        @like="onHandleLike" @unlike="onHandleUnlike" class="action-bar" />
     </div>
+    <!-- 操作栏 -->
+    <ActionBar class="action-bar" v-if="!isPending && isTextStreamEnd" :content="msg.content" :status="msg.opsStatus"
+      @like="onHandleLike" @unlike="onHandleUnlike" />
   </div>
 </template>
 
@@ -52,7 +52,7 @@ const onHandleUnlike = () => {
 
 onMounted(() => {
   const watermark = new Watermark({
-    content: 'https://github.com/ppy-web',
+    content: 'github.com/ppy-web',
     parent: `.${mClass.value}`,
     width: 100,
     height: 100,
@@ -72,6 +72,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .bot {
   max-width: 100%;
+  position: relative;
+  padding-bottom: 20px;
 
   & .message {
     border-radius: 8px;
@@ -80,11 +82,13 @@ onMounted(() => {
     max-width: 100%;
     font-weight: 400;
     font-size: 16px;
-    color: #333333;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 
     &.pending {
-      background-color: #fcfcfc;
+      background-color: var(--bg-secondary);
       padding: 12px;
+      margin-left: 12px;
     }
 
     .watermark {
@@ -93,32 +97,18 @@ onMounted(() => {
 
     .rich-text {
       user-select: text;
-
-      img {
-        display: none;
-      }
-
-      // 角标样式
-      .highlight-text {
-        cursor: pointer !important;
-        user-select: none !important;
-      }
     }
 
-    .tip {
-      display: block;
-      margin-top: 10px;
-      font-weight: 400;
-      font-weight: 400;
-      font-size: 14px;
-      color: #979797;
-    }
   }
 
   // 控制操作栏显隐
   .action-bar {
     opacity: 0;
     transition: opacity 0.4s ease;
+    position: absolute;
+    bottom: -5px;
+    left: 66px;
+    z-index: 2;
   }
 
   &:hover {

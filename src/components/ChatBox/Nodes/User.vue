@@ -21,11 +21,12 @@ const props = defineProps({
   flex-direction: row-reverse;
   max-width: 100%;
   .message {
-    background: #f3f3f3;
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 10px 15px;
-    color: #333333;
+    color: var(--text-primary);
     overflow: hidden !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
     .rich-text {
       white-space: pre-wrap;
       word-break: break-all;

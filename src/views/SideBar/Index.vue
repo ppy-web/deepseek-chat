@@ -17,7 +17,6 @@ import History from "./History.vue";
 
 const app = useAppStore();
 
-
 const handleFixed = () => {
   if (!app.isSmallPage) {
     return;
