@@ -3,6 +3,7 @@ import "normalize.css"
 import "highlight.js/styles/github-dark.css"
 import "animate.css"
 import "./index.scss"
+import 'katex/dist/katex.min.css'
 
 import pinia from '@/store'
 import { useAppStore } from '@/store'

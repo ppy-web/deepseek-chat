@@ -9,11 +9,11 @@ const useCallwordStore = defineStore("callword", function () {
   const insistance = storage.get("callWord");
   const callWord = reactive({
     appName: insistance?.appName || '小漫同学',
-    character: 1,
-    hobby: insistance?.hobby ,
+    character: insistance?.character || 1,
+    hobby: insistance?.hobby,
     localDateTime: formatDate(new Date()),
-    mood: insistance?.mood ,
-    desc: insistance?.desc 
+    mood: insistance?.mood,
+    desc: insistance?.desc
   });
   function set(data) {
     merge(callWord, data);

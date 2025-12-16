@@ -4,7 +4,7 @@
     'hide-sidebar': !app.isSideBarVisible,
     'sidebar-fixed': app.isSidebarFixed,
   }">
-    <SideBar class="sidebar-area" />
+    <SideBar class="sidebar-area" :class="{ 'sidebar-light': !app.isDark }" />
     <Assistant class="main-area" :need-transition="true">
       <router-view v-slot="{ Component, route }">
         <keep-alive>
@@ -83,12 +83,26 @@ onMounted(() => {
 
 <style lang="scss">
 :root {
-  --sidebar-width: 300px;
+  --sidebar-width: 302px;
 }
 
 .app-container {
   width: 100vw;
   height: 100vh;
+
+  .sidebar-light {
+    display: border-box;
+    border-right: 1px solid var(--border-color);
+    margin-right: -1px;
+    background: linear-gradient(to bottom,
+        hsl(210, 15%, 92%) 0%,
+        /* 天顶的淡蓝色 */
+        #c1d5f0 60%,
+        /* 中间过渡色 */
+        #F0F8FF 100%
+        /* 靠近地平线的更浅色 */
+      );
+  }
 }
 
 .sidebar-area {

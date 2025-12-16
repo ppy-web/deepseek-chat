@@ -4,15 +4,13 @@
     <div class="try-item animate__animated animate__zoomInLeft" v-for="(item, index) in list" :key="index"
       @click="emit('send', item)">
       <img class="try-item-img" :src="turnImg" alt="" />
-      <span class="try-item-text" v-html="markdown.render(item)"></span>
+      <span class="try-item-text" v-html="item"></span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useMarkdown } from "@/hooks/useMarkdown"; // Markdown渲染
 import turnImg from "@/assets/img/turnrightdown.png";
-const { markdown } = useMarkdown();
 const emit = defineEmits(["send"]);
 const props = defineProps({
   list: {

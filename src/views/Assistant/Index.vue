@@ -11,8 +11,8 @@ const app = useAppStore();
 
 <template>
   <el-container>
-    <div class="assistant noisy light" :class="{ 'night': app.isDark }">
-      <Navbar  v-if="!chat.sessionId"/>
+    <div class="assistant light" :class="{ 'night': app.isDark }">
+      <Navbar v-if="!chat.sessionId" />
       <div class="new-dialog animate__animated animate__fadeIn" v-if="!chat.sessionId">
         <BotHello />
         <InputBox />
@@ -65,9 +65,9 @@ const app = useAppStore();
 
 .light {
   background: linear-gradient(to bottom,
-      #87CEEB 0%,
+      hsl(210, 15%, 92%) 0%,
       /* 天顶的淡蓝色 */
-      #B0E0E6 70%,
+      #c1d5f0 60%,
       /* 中间过渡色 */
       #F0F8FF 100%
       /* 靠近地平线的更浅色 */
@@ -75,6 +75,6 @@ const app = useAppStore();
 }
 
 .night {
-  background-image: url("@/assets/img/noise.png");
+  background-image: url("@/assets/img/noise.png") !important;
 }
 </style>

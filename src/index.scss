@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 // 主题变量定义
 :root {
   // 日间模式颜色
@@ -17,8 +16,9 @@
   --sidebar-text: #333333;
   --code-bg: #f4f4f4;
   --code-text: #333333;
-  --table-header-bg: #e0e2eb;
+  --table-header-bg: #f3f3f4;
   --table-row-bg: #f7f8fa;
+  --table-border-color: #dfdfdf;
   --table-row-alt-bg: #f1f2f6;
   --hover-bg: #e0e2e3;
   --shadow-color: rgba(0, 0, 0, 0.1);
@@ -39,6 +39,7 @@
   --code-bg: #2d2d2d;
   --code-text: #e0e0e0;
   --table-header-bg: #3a3a3a;
+  --table-border-color: #e0e0e0;
   --table-row-bg: #2d2d2d;
   --table-row-alt-bg: #333333;
   --hover-bg: #3a3a3a;
@@ -118,256 +119,46 @@ input::-webkit-input-placeholder {
     user-select: none;
   }
 }
-@mixin content-style {
-  pre,
-  code {
-    font-size: 14px;
-    font-family: Roboto, "Courier New", Consolas, Inconsolata, Courier,
-      monospace;
-    margin: auto 5px;
-    background-color: var(--code-bg);
-    color: var(--code-text);
-  }
-
-  code {
-    white-space: pre-wrap;
-    border-radius: 2px;
-    display: inline;
-  }
-
-  pre {
-    font-size: 15px;
-    line-height: 1.4em;
-    display: block;
-  }
-
-  pre code {
-    white-space: pre;
-    overflow: auto;
-    border-radius: 3px;
-    padding: 1px 1px;
-    display: block !important;
-  }
-
-  strong,
-  b {
-    color: var(--text-primary);
-  }
-
-  em,
-  i {
-    color: var(--text-primary);
-  }
-
-  hr {
-    border: 1px solid var(--border-color);
-    margin: 1em auto;
-  }
-
-  p {
-    margin: 0px !important;
-    padding: 0 !important;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-    text-align: inherit;
-    background: transparent;
-    border: none;
-  }
-  pre,
-  dl,
-  blockquote,
-  q,
-  ul,
-  ol {
-    margin: 10px 0;
-  }
-
-  ul,
-  ol {
-    padding-left: 15px;
-  }
-
-  li {
-    margin: 10px;
-  }
-
-  li p {
-    margin: 10px 0 !important;
-  }
-
-  ul ul,
-  ul ol,
-  ol ul,
-  ol ol {
-    margin: 0;
-    padding-left: 10px;
-  }
-
-  ul {
-    list-style-type: circle;
-  }
-
-  dl {
-    padding: 0;
-  }
-
-  dl dt {
-    font-size: 1em;
-    font-weight: bold;
-    font-style: italic;
-  }
-
-  dl dd {
-    margin: 0 0 10px;
-    padding: 0 10px;
-  }
-
-  blockquote,
-  q {
-    border-left: 2px solid var(--text-primary);
-    padding: 0 10px;
-    color: var(--text-tertiary);
-    quotes: none;
-    margin-left: 1em;
-  }
-
-  blockquote::before,
-  blockquote::after,
-  q::before,
-  q::after {
-    content: none;
-  }
-
-  h1,
-  h2 {
-    margin: 5px 0 5px;
-    padding: 0;
-    font-style: bold !important;
-    text-align: center !important;
-    padding: 0.5em 1em !important;
-  }
-
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin: 5px 0 5px;
-    padding: 0;
-    font-style: bold !important;
-    text-align: left !important;
-    padding: 0.5em 1em !important;
-  }
-
-  h1 span,
-  h2 span {
-    display: inline-block;
-    color: var(--text-primary);
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px var(--shadow-color);
-  }
-
-  h3 span,
-  h4 span,
-  h5 span,
-  h6 span {
-    border-left: 4px solid var(--border-color);
-    margin: 2em 8px 0.75em 0;
-    color: var(--text-primary);
-    font-weight: bold;
-    border-bottom: 1px dashed var(--border-color);
-  }
-
-  h1 {
-    font-size: 24px !important;
-    border-bottom: 1px solid var(--border-color) !important;
-  }
-
-  h2 {
-    font-size: 20px !important;
-    border-bottom: 1px solid var(--border-color) !important;
-  }
-
-  h3 {
-    font-size: 18px;
-  }
-
-  h4 {
-    font-size: 16px;
-  }
-}
-
 @mixin table-style {
   table {
     min-width: 100%;
-    border-collapse: collapse; /* 边框合并 */
-    font-size: 14px;
-  }
-  /* 设置表头的样式 */
-  th {
-    color: var(--text-primary);
-    padding: 10px;
-    text-align: left;
-    border: none;
-    font-weight: normal;
+    font-size: 16px;
+    overflow: hidden;
+    border-spacing: 0;
+    border: 1px solid var(--table-border-color);
+    border-radius: 10px;
+    overflow-x: auto;
+    display: block;
     white-space: nowrap;
-    background: var(--table-header-bg);
   }
-  tr {
-    border: none;
+  table tr {
+    display: table-row;
+  }
+
+  table th {
+    background-color: var(--table-header-bg);
+    padding: 12px;
+    white-space: nowrap;
+    display: table-cell;
+  }
+  table td {
+    border-top: 1px solid var(--table-border-color);
     background-color: var(--table-row-bg);
-  }
-  tr:nth-child(odd) {
-    background-color: var(--table-row-alt-bg);
-  }
-  td {
-    color: var(--text-primary);
-    padding: 5px 10px;
-    border: none;
-    text-align: left;
+    padding: 12px;
     white-space: nowrap;
+    display: table-cell;
   }
-  th:first-child,
-  td:first-child {
-    padding-left: 19px; /* 第一列左边距 */
-  }
-  th:last-child,
-  td:last-child {
-    padding-right: 19px; /* 最后一列右边距 */
+  table th:not(:last-child),
+  table td:not(:last-child) {
+    border-right: 1px solid var(--table-border-color);
   }
 }
 
 // 消息里面的富文本样式
 .message,
 .content {
-  font-size: 15px;
-  line-height: 1.5em;
-  letter-spacing: 0.1em;
   @include sign-style;
-  @include content-style;
   @include table-style;
-  overflow-y: hidden;
-  table {
-    width: calc(100% - 100px) !important;
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap; /* 保持表格不换行 */
-    padding: 0;
-    border-collapse: collapse;
-    border-spacing: 0;
-    font-size: 1em;
-    font: inherit;
-    border: 0;
-    margin: 0 auto;
-  }
-  tbody {
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
 }
 
 .dialog-header {

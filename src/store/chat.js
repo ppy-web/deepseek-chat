@@ -3,14 +3,12 @@ import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { useMitt } from "../hooks/useMitt"; // 事件总线
 import { useRefs } from "@/hooks/useRefs"; // DOM引用管理
-import { useMarkdown } from "../hooks/useMarkdown"; // Markdown渲染
 import { useHistoryStore, useAppStore, useCallwordStore } from "@/store";
 import { EVENT_TYPE, MESSAGE_TYPE } from "@/constants";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { scrollTop, Timer, isEmpty, storage } from "@/utils"; // 工具函数
 import { getTalkTitle } from "@/service/api";
 const { refs } = useRefs();
-const { markdown } = useMarkdown();
 
 const mitt = useMitt();
 const useChatStore = defineStore("chat", () => {
@@ -133,9 +131,6 @@ const useChatStore = defineStore("chat", () => {
         }
         message.value.content += delta.content;
       }
-      // 正常文本内容 md格式
-      message.value.htmlStr = markdown.render(message.value.content);
-      message.value.htmlThinking = markdown.render(message.value.thinking);
       // 每次处理文本消息后尝试滚动到底部
       scrollMessageBox();
     } catch (error) {
@@ -145,7 +140,6 @@ const useChatStore = defineStore("chat", () => {
   };
   const handleStreamError = () => {
     message.value.content = '对不起，我无法回答这个问题。';
-    message.value.htmlStr = markdown.render(message.value.content);
     message.value.isTextStreamEnd = true; // 标记流已结束
     message.value.isPending = false;
   };
@@ -153,19 +147,16 @@ const useChatStore = defineStore("chat", () => {
     // 创建新的中断控制器，用于后续可能的请求中断
     controller = new AbortController();
     const signal = controller.signal;
-    let ask, botMessage, queryParams;
+    let botMessage, queryParams;
     const app = useAppStore();
     const callword = useCallwordStore();
     if (!lastQuery) {
       // 创建AI回复消息对象
       botMessage = {
-        ask,
         mid: uuidv4(),
         type: MESSAGE_TYPE.BOT,
         content: "", // 原始文本内容
-        htmlStr: "", // Markdown渲染后的HTML
         thinking: "", // 思考文本
-        htmlThinking: "", // 思考文本HTML
         thinkFinished: false, // 思考结束
         thinkTime: 0, // 思考用时
         isPending: true, // 是否正在处理
