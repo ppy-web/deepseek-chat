@@ -138,6 +138,7 @@ input::-webkit-input-placeholder {
   table th {
     background-color: var(--table-header-bg);
     padding: 12px;
+    min-width: 100px;
     white-space: nowrap;
     display: table-cell;
   }
