@@ -34,6 +34,8 @@ const useAppStore = defineStore("app", function () {
   const isSideBarVisible = computed(() => info.isSideBarVisible);
   const isSidebarFixed = computed(() => info.isSidebarFixed);
   const isSmallPage = computed(() => info.isSmallPage);
+  const theme = computed(() => info.theme);
+  const isDark = computed(() => info.theme === 'dark');
 
   function set(data) {
     merge(info, data);
@@ -47,8 +49,6 @@ const useAppStore = defineStore("app", function () {
     storage.remove("appInfo");
     storage.remove("apiConfig");
   }
-  const theme = computed(() => info.theme);
-  const isDark = computed(() => info.theme === 'dark');
 
   function toggleTheme() {
     const newTheme = info.theme === 'light' ? 'dark' : 'light';

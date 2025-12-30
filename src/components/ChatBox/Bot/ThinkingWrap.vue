@@ -2,7 +2,6 @@
 <script setup>
 import { ref } from "vue";
 import { ArrowDown } from "@element-plus/icons-vue";
-import { MarkdownRender } from 'markstream-vue';
 
 const props = defineProps({
   html: {

@@ -30,7 +30,6 @@
     "lodash-es": "^4.17.21",
     "markdown-it": "^14.1.0",
     "markstream-vue": "^0.0.3-beta.5",
-    "mermaid": "^11.12.2",
     "mitt": "^3.0.1",
     "modern-css-reset": "^1.4.0",
     "normalize.css": "^8.0.1",
@@ -70,6 +69,7 @@
     "unplugin-vue-components": "^0.22.9",
     "vite": "^6.3.5",
     "vite-plugin-externals": "^0.6.2",
+    "vite-plugin-monaco-editor": "^1.1.0",
     "vite-plugin-top-level-await": "^1.4.2"
   }
 }

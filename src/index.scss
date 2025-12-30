@@ -113,22 +113,14 @@ input::-webkit-input-placeholder {
   word-break: break-all;
 }
 
-// 序号角标样式
-@mixin sign-style {
-  .highlight-text {
-    cursor: pointer;
-    user-select: none;
-  }
-}
 @mixin table-style {
   table {
-    max-width: 100%;
     overflow: hidden;
-    border-spacing: 0;
-    border: 1px solid var(--table-border-color);
+    // border-spacing: 0;
+    // border: 1px solid var(--table-border-color);
     border-radius: 10px;
-    overflow-x: auto;
-    display: block;
+    // overflow-x: auto;
+    // display: block;
     white-space: nowrap;
   }
   table tr {
@@ -138,7 +130,7 @@ input::-webkit-input-placeholder {
   table th {
     background-color: var(--table-header-bg);
     padding: 12px;
-    min-width: 100px;
+    min-width: 200px;
     white-space: nowrap;
     display: table-cell;
   }
@@ -158,7 +150,6 @@ input::-webkit-input-placeholder {
 // 消息里面的富文本样式
 .message,
 .content {
-  @include sign-style;
   @include table-style;
 }
 
@@ -333,11 +324,6 @@ input::-webkit-input-placeholder {
 
       .model-item-des {
         color: var(--text-secondary);
-      }
-
-      .check {
-        background-image: url("./assets/img/check.png");
-        background-size: 100% 100%;
       }
     }
   }

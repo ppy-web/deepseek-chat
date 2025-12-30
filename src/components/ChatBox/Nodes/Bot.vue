@@ -9,7 +9,10 @@
       <!-- 思考过程 -->
       <ThinkingWrap :html="msg.thinking" :finished="msg.thinkFinished" :second="msg.thinkTime" />
       <!-- 大模型回答 -->
-      <MarkdownRender :content="msg.content" :is-dark="app.isDark"></MarkdownRender>
+      <MarkdownRender :content="msg.content" :is-dark="app.isDark" code-block-light-theme="vs"
+        code-block-dark-theme="vs" :code-block-props="{ showHeader: false, showFontSizeButtons: false }">
+      </MarkdownRender>
+      <!-- <div v-html="msg.content"></div> -->
     </div>
     <!-- 操作栏 -->
     <ActionBar class="action-bar" v-if="!msg.isPending && msg.isTextStreamEnd" :content="msg.content"
@@ -25,6 +28,9 @@ import AiLoading from "../Bot/AiLoading.vue";
 import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
 import MarkdownRender from 'markstream-vue'
+import { enableKatex } from 'markstream-vue'
+import 'katex/dist/katex.min.css'
+enableKatex()
 const props = defineProps({
   msg: {
     type: Object,

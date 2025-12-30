@@ -10,7 +10,6 @@ import IconsResolver from 'unplugin-icons/resolver'
 import legacy from "@vitejs/plugin-legacy";
 import topLevelAwait from "vite-plugin-top-level-await";
 
-
 export default defineConfig(({ mode }) => {
   const plugins = [
     legacy({
@@ -45,7 +44,6 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       port: 3010,
-      // open: true,
     },
     resolve: {
       alias: {
