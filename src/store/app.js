@@ -25,7 +25,7 @@ const useAppStore = defineStore("app", function () {
   });
   const apiConfig = reactive({
     ...API_CONFIG,
-    ...localInfo,
+    model: localInfo?.model || "deepseek-chat",
   })
 
   const apiInfo = computed(() => apiConfig);
@@ -49,7 +49,7 @@ const useAppStore = defineStore("app", function () {
   }
   const theme = computed(() => info.theme);
   const isDark = computed(() => info.theme === 'dark');
-  
+
   function toggleTheme() {
     const newTheme = info.theme === 'light' ? 'dark' : 'light';
     set({ theme: newTheme });
@@ -64,7 +64,7 @@ const useAppStore = defineStore("app", function () {
     isSideBarVisible,
     isSidebarFixed,
     isSmallPage,
-    deepseek: computed(() => info.deepseek),
+    isDeepseek: computed(() => info.deepseek),
     useModel: computed(() => apiConfig.model),
     baseURL: computed(() => apiConfig.baseURL),
     apiKey: computed(() => apiConfig.apiKey),

@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
-    "@gaothing/indexdb-util": "^2.0.8",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@tailwindcss/vite": "^4.1.13",
     "@vueuse/core": "^13.4.0",
@@ -23,7 +22,6 @@
     "dayjs": "^1.11.6",
     "element-plus": "^2.11.7",
     "eslint": "^9.35.0",
-    "glob": "7.2.3",
     "highlight.js": "^11.10.0",
     "js-md5": "^0.8.3",
     "jszip": "^3.10.1",
@@ -34,6 +32,7 @@
     "markstream-vue": "^0.0.3-beta.5",
     "mermaid": "^11.12.2",
     "mitt": "^3.0.1",
+    "modern-css-reset": "^1.4.0",
     "normalize.css": "^8.0.1",
     "openai": "^6.8.1",
     "pinia": "^3.0.4",

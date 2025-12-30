@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 // 主题变量定义
 :root {
   // 日间模式颜色
@@ -121,8 +122,7 @@ input::-webkit-input-placeholder {
 }
 @mixin table-style {
   table {
-    min-width: 100%;
-    font-size: 16px;
+    max-width: 100%;
     overflow: hidden;
     border-spacing: 0;
     border: 1px solid var(--table-border-color);
@@ -380,7 +380,7 @@ input::-webkit-input-placeholder {
 
 // Element Plus 对话框主题支持
 .el-dialog {
-  background-color: var(--bg-primary) !important;
+  background-color: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
 

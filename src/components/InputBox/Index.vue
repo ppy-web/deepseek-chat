@@ -7,7 +7,7 @@
         @compositionstart="isComposing = true" @compositionend="isComposing = false" />
       <div class="input-bottom-wrapper">
         <div class="input-bottom-wrapper-left">
-          <div class="deep-button" :class="{ active: app.deepseek }" @click="checkTink">深度思考</div>
+          <div class="deep-button" :class="{ active: app.isDeepseek }" @click="checkTink">深度思考</div>
         </div>
         <div class="input-bottom-wrapper-right">
           <span class="stop" @click.stop="cancelAnswer" v-if="chat.isRunning">
@@ -43,10 +43,10 @@ const canSend = computed(() => {
 
 const checkTink = () => {
   app.set({
-    deepseek: !app.deepseek
+    deepseek: !app.isDeepseek
   })
   app.setApiConfig({
-    model: app.deepseek ? 'deepseek-reasoner' : 'deepseek-chat'
+    model: app.isDeepseek ? 'deepseek-reasoner' : 'deepseek-chat'
   })
 }
 
@@ -203,6 +203,7 @@ onUnmounted(() => {
           cursor: pointer;
           color: #cf4336;
           font-weight: 500;
+
           &:hover {
             background: var(--hover-bg);
           }
@@ -219,10 +220,12 @@ onUnmounted(() => {
           font-weight: 500;
           color: #4cc666;
           user-select: none;
+
           &:hover {
             background: var(--hover-bg);
           }
         }
+
         .disabled {
           cursor: not-allowed;
           opacity: 0.5;

@@ -81,6 +81,7 @@ onUnmounted(() => {
   flex: 1;
   overflow-y: hidden !important;
   margin-bottom: 40px;
+
   .message-wrap {
     display: flex;
     margin-bottom: 12px;

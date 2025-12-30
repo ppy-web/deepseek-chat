@@ -1,23 +1,8 @@
 <!-- 用于展示深度思考内容 -->
-<template>
-  <div class="thinking-wrap" v-if="html" :class="{ 'thinking-hide': !show }">
-    <div class="thinking" @click="show = !show">
-      <i-svg-spinners:blocks-wave v-if="!finished" width="20px" height="20px" />
-      <span>{{ finished ? `思考完成 用时(${second}秒)` : "思考中" }}
-      </span>
-      <el-icon class="arrows">
-        <ArrowDown color="#666666" />
-      </el-icon>
-    </div>
-    <Transition>
-      <span class="rich-text-thingking" v-html="html"></span>
-    </Transition>
-  </div>
-</template>
-
 <script setup>
 import { ref } from "vue";
 import { ArrowDown } from "@element-plus/icons-vue";
+import { MarkdownRender } from 'markstream-vue';
 
 const props = defineProps({
   html: {
@@ -35,6 +20,22 @@ const props = defineProps({
 });
 const show = ref(true);
 </script>
+
+<template>
+  <div class="thinking-wrap" v-if="html" :class="{ 'thinking-hide': !show }">
+    <div class="thinking" @click="show = !show">
+      <i-svg-spinners:blocks-wave v-if="!finished" width="20px" height="20px" />
+      <span>{{ finished ? `思考完成 用时(${second}秒)` : "思考中" }}
+      </span>
+      <el-icon class="arrows">
+        <ArrowDown color="#666666" />
+      </el-icon>
+    </div>
+    <Transition>
+      <span class="rich-text-thingking" v-html="html"></span>
+    </Transition>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .thinking-wrap {

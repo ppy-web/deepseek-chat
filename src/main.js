@@ -4,6 +4,8 @@ import "highlight.js/styles/github-dark.css"
 import "animate.css"
 import "./index.scss"
 import 'katex/dist/katex.min.css'
+import "modern-css-reset";
+import "markstream-vue/index.css";
 
 import pinia from '@/store'
 import { useAppStore } from '@/store'

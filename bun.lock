@@ -28,6 +28,7 @@
         "markstream-vue": "^0.0.3-beta.5",
         "mermaid": "^11.12.2",
         "mitt": "^3.0.1",
+        "modern-css-reset": "^1.4.0",
         "normalize.css": "^8.0.1",
         "openai": "^6.8.1",
         "pinia": "^3.0.4",
@@ -1087,6 +1088,8 @@
     "mkdirp": ["mkdirp@3.0.1", "https://registry.npmmirror.com/mkdirp/-/mkdirp-3.0.1.tgz", { "bin": "dist/cjs/src/bin.js" }, "sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg=="],
 
     "mlly": ["mlly@1.8.0", "https://registry.npmmirror.com/mlly/-/mlly-1.8.0.tgz", { "dependencies": { "acorn": "^8.15.0", "pathe": "^2.0.3", "pkg-types": "^1.3.1", "ufo": "^1.6.1" } }, "sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g=="],
+
+    "modern-css-reset": ["modern-css-reset@1.4.0", "https://registry.npmmirror.com/modern-css-reset/-/modern-css-reset-1.4.0.tgz", {}, "sha512-0crZmSFmrxkI7159rvQWjpDhy0u4+Awg/iOycJdlVn0RSeft/a+6BrQHR3IqvmdK25sqt0o6Z5Ap7cWgUee2rw=="],
 
     "monaco-editor": ["monaco-editor@0.52.2", "https://registry.npmmirror.com/monaco-editor/-/monaco-editor-0.52.2.tgz", {}, "sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ=="],
 

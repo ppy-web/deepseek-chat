@@ -25,7 +25,6 @@ import AiLoading from "../Bot/AiLoading.vue";
 import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
 import MarkdownRender from 'markstream-vue'
-import 'markstream-vue/index.css'
 const props = defineProps({
   msg: {
     type: Object,
@@ -50,17 +49,16 @@ const onHandleUnlike = () => {
 
   & .message {
     border-radius: 8px;
-    font-size: 16px;
-    padding-left: 10px;
+    padding-left: 5px;
     max-width: 100%;
     font-weight: 400;
-    font-size: 16px;
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
 
     &.pending {
-      background-color: var(--bg-secondary);
-      padding: 12px;
+      // background-color: var(--bg-secondary);
+      // padding: 12px;
+      border-top: 1px solid var(--border-color);
       margin-left: 12px;
     }
 
