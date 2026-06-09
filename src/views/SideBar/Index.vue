@@ -1,8 +1,7 @@
 <template>
-  <!-- 侧边栏 -->
-  <div @mouseleave="handleFixed" class="h-full flex flex-col letter-spacing-wide">
+  <div class="sidebar-shell" @mouseleave="handleFixed">
     <TopInfo />
-    <div class="sidebar-history flex-1 overflow-hidden">
+    <div class="sidebar-history">
       <History />
     </div>
     <AddBtn />
@@ -28,7 +27,17 @@ const handleFixed = () => {
 </script>
 
 <style scoped>
-.letter-spacing-wide {
-  letter-spacing: 0.1em;
+.sidebar-shell {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-history {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
 }
 </style>

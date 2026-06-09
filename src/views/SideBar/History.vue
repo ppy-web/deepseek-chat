@@ -1,49 +1,63 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, h, ref } from "vue";
+import type { DropdownOption } from "naive-ui";
+import {
+  NButton,
+  NDropdown,
+  NEmpty,
+  NInput,
+  NModal,
+  NScrollbar,
+  NText,
+} from "naive-ui";
 import { getDayjsCategory } from "@/utils/index";
 import { useChatStore, useHistoryStore, useAppStore } from "@/store";
 import { successMsg, errorMsg, warningMsg } from "@/hooks/useMsg";
-import DialogTitle from "@/components/Common/DialogTitle.vue";
+import type { Session } from "@/store/history";
 
-interface HistoryItem {
+interface HistoryGroupItem {
   id: string;
   name: string;
   timestamp: number;
-  isSetTitle?: boolean;
-  active?: boolean;
-  showPopover?: boolean;
-  type?: string;
+  type?: "title";
   content?: string;
+  active?: boolean;
+  isSetTitle?: boolean;
 }
 
-const selectedId = ref("");
 const renameValue = ref("");
-const show = ref(false);
-const renameRef = ref<HTMLInputElement | null>(null);
-const showDel = ref(false);
-const activeDialog = ref<HistoryItem | null>(null);
+const showRename = ref(false);
+const showDelete = ref(false);
+const activeDialog = ref<HistoryGroupItem | null>(null);
 const handleLoading = ref(false);
-let currentDateType: string | null = null;
 
 const app = useAppStore();
 const chat = useChatStore();
 const history = useHistoryStore();
 history.loadSessions();
 
-const list = computed(() => {
-  const data: HistoryItem[] = [];
-  currentDateType = null;
-  
-  // 添加防御性检查，确保 history.sessions 是数组
+const actionOptions: DropdownOption[] = [
+  {
+    label: "重命名",
+    key: "rename",
+  },
+  {
+    label: () => h("span", { class: "danger-option" }, "删除"),
+    key: "delete",
+  },
+];
+
+const list = computed<HistoryGroupItem[]>(() => {
+  const data: HistoryGroupItem[] = [];
+  let currentDateType: string | null = null;
   const sessions = Array.isArray(history.sessions) ? history.sessions : [];
-  
-  sessions.forEach((item) => {
-    const { timestamp } = item;
-    const dateType = getDayjsCategory(timestamp);
+
+  sessions.forEach((item: Session) => {
+    const dateType = getDayjsCategory(item.timestamp);
     if (dateType !== currentDateType) {
       data.push({
         id: `title-${dateType}`,
-        name: '',
+        name: "",
         timestamp: 0,
         type: "title",
         content: dateType,
@@ -53,17 +67,20 @@ const list = computed(() => {
     data.push({
       ...item,
       active: chat.sessionId === item.id,
-      showPopover: false,
     });
   });
   return data;
 });
 
-const handleClickDialog = (item: HistoryItem) => {
+const sessionCount = computed(() => {
+  return Array.isArray(history.sessions) ? history.sessions.length : 0;
+});
+
+const handleClickDialog = (item: HistoryGroupItem) => {
   try {
-    const { id } = item;
-    if (chat.sessionId === id) return;
-    chat.initMessages(id);
+    if (item.type === "title") return;
+    if (chat.sessionId === item.id) return;
+    chat.initMessages(item.id);
     app.set({
       isSideBarVisible: false,
     });
@@ -72,33 +89,48 @@ const handleClickDialog = (item: HistoryItem) => {
   }
 };
 
-const handleRename = (item: HistoryItem) => {
+const openRename = (item: HistoryGroupItem) => {
   activeDialog.value = item;
   renameValue.value = item.name;
-  show.value = true;
+  showRename.value = true;
 };
 
-const handleDelete = (item: HistoryItem) => {
+const openDelete = (item: HistoryGroupItem) => {
   activeDialog.value = item;
-  showDel.value = true;
+  showDelete.value = true;
+};
+
+const handleSelectAction = (key: string | number, item: HistoryGroupItem) => {
+  if (key === "rename") {
+    openRename(item);
+    return;
+  }
+  if (key === "delete") {
+    openDelete(item);
+  }
+};
+
+const closeRename = () => {
+  showRename.value = false;
+  renameValue.value = "";
 };
 
 const handleConfirm = async () => {
-  if (renameValue.value.trim() === "") {
+  const nextName = renameValue.value.trim();
+  if (nextName === "") {
     warningMsg("请输入新的对话标题");
     return;
   }
-  if (renameValue.value.trim() === activeDialog.value?.name) {
+  if (nextName === activeDialog.value?.name) {
     warningMsg("新标题不能和原标题相同");
     return;
   }
   try {
     handleLoading.value = true;
     if (activeDialog.value) {
-      history.updateSession(activeDialog.value.id, renameValue.value);
+      history.updateSession(activeDialog.value.id, nextName);
     }
-    show.value = false;
-    renameValue.value = "";
+    closeRename();
   } catch (error) {
     errorMsg(String(error));
   } finally {
@@ -113,7 +145,7 @@ const handleConfirmDelete = async () => {
       await history.deleteSession(activeDialog.value.id);
     }
     successMsg("删除成功");
-    showDel.value = false;
+    showDelete.value = false;
   } catch (error) {
     errorMsg(String(error));
   } finally {
@@ -123,144 +155,212 @@ const handleConfirmDelete = async () => {
 </script>
 
 <template>
-  <div class="sidebar-history-title flex items-center justify-between pt-4 pb-2.5 text-sm text-[var(--text-tertiary)]"
-    style="border-top: 1px solid var(--border-color)">
-    <span>历史会话</span>
-    <i-streamline-stickies-color:time />
-  </div>
-  <div class="history-list h-full text-sm overflow-y-auto">
-    <div class="history-item" v-for="item in list" :key="item.id">
-      <div v-if="item.type === 'title'" class="text-[var(--text-tertiary)] my-3 text-xs px-1.5">
-        {{ item.content }}
+  <section class="history-panel">
+    <header class="history-header">
+      <div>
+        <div class="history-title">历史会话</div>
+        <div class="history-count">{{ sessionCount }} 个会话</div>
       </div>
-      <div v-else class="history-content flex items-center justify-between cursor-pointer rounded-xl px-1.5 pl-4 h-[42px] leading-[42px] mb-1"
-        :class="{ 'active-item': chat.sessionId == item.id }">
-        <span class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis"
-          @click.stop="handleClickDialog(item)">{{ item.name }}</span>
-        <span class="options opacity-0 mr-2.5 ml-2.5 rounded">
-          <div class="relative inline-block">
-            <i-streamline-stickies-color:wrench @click="selectedId = item.id" class="cursor-pointer" />
-            <div v-if="selectedId == item.id" class="popover-menu absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border p-2 z-50 min-w-[120px]">
-              <div class="popover-item flex items-center p-2 cursor-pointer rounded hover:bg-gray-100"
-                @click.stop="handleRename(item)">
-                <span class="ml-2 font-medium">重命名</span>
-              </div>
-              <div class="popover-item flex items-center p-2 cursor-pointer rounded hover:bg-gray-100 text-red-500"
-                @click.stop="handleDelete(item)">
-                <span class="ml-2 font-medium">删除</span>
-              </div>
-            </div>
-          </div>
-        </span>
-      </div>
-    </div>
-    <div class="finished mt-5 text-center text-[var(--text-tertiary)] text-xs">
-      {{ list.length > 0 ? "没有更多了~" : "" }}
+      <i-streamline-stickies-color:time class="history-icon" />
+    </header>
+
+    <div v-if="sessionCount === 0" class="history-empty">
+      <NEmpty description="暂无历史会话" size="small" />
     </div>
 
-    <!-- 重命名弹窗 -->
-    <div v-if="show" class="modal-overlay" @click.self="show = false">
-      <div class="modal-content">
-        <DialogTitle title="编辑对话名称" @close="show = false; renameValue = '';" />
-        <div class="py-4">
-          <input ref="renameRef" v-model="renameValue" type="text" placeholder="请输入对话名称"
-            :maxlength="20" autofocus
-            class="w-full h-11 px-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div class="flex justify-center gap-3 pb-5">
-          <button class="px-4 h-8 rounded text-sm border hover:bg-gray-50" @click="show = false; renameValue = '';">
-            取消
-          </button>
-          <button class="px-4 h-8 rounded text-sm text-white bg-gradient-to-r from-blue-400 to-blue-600 hover:opacity-90"
-            @click="handleConfirm">
-            确认
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 删除确认弹窗 -->
-    <div v-if="showDel" class="modal-overlay" @click.self="showDel = false">
-      <div class="modal-content">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center">
-            <img src="@/assets/img/warning.png" class="w-5 h-5 mr-2" />
-            <span class="font-bold text-lg">删除对话？</span>
+    <NScrollbar v-else class="history-scroll">
+      <div class="history-list">
+        <template v-for="item in list" :key="item.id">
+          <div v-if="item.type === 'title'" class="history-section">
+            {{ item.content }}
           </div>
-          <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100"
-            @click="showDel = false">×</button>
-        </div>
-        <div class="py-4 text-gray-500">删除后不可恢复。</div>
-        <div class="flex justify-center gap-3 pb-5">
-          <button class="px-4 h-8 rounded text-sm border hover:bg-gray-50" @click="showDel = false">
-            取消
-          </button>
-          <button class="px-4 h-8 rounded text-sm text-white bg-red-500 hover:opacity-90 disabled:opacity-50"
-            @click="handleConfirmDelete" :disabled="handleLoading">
-            删除
-          </button>
-        </div>
+          <div v-else class="history-content" :class="{ 'active-item': item.active }">
+            <button class="history-name" type="button" @click.stop="handleClickDialog(item)">
+              {{ item.name }}
+            </button>
+            <NDropdown
+              trigger="click"
+              placement="bottom-end"
+              :options="actionOptions"
+              @select="(key) => handleSelectAction(key, item)"
+            >
+              <NButton class="history-more" quaternary circle size="tiny" aria-label="会话操作">
+                <template #icon>
+                  <i-streamline-stickies-color:wrench />
+                </template>
+              </NButton>
+            </NDropdown>
+          </div>
+        </template>
+        <div class="history-finished">没有更多了~</div>
       </div>
-    </div>
-  </div>
+    </NScrollbar>
+
+    <NModal v-model:show="showRename" preset="dialog" title="编辑对话名称" :show-icon="false">
+      <div class="rename-body">
+        <NInput
+          v-model:value="renameValue"
+          type="text"
+          placeholder="请输入对话名称"
+          :maxlength="20"
+          show-count
+          autofocus
+          @keyup.enter="handleConfirm"
+        />
+      </div>
+      <template #action>
+        <NButton @click="closeRename">取消</NButton>
+        <NButton type="primary" :loading="handleLoading" @click="handleConfirm">确认</NButton>
+      </template>
+    </NModal>
+
+    <NModal v-model:show="showDelete" preset="dialog" type="warning" title="删除对话？">
+      <NText depth="3">删除后不可恢复。</NText>
+      <template #action>
+        <NButton @click="showDelete = false">取消</NButton>
+        <NButton type="error" :loading="handleLoading" @click="handleConfirmDelete">删除</NButton>
+      </template>
+    </NModal>
+  </section>
 </template>
 
 <style scoped>
+.history-panel {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  border-top: 1px solid var(--border-color);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  padding: 12px 2px 10px;
+}
+
+.history-title {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.history-count {
+  margin-top: 3px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.history-icon {
+  color: var(--text-tertiary);
+  font-size: 18px;
+}
+
+.history-empty {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-scroll {
+  min-height: 0;
+  flex: 1;
+}
+
 .history-list {
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-tertiary) var(--bg-secondary);
+  padding-right: 4px;
 }
 
-.history-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.history-list::-webkit-scrollbar-track {
-  background-color: var(--bg-secondary);
-}
-
-.history-list::-webkit-scrollbar-thumb {
-  background-color: var(--text-tertiary);
-  border-radius: 3px;
+.history-section {
+  margin: 14px 0 6px;
+  padding: 0 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .history-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  margin-bottom: 4px;
+  padding: 0 4px 0 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   color: var(--sidebar-text);
-  position: relative;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 }
 
 .history-content:hover {
   background-color: var(--hover-bg);
 }
 
-.history-content:hover .options {
+.active-item {
+  border-color: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.12);
+  color: #0f766e;
+}
+
+:global(:root.dark) .active-item {
+  border-color: rgba(45, 212, 191, 0.22);
+  background: rgba(45, 212, 191, 0.12);
+  color: #5eead4;
+}
+
+.history-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 40px;
+  outline: none;
+  padding: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-more {
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.history-content:hover .history-more,
+.history-more:focus-visible {
   opacity: 1;
 }
 
-.active-item {
-  background-color: #e4edfd;
-  color: #4b6deb;
+.active-item .history-more {
+  opacity: 1;
 }
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+.history-finished {
+  padding: 16px 0 6px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  text-align: center;
 }
 
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  min-width: 350px;
-  max-width: 500px;
+.rename-body {
+  padding-top: 6px;
 }
 
-.popover-menu {
-  box-shadow: 0px 6px 40px 0px rgba(0, 0, 0, 0.1);
+:global(.danger-option) {
+  color: #dc2626;
 }
 </style>

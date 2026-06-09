@@ -6,10 +6,13 @@ import { useRefs } from "@/hooks/useRefs";
 import { useHistoryStore, useAppStore, useCallwordStore } from "@/store";
 import { EVENT_TYPE, MESSAGE_TYPE } from "@/constants";
 import {
-  buildDeepSeekChatRequestBody,
-  getDeepSeekModelByThinking,
   type DeepSeekMessage,
 } from "@/constants/deepseek";
+import {
+  buildChatRequestBody,
+  buildChatRequestHeaders,
+  getProviderModelByThinking,
+} from "@/constants/llm";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { scrollTop, Timer, isEmpty } from "@/utils";
 import { storage } from "@/utils";
@@ -169,9 +172,9 @@ const useChatStore = defineStore("chat", () => {
     }
   };
 
-  const handleStreamError = (): void => {
+  const handleStreamError = (content = '对不起，我无法回答这个问题。'): void => {
     if (message.value) {
-      message.value.content = '对不起，我无法回答这个问题。';
+      message.value.content = content;
       message.value.isTextStreamEnd = true;
       message.value.isPending = false;
     }
@@ -183,6 +186,7 @@ const useChatStore = defineStore("chat", () => {
 
     const app = useAppStore();
     const callword = useCallwordStore();
+    const apiKey = app.currentApiKey;
 
     if (!lastQuery) {
       const botMessage: ChatMessage = {
@@ -198,6 +202,11 @@ const useChatStore = defineStore("chat", () => {
       pushMessage(botMessage);
       setMessage(botMessage);
       scrollMessageBox(250);
+    }
+
+    if (!apiKey) {
+      handleStreamError("请先配置当前模型的 API Key。");
+      return;
     }
 
     const chatMessage: DeepSeekMessage[] = messages.value.slice(0, -1).map(
@@ -217,7 +226,8 @@ const useChatStore = defineStore("chat", () => {
       role: "system",
     };
 
-    const queryParams = buildDeepSeekChatRequestBody({
+    const queryParams = buildChatRequestBody({
+      provider: app.provider,
       model: app.useModel,
       messages: [promtMessage, ...chatMessage],
       defaultParams: app.defaultParams,
@@ -228,11 +238,7 @@ const useChatStore = defineStore("chat", () => {
 
     fetchEventSource(`${app.baseURL}/chat/completions`, {
       method: "post",
-      headers: {
-        'Accept': 'application/json',
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${app.apiKey}`,
-      },
+      headers: buildChatRequestHeaders(app.provider, apiKey),
       signal,
       openWhenHidden: true,
       body: JSON.stringify(queryParams),
@@ -319,7 +325,8 @@ const useChatStore = defineStore("chat", () => {
       return;
     }
 
-    const param = buildDeepSeekChatRequestBody({
+    const param = buildChatRequestBody({
+      provider: app.provider,
       messages: [
         {
           content:
@@ -329,7 +336,7 @@ const useChatStore = defineStore("chat", () => {
           role: "system",
         },
       ],
-      model: getDeepSeekModelByThinking(false),
+      model: getProviderModelByThinking(app.provider, false),
       defaultParams: {
         ...app.defaultParams,
         stream: false,
@@ -341,7 +348,8 @@ const useChatStore = defineStore("chat", () => {
 
     const { choices } = await getTalkTitle(param, {
       baseURL: app.baseURL,
-      apiKey: app.apiKey,
+      apiKey: app.currentApiKey,
+      provider: app.provider,
     });
     if (choices && choices.length > 0) {
       history.updateSession(currentId.value, choices[0].message.content);

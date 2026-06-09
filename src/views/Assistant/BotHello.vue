@@ -25,7 +25,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="desc select-none cursor-pointer font-medium text-2xl leading-8 h-8 break-words">
+  <div class="desc select-none cursor-pointer font-medium text-2xl leading-8 h-8 break-words text-center">
     {{ displayText }}<span v-if="showCursor" class="cursor-blink">|</span>
   </div>
 </template>
@@ -33,15 +33,23 @@ onMounted(() => {
 <style scoped>
 .desc {
   transition: all 0.3s ease-in-out;
-  background: linear-gradient(to right, #21f05f, #21aef0 50%, #cd85f7 100%);
+  background: var(--text-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .cursor-blink {

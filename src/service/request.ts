@@ -13,8 +13,9 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    config.headers["Authorization"] =
-      config.headers["Authorization"] || `Bearer ${API_CONFIG.apiKey}`;
+    if (!config.headers["Authorization"] && API_CONFIG.apiKey) {
+      config.headers["Authorization"] = `Bearer ${API_CONFIG.apiKey}`;
+    }
     config.timeout = config.timeout || 30000;
     return config;
   },

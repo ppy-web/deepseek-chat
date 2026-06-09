@@ -1,27 +1,30 @@
 <template>
-  <div class="app-container flex h-screen w-screen" :class="{
-    'small-page': app.isSmallPage,
-    'hide-sidebar': !app.isSideBarVisible,
-    'sidebar-fixed': app.isSidebarFixed,
-  }">
-    <aside class="sidebar-area" :class="{ 'sidebar-light': !app.isDark }">
-      <SideBar />
-    </aside>
-    <main class="main-area flex-1">
-      <Assistant :need-transition="true">
-        <router-view v-slot="{ Component, route }">
-          <keep-alive>
-            <component :is="Component" :key="route.path" v-if="route.meta.keepAlive" />
-          </keep-alive>
-          <component :is="Component" v-if="!route.meta.keepAlive" />
-        </router-view>
-      </Assistant>
-    </main>
-  </div>
+  <NConfigProvider :theme="naiveTheme" :theme-overrides="naiveThemeOverrides" abstract>
+    <div class="app-container flex h-screen w-screen" :class="{
+      'small-page': app.isSmallPage,
+      'hide-sidebar': !app.isSideBarVisible,
+      'sidebar-fixed': app.isSidebarFixed,
+    }">
+      <aside class="sidebar-area" :class="{ 'sidebar-light': !app.isDark }">
+        <SideBar />
+      </aside>
+      <main class="main-area flex-1">
+        <Assistant :need-transition="true">
+          <router-view v-slot="{ Component, route }">
+            <keep-alive>
+              <component :is="Component" :key="route.path" v-if="route.meta.keepAlive" />
+            </keep-alive>
+            <component :is="Component" v-if="!route.meta.keepAlive" />
+          </router-view>
+        </Assistant>
+      </main>
+    </div>
+  </NConfigProvider>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
+import { NConfigProvider, darkTheme, type GlobalThemeOverrides } from "naive-ui";
 import { useBrowser } from "@/hooks/useBrowser";
 import { useAppStore, useCallwordStore } from "@/store";
 import { NARROW_SCREEN_WIDTH } from "@/constants/index";
@@ -29,11 +32,37 @@ import { NARROW_SCREEN_WIDTH } from "@/constants/index";
 import SideBar from "@/views/SideBar/Index.vue";
 import Assistant from "@/views/Assistant/Index.vue";
 import * as service from "@/service/api";
+import { PROVIDERS } from "@/constants/llm";
 
 const app = useAppStore();
 const callword = useCallwordStore();
 window.document.title = callword.name;
 const { browser, onScreenChange } = useBrowser();
+
+const naiveTheme = computed(() => (app.isDark ? darkTheme : null));
+const naiveThemeOverrides = computed<GlobalThemeOverrides>(() => ({
+  common: {
+    primaryColor: "#10b981",
+    primaryColorHover: "#14b8a6",
+    primaryColorPressed: "#0f766e",
+    primaryColorSuppl: "#2dd4bf",
+    borderRadius: "8px",
+    borderColor: app.isDark ? "#404040" : "#e0e0e0",
+    textColorBase: app.isDark ? "#e0e0e0" : "#222222",
+    bodyColor: app.isDark ? "#050505" : "#ffffff",
+    popoverColor: app.isDark ? "#1f1f1f" : "#ffffff",
+  },
+  Button: {
+    heightSmall: "32px",
+    borderRadiusSmall: "8px",
+  },
+  Tag: {
+    borderRadius: "8px",
+  },
+  Tooltip: {
+    borderRadius: "8px",
+  },
+}));
 
 watch(() => app.theme, (newTheme) => {
   if (newTheme === 'dark') {
@@ -44,7 +73,12 @@ watch(() => app.theme, (newTheme) => {
 }, { immediate: true });
 
 const getInitParam = async () => {
-  const { is_available, balance_infos } = await service.getUserBalance();
+  if (app.provider !== PROVIDERS.DEEPSEEK || !app.currentApiKey) {
+    return;
+  }
+  const { is_available, balance_infos } = await service.getUserBalance({
+    apiKey: app.currentApiKey,
+  });
   app.set({
     isAvailable: is_available,
     balanceInfo: balance_infos[0],

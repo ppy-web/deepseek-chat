@@ -2,8 +2,13 @@ import request from "./request";
 import type {
   DeepSeekChatRequestBody,
   DeepSeekMessage,
-  DeepSeekModel,
 } from "@/constants/deepseek";
+import {
+  buildChatRequestHeaders,
+  PROVIDERS,
+  type AIProvider,
+  type ChatModel,
+} from "@/constants/llm";
 
 type TalkTitleParam = Pick<
   DeepSeekChatRequestBody,
@@ -21,7 +26,7 @@ type TalkTitleParam = Pick<
     >
   > & {
     messages: DeepSeekMessage[];
-    model: DeepSeekModel;
+    model: ChatModel;
   };
 
 interface ChatCompletionResponse {
@@ -55,6 +60,7 @@ export function getTalkTitle(
   options?: {
     baseURL?: string;
     apiKey?: string;
+    provider?: AIProvider;
   }
 ): Promise<ChatCompletionResponse> {
   return request({
@@ -62,13 +68,7 @@ export function getTalkTitle(
     url: '/chat/completions',
     method: "post",
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...(options?.apiKey
-        ? {
-          Authorization: `Bearer ${options.apiKey}`,
-        }
-        : {}),
+      ...buildChatRequestHeaders(options?.provider || PROVIDERS.DEEPSEEK, options?.apiKey || ""),
     },
     data: data,
   });
@@ -77,10 +77,15 @@ export function getTalkTitle(
 /**
  * 获取用户余额
  */
-export function getUserBalance(): Promise<BalanceResponse> {
+export function getUserBalance(options?: {
+  apiKey?: string;
+}): Promise<BalanceResponse> {
   return request({
     url: '/user/balance',
     method: "get",
+    headers: {
+      ...buildChatRequestHeaders(PROVIDERS.DEEPSEEK, options?.apiKey || ""),
+    },
   });
 }
 

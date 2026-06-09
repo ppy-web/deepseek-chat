@@ -2,11 +2,14 @@ import { EVENT_TYPE } from "@/constants/event_type";
 import { MESSAGE_TYPE } from "@/constants/message_type";
 import MODELS from "@/constants/models";
 import {
-  DEEPSEEK_API_BASE_URL,
   DEEPSEEK_MODELS,
-  type DeepSeekDefaultParams,
-  type DeepSeekModel,
-} from "@/constants/deepseek";
+  PROVIDERS,
+  getProviderBaseURL,
+  type AIProvider,
+  type ChatDefaultParams,
+  type ChatModel,
+  type ProviderApiKeys,
+} from "@/constants/llm";
 
 /** 窄屏宽度 */
 export const NARROW_SCREEN_WIDTH = 768;
@@ -16,16 +19,28 @@ export const CHAT_CONFIG = {
 } as const;
 
 export interface ApiConfig {
+  provider: AIProvider;
   baseURL: string;
   apiKey: string;
-  model: DeepSeekModel;
+  apiKeys: ProviderApiKeys;
+  apiKeyConfigured: Record<AIProvider, boolean>;
+  model: ChatModel;
   timeout: number;
-  defaultParams: DeepSeekDefaultParams;
+  defaultParams: ChatDefaultParams;
 }
 
 export const API_CONFIG: ApiConfig = {
-  baseURL: DEEPSEEK_API_BASE_URL,
-  apiKey: "sk-858ee51df95e456fa5e74fcde3e478e7",
+  provider: PROVIDERS.DEEPSEEK,
+  baseURL: getProviderBaseURL(PROVIDERS.DEEPSEEK),
+  apiKey: "",
+  apiKeys: {
+    [PROVIDERS.DEEPSEEK]: "",
+    [PROVIDERS.XIAOMI]: "",
+  },
+  apiKeyConfigured: {
+    [PROVIDERS.DEEPSEEK]: false,
+    [PROVIDERS.XIAOMI]: false,
+  },
   model: DEEPSEEK_MODELS.FLASH,
   timeout: 60000,
   defaultParams: {

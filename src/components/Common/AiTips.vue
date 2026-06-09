@@ -9,6 +9,6 @@
 withDefaults(defineProps<{
   tip?: string;
 }>(), {
-  tip: "内容由AI生成，重要信息请自行甄别",
+  tip: "AI会犯错，请自行甄别",
 });
 </script>

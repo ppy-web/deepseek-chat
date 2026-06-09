@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import {
+  NButton,
+  NCard,
+  NForm,
+  NFormItem,
+  NInput,
+  NModal,
+  NRadioButton,
+  NRadioGroup,
+  NTooltip,
+} from "naive-ui";
 import { useCallwordStore } from '@/store';
 import { CHARACTHER } from '@/constants';
 
@@ -47,98 +58,123 @@ function showCallWord() {
 </script>
 
 <template>
-  <div class="my-2">
-    <div @click="showCallWord" class="cursor-pointer">
-      <i-streamline-stickies-color:control />
-    </div>
+  <NTooltip trigger="hover">
+    <template #trigger>
+      <NButton
+        class="sidebar-icon-button"
+        quaternary
+        size="small"
+        aria-label="个性化设置"
+        @click="showCallWord"
+      >
+        <template #icon>
+          <i-streamline-stickies-color:control />
+        </template>
+      </NButton>
+    </template>
+    个性化设置
+  </NTooltip>
 
-    <!-- 弹窗 -->
-    <div v-if="callVisible" class="modal-overlay" @click.self="callVisible = false">
-      <div class="modal-content max-w-[600px] w-full">
-        <div class="flex justify-between items-center mb-5">
-          <span class="text-xl font-medium">个性化设置</span>
-          <i-streamline-stickies-color:cancel-2 @click="callVisible = false" class="cursor-pointer" />
-        </div>
-        <div>
-          <form @submit.prevent="onHandleSave">
-            <div class="mb-4 flex items-center">
-              <label class="w-24 text-right pr-4 text-sm">助手昵称</label>
-              <div class="flex-1">
-                <input v-model="role.appName" placeholder="想要怎么称呼我呢？" maxlength="5"
-                  class="w-full h-9 px-3 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <span v-if="formErrors.appName" class="text-red-500 text-xs mt-1">{{ formErrors.appName }}</span>
-              </div>
-            </div>
-            <div class="mb-4 flex items-center">
-              <label class="w-24 text-right pr-4 text-sm">助手性格</label>
-              <div class="flex-1 flex gap-2 flex-wrap">
-                <button v-for="item in CHARACTHER" :key="item.value" type="button"
-                  class="px-3 py-1 rounded-full text-sm border transition-all"
-                  :class="role.character === item.value ? 'bg-blue-500 text-white border-blue-500' : 'hover:bg-gray-100'"
-                  @click="role.character = item.value">
-                  {{ item.label }}
-                </button>
-              </div>
-            </div>
-            <div class="mb-4 flex items-center">
-              <label class="w-24 text-right pr-4 text-sm">关于你</label>
-              <div class="flex-1">
-                <input v-model="role.hobby" placeholder="请输入你的信息，让我更了解你" maxlength="200"
-                  class="w-full h-9 px-3 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-            </div>
-            <div class="mb-4 flex items-start">
-              <label class="w-24 text-right pr-4 text-sm pt-2">自定义指令</label>
-              <div class="flex-1">
-                <textarea v-model="role.desc" :rows="3" placeholder="自定义的提示词，如：你是一个程序员" maxlength="500"
-                  class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-              </div>
-            </div>
-          </form>
-          <div class="flex flex-row justify-center text-xs text-gray-500 text-center mt-4">
-            <i-streamline-stickies-color:android-setting-duo />
-            <span>&nbsp;您设置的数据只储存在本机，不必担心隐私泄露</span>
+  <NModal v-model:show="callVisible" class="callword-modal">
+    <NCard title="个性化设置" :bordered="false" role="dialog" aria-modal="true">
+      <template #header-extra>
+        <NButton quaternary circle size="small" aria-label="关闭个性化设置" @click="callVisible = false">
+          <template #icon>
+            <i-streamline-stickies-color:cancel-2 />
+          </template>
+        </NButton>
+      </template>
+
+      <NForm label-placement="left" label-width="88" :show-feedback="false" @submit.prevent="onHandleSave">
+        <NFormItem label="助手昵称" :validation-status="formErrors.appName ? 'error' : undefined">
+          <div class="field-stack">
+            <NInput v-model:value="role.appName" placeholder="想要怎么称呼我呢？" maxlength="5" show-count />
+            <span v-if="formErrors.appName" class="field-error">{{ formErrors.appName }}</span>
           </div>
-        </div>
-        <div class="mx-auto text-center mt-4">
-          <button class="px-4 h-8 rounded text-sm border hover:bg-gray-50 mr-2" @click="callVisible = false">
-            取消
-          </button>
-          <button class="px-4 h-8 rounded text-sm text-white bg-blue-500 hover:opacity-90" @click="onHandleSave">
-            保存
-          </button>
-        </div>
+        </NFormItem>
+
+        <NFormItem label="助手性格">
+          <NRadioGroup v-model:value="role.character" class="character-group" name="assistant-character">
+            <NRadioButton v-for="item in CHARACTHER" :key="item.value" :value="item.value">
+              {{ item.label }}
+            </NRadioButton>
+          </NRadioGroup>
+        </NFormItem>
+
+        <NFormItem label="关于你">
+          <NInput v-model:value="role.hobby" placeholder="请输入你的信息，让我更了解你" maxlength="200" show-count />
+        </NFormItem>
+
+        <NFormItem label="自定义指令">
+          <NInput
+            v-model:value="role.desc"
+            type="textarea"
+            placeholder="自定义的提示词，如：你是一个程序员"
+            maxlength="500"
+            show-count
+            :autosize="{ minRows: 3, maxRows: 5 }"
+          />
+        </NFormItem>
+      </NForm>
+
+      <div class="privacy-note">
+        <i-streamline-stickies-color:android-setting-duo />
+        <span>您设置的数据只储存在本机，不必担心隐私泄露</span>
       </div>
-    </div>
-  </div>
+
+      <template #footer>
+        <div class="modal-actions">
+          <NButton @click="callVisible = false">取消</NButton>
+          <NButton type="primary" @click="onHandleSave">保存</NButton>
+        </div>
+      </template>
+    </NCard>
+  </NModal>
 </template>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+.sidebar-icon-button {
+  width: 32px;
+  height: 32px;
+  color: var(--text-primary);
+}
+
+:global(.callword-modal) {
+  width: min(600px, calc(100vw - 32px));
+}
+
+.field-stack {
+  width: 100%;
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  color: #ef4444;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+:deep(.character-group) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.privacy-note {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  gap: 6px;
+  margin-top: 16px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  text-align: center;
 }
 
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style>
