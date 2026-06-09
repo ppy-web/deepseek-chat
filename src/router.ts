@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Assistant from "@/views/Assistant/index.vue";
+import Assistant from "@/views/Assistant/Index.vue";
+
 const routes = [
   {
     path: "/",

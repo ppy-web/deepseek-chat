@@ -1,94 +1,37 @@
 <!-- 用于展示深度思考内容 -->
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import { ArrowDown } from "@element-plus/icons-vue";
 
-const props = defineProps({
-  html: {
-    type: String,
-    default: "",
-  },
-  finished: {
-    type: Boolean,
-    default: false,
-  },
-  second: {
-    type: Number,
-    default: 0,
-  },
-});
+const props = defineProps<{
+  html?: string;
+  finished?: boolean;
+  second?: number;
+}>();
+
 const show = ref(true);
 </script>
 
 <template>
-  <div class="thinking-wrap" v-if="html" :class="{ 'thinking-hide': !show }">
-    <div class="thinking" @click="show = !show">
+  <div class="thinking-wrap mb-2.5" v-if="html" :class="{ 'thinking-hide': !show }">
+    <div class="thinking select-none w-fit text-gray-500 rounded-xl flex items-center text-sm italic cursor-pointer"
+      @click="show = !show">
       <i-svg-spinners:blocks-wave v-if="!finished" width="20px" height="20px" />
-      <span>{{ finished ? `思考完成 用时(${second}秒)` : "思考中" }}
+      <span>{{ finished ? `思考完成 用时(${second}秒)` : "思考中" }}</span>
+      <span class="arrows inline-block transition-transform duration-300" :class="{ 'rotate-0': !show, '-rotate-180': show }">
+        ↓
       </span>
-      <el-icon class="arrows">
-        <ArrowDown color="#666666" />
-      </el-icon>
     </div>
     <Transition>
-      <span class="rich-text-thingking" v-html="html"></span>
+      <span v-if="show" class="rich-text-thinking inline-block relative pl-3 text-gray-400 text-sm leading-relaxed mt-1.5"
+        style="border-left: 2px solid #e5e5e5;">
+        {{ html }}
+      </span>
     </Transition>
   </div>
 </template>
 
-<style lang="scss" scoped>
-.thinking-wrap {
-  margin-bottom: 10px;
-
-  .thinking {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    width: fit-content;
-    color: #666666;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    // 斜体
-    font-style: italic;
-    cursor: pointer;
-  }
-
-  .arrows {
-    transform: rotate(-180deg);
-    transition: transform 0.3s ease;
-  }
-
-  .rich-text-thingking {
-    display: inline-block;
-    position: relative;
-    padding-left: 13px;
-    color: #8b8b8b;
-    line-height: 1.3;
-    font-size: 14px;
-    margin-top: 5px;
-
-    &::before {
-      content: " ";
-      border-left: 2px solid #e5e5e5;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-  }
-}
-
-.thinking-hide {
-  .rich-text-thingking {
-    display: none;
-  }
-
-  .arrows {
-    transform: rotate(0deg);
-  }
+<style scoped>
+.thinking-hide .rich-text-thinking {
+  display: none;
 }
 </style>

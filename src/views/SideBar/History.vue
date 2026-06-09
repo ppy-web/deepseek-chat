@@ -1,19 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { Edit, Delete, CloseBold } from "@element-plus/icons-vue";
 import { getDayjsCategory } from "@/utils/index";
 import { useChatStore, useHistoryStore, useAppStore } from "@/store";
 import { successMsg, errorMsg, warningMsg } from "@/hooks/useMsg";
 import DialogTitle from "@/components/Common/DialogTitle.vue";
 
-const selectedId = ref(""); // 当前选中二级菜单的会话id
-const renameValue = ref(""); // 重命名输入框的值
-const show = ref(false); // 是否显示重命名弹窗
-const renameRef = ref(null); // 重命名输入框的ref
-const showDel = ref(false); // 是否显示删除弹窗
-const activeDialog = ref(null); // 当前点击的对话项
-const handleLoading = ref(false); // 是否显示加载中
-let currentDateType = null; // 对话列表当前日期类型
+interface HistoryItem {
+  id: string;
+  name: string;
+  timestamp: number;
+  isSetTitle?: boolean;
+  active?: boolean;
+  showPopover?: boolean;
+  type?: string;
+  content?: string;
+}
+
+const selectedId = ref("");
+const renameValue = ref("");
+const show = ref(false);
+const renameRef = ref<HTMLInputElement | null>(null);
+const showDel = ref(false);
+const activeDialog = ref<HistoryItem | null>(null);
+const handleLoading = ref(false);
+let currentDateType: string | null = null;
 
 const app = useAppStore();
 const chat = useChatStore();
@@ -21,76 +31,91 @@ const history = useHistoryStore();
 history.loadSessions();
 
 const list = computed(() => {
-  const data = [];
-  history.sessions.forEach((item) => {
+  const data: HistoryItem[] = [];
+  currentDateType = null;
+  
+  // 添加防御性检查，确保 history.sessions 是数组
+  const sessions = Array.isArray(history.sessions) ? history.sessions : [];
+  
+  sessions.forEach((item) => {
     const { timestamp } = item;
     const dateType = getDayjsCategory(timestamp);
     if (dateType !== currentDateType) {
       data.push({
+        id: `title-${dateType}`,
+        name: '',
+        timestamp: 0,
         type: "title",
         content: dateType,
       });
       currentDateType = dateType;
-    } else {
-      item.active = app.currentId === item.id;
-      item.showPopover = false;
     }
-    data.push(item);
+    data.push({
+      ...item,
+      active: chat.sessionId === item.id,
+      showPopover: false,
+    });
   });
   return data;
 });
 
-const handleClickDialog = (item) => {
+const handleClickDialog = (item: HistoryItem) => {
   try {
     const { id } = item;
     if (chat.sessionId === id) return;
     chat.initMessages(id);
     app.set({
       isSideBarVisible: false,
-    })
+    });
   } catch (err) {
     console.log("获取对话记录失败", err);
   }
 };
-const handleRename = (item) => {
+
+const handleRename = (item: HistoryItem) => {
   activeDialog.value = item;
   renameValue.value = item.name;
   show.value = true;
-  item.showPopover = false;
 };
-const handleDelete = (item) => {
+
+const handleDelete = (item: HistoryItem) => {
   activeDialog.value = item;
   showDel.value = true;
-  item.showPopover = false;
 };
+
 const handleConfirm = async () => {
   if (renameValue.value.trim() === "") {
     warningMsg("请输入新的对话标题");
     return;
   }
-  if (renameValue.value.trim() === activeDialog.value.name) {
+  if (renameValue.value.trim() === activeDialog.value?.name) {
     warningMsg("新标题不能和原标题相同");
     return;
   }
   try {
     handleLoading.value = true;
-    history.updateSession(activeDialog.value.id, renameValue.value);
+    if (activeDialog.value) {
+      history.updateSession(activeDialog.value.id, renameValue.value);
+    }
     show.value = false;
     renameValue.value = "";
   } catch (error) {
-    errorMsg(error);
+    errorMsg(String(error));
   } finally {
     handleLoading.value = false;
   }
 };
+
 const handleConfirmDelete = async () => {
   try {
     handleLoading.value = true;
-    await history.deleteSession(activeDialog.value.id);
+    if (activeDialog.value) {
+      await history.deleteSession(activeDialog.value.id);
+    }
     successMsg("删除成功");
     showDel.value = false;
   } catch (error) {
-    errorMsg(error);
+    errorMsg(String(error));
   } finally {
     handleLoading.value = false;
   }
@@ -98,222 +123,144 @@ const handleConfirmDelete = async () => {
 </script>
 
 <template>
-  <div class="sidebar-history-title">
-    <span>历史会话</span> <i-streamline-stickies-color:time />
+  <div class="sidebar-history-title flex items-center justify-between pt-4 pb-2.5 text-sm text-[var(--text-tertiary)]"
+    style="border-top: 1px solid var(--border-color)">
+    <span>历史会话</span>
+    <i-streamline-stickies-color:time />
   </div>
-  <div class="history-list">
+  <div class="history-list h-full text-sm overflow-y-auto">
     <div class="history-item" v-for="item in list" :key="item.id">
-      <div v-if="item.type === 'title'" class="history-title">
+      <div v-if="item.type === 'title'" class="text-[var(--text-tertiary)] my-3 text-xs px-1.5">
         {{ item.content }}
       </div>
-      <div v-else class="history-content" :class="{ active: chat.sessionId == item.id }">
-        <span class="h-content oneline" @click.stop="handleClickDialog(item)">{{ item.name }}
-        </span>
-        <span class="options" :class="{ selected: selectedId == item.id }">
-          <el-popover v-model:visible="item.showPopover" trigger="click" @hide="selectedId = ''"
-            popper-class="history-item-popover" placement="bottom-end">
-            <div class="history-item-popover-content">
-              <div class="options-item" @click.stop="handleRename(item)">
-                <el-icon size="18" color="#1C1C1C">
-                  <Edit />
-                </el-icon>
-                <span style="
-                    padding: 0 5px 0 20px;
-                    font-weight: 500;
-                  ">重命名</span>
+      <div v-else class="history-content flex items-center justify-between cursor-pointer rounded-xl px-1.5 pl-4 h-[42px] leading-[42px] mb-1"
+        :class="{ 'active-item': chat.sessionId == item.id }">
+        <span class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis"
+          @click.stop="handleClickDialog(item)">{{ item.name }}</span>
+        <span class="options opacity-0 mr-2.5 ml-2.5 rounded">
+          <div class="relative inline-block">
+            <i-streamline-stickies-color:wrench @click="selectedId = item.id" class="cursor-pointer" />
+            <div v-if="selectedId == item.id" class="popover-menu absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border p-2 z-50 min-w-[120px]">
+              <div class="popover-item flex items-center p-2 cursor-pointer rounded hover:bg-gray-100"
+                @click.stop="handleRename(item)">
+                <span class="ml-2 font-medium">重命名</span>
               </div>
-              <div class="options-item" @click.stop="handleDelete(item)">
-                <el-icon color="#FF3b30" size="18">
-                  <Delete />
-                </el-icon>
-                <span style="
-                    color: #ff3b30;
-                    padding: 0 5px 0 20px;
-                    font-weight: 500;
-                  ">删除</span>
+              <div class="popover-item flex items-center p-2 cursor-pointer rounded hover:bg-gray-100 text-red-500"
+                @click.stop="handleDelete(item)">
+                <span class="ml-2 font-medium">删除</span>
               </div>
             </div>
-
-            <template #reference>
-              <i-streamline-stickies-color:wrench @click="selectedId = item.id" />
-            </template>
-          </el-popover>
+          </div>
         </span>
       </div>
     </div>
-    <div class="finished">
+    <div class="finished mt-5 text-center text-[var(--text-tertiary)] text-xs">
       {{ list.length > 0 ? "没有更多了~" : "" }}
     </div>
-    <el-dialog v-model="show" class="dialog-round-confirm" width="411px" align-center :show-close="false"
-      :destroy-on-close="true" append-to-body header-class="dialog-header" @opened="renameRef?.focus()">
-      <template #header="{ close }">
-        <DialogTitle title="编辑对话名称" @close="
-          close();
-        renameValue = '';
-        " />
-      </template>
-      <div class="confirm-content">
-        <el-input ref="renameRef" v-model="renameValue" type="text" placeholder="请输入对话名称" :maxlength="20"
-          style="height: 44px; --el-input-border-radius: 6px" show-word-limit :autofocus="true" />
-      </div>
 
-      <template #footer>
-        <div style="padding-bottom: 20px">
-          <el-button type="default" style="height: 32px; border-radius: 4px" @click="
-            show = false;
-          renameValue = '';
-          ">
+    <!-- 重命名弹窗 -->
+    <div v-if="show" class="modal-overlay" @click.self="show = false">
+      <div class="modal-content">
+        <DialogTitle title="编辑对话名称" @close="show = false; renameValue = '';" />
+        <div class="py-4">
+          <input ref="renameRef" v-model="renameValue" type="text" placeholder="请输入对话名称"
+            :maxlength="20" autofocus
+            class="w-full h-11 px-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="flex justify-center gap-3 pb-5">
+          <button class="px-4 h-8 rounded text-sm border hover:bg-gray-50" @click="show = false; renameValue = '';">
             取消
-          </el-button>
-          <el-button type="primary" style="
-              height: 32px;
-              border-radius: 4px;
-              background: linear-gradient(90deg, #269efd 0%, #1677fe 100%);
-              border: none;
-            " @click="handleConfirm">
+          </button>
+          <button class="px-4 h-8 rounded text-sm text-white bg-gradient-to-r from-blue-400 to-blue-600 hover:opacity-90"
+            @click="handleConfirm">
             确认
-          </el-button>
+          </button>
         </div>
-      </template>
-    </el-dialog>
-    <el-dialog v-model="showDel" class="dialog-round-confirm" width="420px" align-center :show-close="false"
-      :destroy-on-close="true" append-to-body header-class="dialog-header">
-      <template #header="{ close }">
-        <div class="header-container">
-          <div class="header-l">
-            <img src="@/assets/img/warning.png" />
-            <span class="title" style="font-size: 18px">删除对话？</span>
+      </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div v-if="showDel" class="modal-overlay" @click.self="showDel = false">
+      <div class="modal-content">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center">
+            <img src="@/assets/img/warning.png" class="w-5 h-5 mr-2" />
+            <span class="font-bold text-lg">删除对话？</span>
           </div>
-          <div class="header-r">
-            <el-icon>
-              <CloseBold @click="close()" />
-            </el-icon>
-          </div>
+          <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100"
+            @click="showDel = false">×</button>
         </div>
-      </template>
-      <div class="confirm-content">删除后不可恢复。</div>
-      <template #footer>
-        <div style="padding-bottom: 20px">
-          <el-button type="default" style="height: 32px; border-radius: 4px" @click="showDel = false">
+        <div class="py-4 text-gray-500">删除后不可恢复。</div>
+        <div class="flex justify-center gap-3 pb-5">
+          <button class="px-4 h-8 rounded text-sm border hover:bg-gray-50" @click="showDel = false">
             取消
-          </el-button>
-          <el-button type="primary" style="
-              height: 32px;
-              border-radius: 4px;
-              background: #ff3b30;
-              border: none;
-            " @click="handleConfirmDelete" :disabled="handleLoading">
+          </button>
+          <button class="px-4 h-8 rounded text-sm text-white bg-red-500 hover:opacity-90 disabled:opacity-50"
+            @click="handleConfirmDelete" :disabled="handleLoading">
             删除
-          </el-button>
+          </button>
         </div>
-      </template>
-    </el-dialog>
+      </div>
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
-.sidebar-history-title {
-  border-top: 1px solid var(--border-color);
-  padding-top: 16px;
-  padding-bottom: 10px;
-  font-size: 14px;
-  color: var(--text-tertiary);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  img {
-    width: 18px;
-  }
+<style scoped>
+.history-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-tertiary) var(--bg-secondary);
 }
 
-.history-list {
-  height: 100%;
-  font-size: 14px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  /* auto | thin | none */
-  scrollbar-color: var(--text-tertiary) var(--bg-secondary);
-  /* 滑块颜色 轨道颜色 */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
+.history-list::-webkit-scrollbar-track {
+  background-color: var(--bg-secondary);
+}
 
-  &::-webkit-scrollbar-track {
-    background-color: var(--bg-secondary);
-  }
+.history-list::-webkit-scrollbar-thumb {
+  background-color: var(--text-tertiary);
+  border-radius: 3px;
+}
 
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--text-tertiary);
-    border-radius: 3px;
-  }
+.history-content {
+  color: var(--sidebar-text);
+  position: relative;
+}
 
-  .history-item {
-    .history-title {
-      color: var(--text-tertiary);
-      margin: 12px 0;
-      font-size: 12px;
-      padding: 0 6px;
-    }
+.history-content:hover {
+  background-color: var(--hover-bg);
+}
 
-    .history-content {
-      color: var(--sidebar-text);
-      cursor: pointer;
-      border-radius: 10px;
-      padding: 0 6px;
-      height: 42px;
-      line-height: 42px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-left: 16px;
-      margin-bottom: 5px;
+.history-content:hover .options {
+  opacity: 1;
+}
 
-      .h-content {
-        flex: 1;
-      }
+.active-item {
+  background-color: #e4edfd;
+  color: #4b6deb;
+}
 
-      .options {
-        opacity: 0;
-        margin-right: 10px;
-        margin-left: 10px;
-        border-radius: 4px;
-      }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
 
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 350px;
+  max-width: 500px;
+}
 
-
-      &:hover {
-        background-color: var(--hover-bg);
-
-        .options {
-          opacity: 1;
-        }
-      }
-
-      .selected {
-        opacity: 1;
-      }
-    }
-
-    .active {
-      background-color: #e4edfd;
-      color: #4b6deb;
-    }
-  }
-
-  .finished {
-    margin-top: 20px;
-    text-align: center;
-    color: var(--text-tertiary);
-    font-size: 12px;
-  }
-
-  .loading {
-    text-align: center;
-    color: var(--text-tertiary);
-    font-size: 12px;
-  }
+.popover-menu {
+  box-shadow: 0px 6px 40px 0px rgba(0, 0, 0, 0.1);
 }
 </style>

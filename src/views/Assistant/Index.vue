@@ -1,80 +1,71 @@
-<script setup>
+<script setup lang="ts">
 import BotHello from "./BotHello.vue";
 import InputBox from "@/components/InputBox/Index.vue";
 import ChatBox from "@/components/ChatBox/Index.vue";
 import Navbar from "@/components/Common/Navbar.vue";
 import AiTips from "@/components/Common/AiTips.vue";
 import { useChatStore, useAppStore } from "@/store";
+
 const chat = useChatStore();
 const app = useAppStore();
 </script>
 
 <template>
-  <el-container>
-    <div class="assistant light" :class="{ 'night': app.isDark }">
-      <Navbar v-if="!chat.sessionId" />
-      <div class="new-dialog animate__animated animate__fadeIn" v-if="!chat.sessionId">
-        <BotHello />
-        <InputBox />
-      </div>
-      <!-- 对话 -->
-      <div class="chat-box animate__animated animate__fadeIn" v-else>
-        <ChatBox />
-        <InputBox />
-      </div>
-      <!-- 提示信息  -->
-      <AiTips />
+  <div class="assistant w-full h-full flex flex-col items-center justify-center relative" :class="{ 'dark-bg': app.isDark }">
+    <Navbar v-if="!chat.sessionId" />
+    <div class="new-dialog w-full flex flex-col justify-center gap-4 p-4 animate-fade-in" v-if="!chat.sessionId">
+      <BotHello />
+      <InputBox />
     </div>
-  </el-container>
+    <!-- 对话 -->
+    <div class="chat-box w-full flex flex-col flex-grow animate-fade-in" v-else>
+      <ChatBox />
+      <InputBox />
+    </div>
+    <!-- 提示信息 -->
+    <AiTips />
+  </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .assistant {
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-
-
-  .new-dialog {
-    width: 100%;
-    height: calc(100% - 148px);
-    max-width: 960px;
-    min-width: 400px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 148px;
-  }
-
-  .chat-box {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    flex-grow: 1;
-    width: 100%;
-    height: calc(100% - 48px);
-    // max-width: 960px;
-    // padding: 0 16px;
-  }
+  max-width: 100%;
 }
 
-.light {
+.new-dialog {
+  height: calc(100% - 148px);
+  max-width: 960px;
+  min-width: 400px;
+  margin-bottom: 148px;
+}
+
+.chat-box {
+  height: calc(100% - 48px);
+}
+
+.assistant:not(.dark-bg) {
   background: linear-gradient(to bottom,
       hsl(210, 15%, 92%) 0%,
-      /* 天顶的淡蓝色 */
       #c1d5f0 60%,
-      /* 中间过渡色 */
-      #F0F8FF 100%
-      /* 靠近地平线的更浅色 */
-    );
+      #F0F8FF 100%);
 }
 
-.night {
-  background-image: url("@/assets/img/noise.png") !important;
+.dark-bg {
+  background-image: url("@/assets/img/noise.png");
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
 }
 </style>

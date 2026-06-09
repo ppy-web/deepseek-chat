@@ -1,8 +1,13 @@
-import { shallowRef } from "vue";
+import { shallowRef, type Component } from "vue";
 import User from "./User.vue";
 import Bot from "./Bot.vue";
-const Nodes = shallowRef([]);
-Nodes.value = [
+
+interface NodeConfig {
+  component: Component;
+  type: string;
+}
+
+const Nodes = shallowRef<NodeConfig[]>([
   {
     component: User,
     type: "user",
@@ -11,6 +16,6 @@ Nodes.value = [
     component: Bot,
     type: "assistant",
   },
-];
+]);
 
 export { Nodes };

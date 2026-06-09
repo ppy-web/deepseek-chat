@@ -1,15 +1,15 @@
 <template>
   <!-- 侧边栏 -->
-  <el-aside @mouseleave="handleFixed">
+  <div @mouseleave="handleFixed" class="h-full flex flex-col letter-spacing-wide">
     <TopInfo />
-    <div class="sidebar-history">
+    <div class="sidebar-history flex-1 overflow-hidden">
       <History />
     </div>
     <AddBtn />
-  </el-aside>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAppStore } from "@/store";
 import TopInfo from "./TopInfo.vue";
 import AddBtn from "./AddBtn.vue";
@@ -27,12 +27,8 @@ const handleFixed = () => {
 };
 </script>
 
-<style lang="scss" scoped>
-.el-aside {
+<style scoped>
+.letter-spacing-wide {
   letter-spacing: 0.1em;
-}
-.sidebar-history {
-  flex: 1;
-  overflow: hidden;
 }
 </style>

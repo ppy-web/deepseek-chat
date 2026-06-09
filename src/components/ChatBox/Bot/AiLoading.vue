@@ -1,42 +1,19 @@
-<!-- 用于展示AI头像和思考中状态-->
+<!-- 用于展示AI头像和思考中状态 -->
 <template>
-  <div class="AI">
-    <img class="avatar" :src="botDefault" />
-    <span v-if="props.pending"><i-svg-spinners:blocks-shuffle-3 width="20px" height="20px"
-        class="avatar-loading" /></span>
+  <div class="AI flex flex-row items-center text-sm text-gray-700 h-full">
+    <img class="avatar self-start min-w-[50px] h-[50px] rounded-full" :src="botDefault as string" />
+    <span v-if="props.pending" class="ml-2.5 text-gray-400">
+      <i-svg-spinners:blocks-shuffle-3 width="20px" height="20px" />
+    </span>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import botDefault from "@/assets/img/manman.png";
-const props = defineProps({
-  pending: {
-    type: Boolean,
-    default: false,
-  },
+
+const props = withDefaults(defineProps<{
+  pending?: boolean;
+}>(), {
+  pending: false,
 });
 </script>
-
-<style lang="scss" scoped>
-.AI {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 14px;
-  color: #333;
-  height: 100%;
-
-  .avatar {
-    align-self: flex-start;
-    min-width: 50px;
-    height: 50px;
-    border-radius: 50%;
-  }
-
-  .avatar-loading {
-    margin-left: 10px;
-    color: var(--text-tertiary);
-  }
-
-}
-</style>

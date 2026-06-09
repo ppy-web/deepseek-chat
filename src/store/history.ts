@@ -4,12 +4,20 @@ import { storage } from "@/utils";
 import { v4 as uuidv4 } from "uuid";
 import { useChatStore } from "@/store";
 
-export const useHistoryStore = defineStore("history", () => {
-  const list = ref([])
+export interface Session {
+  id: string;
+  name: string;
+  isSetTitle: boolean;
+  timestamp: number;
+  active?: boolean;
+  showPopover?: boolean;
+}
 
-  // 创建新会话
-  const createSession = () => {
-    const session = {
+export const useHistoryStore = defineStore("history", () => {
+  const list = ref<Session[]>([]);
+
+  const createSession = (): string => {
+    const session: Session = {
       id: uuidv4(),
       name: '新会话',
       isSetTitle: false,
@@ -19,43 +27,46 @@ export const useHistoryStore = defineStore("history", () => {
     saveSessions();
     return session.id;
   };
-  // 初始化 从本地存储加载会话数据
-  const loadSessions = () => {
+
+  const loadSessions = (): void => {
     try {
       const savedSessions = storage.get("chat-sessions");
       if (savedSessions) {
-        list.value = JSON.parse(savedSessions);
+        const parsed = JSON.parse(savedSessions);
+        // 确保解析后的数据是数组
+        if (Array.isArray(parsed)) {
+          list.value = parsed;
+        } else {
+          console.warn("会话数据格式不正确，重置为空数组");
+          list.value = [];
+          storage.remove("chat-sessions");
+        }
       }
     } catch (error) {
       console.error("加载会话数据失败:", error);
+      list.value = [];
+      storage.remove("chat-sessions");
       createSession();
     }
   };
-  // 保存历史会话列表
-  const saveSessions = () => {
+
+  const saveSessions = (): void => {
     try {
       storage.set("chat-sessions", JSON.stringify(list.value));
-      // if (history.sessionId && messages) {
-      //   storage.set(
-      //     `chat-messages-${history.sessionId}`,
-      //     JSON.stringify(messages)
-      //   );
-      // }
     } catch (error) {
       console.error("保存数据失败:", error);
     }
   };
-  // 删除一条会话
-  const deleteSession = (id) => {
+
+  const deleteSession = (id: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
         const index = list.value.findIndex((s) => s.id === id);
         if (index > -1) {
-          // 如果删除的是当前会话，则切换到新会话
           const chat = useChatStore();
           if (chat.sessionId === id) {
             chat.checkToStopMessage();
-            chat.initMessages()
+            chat.initMessages();
           }
           list.value.splice(index, 1);
           storage.remove(`chat-messages-${id}`);
@@ -65,24 +76,23 @@ export const useHistoryStore = defineStore("history", () => {
           reject(new Error("会话不存在"));
         }
       } catch (error) {
-        reject(error)
+        reject(error);
       }
-    })
+    });
   };
 
-  // 修改一条会话
-  const updateSession = (id, name) => {
+  const updateSession = (id: string, name: string): void => {
     const index = list.value.findIndex((s) => s.id === id);
     if (index > -1) {
       list.value[index].name = name;
       list.value[index].isSetTitle = true;
       saveSessions();
     }
-  }
+  };
 
-  const getSessionById = (id) => {
+  const getSessionById = (id: string): Session | undefined => {
     return list.value.find((s) => s.id === id);
-  }
+  };
 
   return {
     sessions: computed(() => list.value),
@@ -93,6 +103,6 @@ export const useHistoryStore = defineStore("history", () => {
     updateSession,
     loadSessions,
   };
-}
-)
-export default useHistoryStore
+});
+
+export default useHistoryStore;

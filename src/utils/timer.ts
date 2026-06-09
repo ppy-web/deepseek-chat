@@ -1,31 +1,33 @@
+/**
+ * 计时器类
+ * 用于测量操作耗时
+ */
 export class Timer {
-  constructor(autoStart = true) {
-    this._startTime = 0;
-    this._endTime = 0;
-    this._isRunning = false;
+  private _startTime: number = 0;
+  private _endTime: number = 0;
+  private _isRunning: boolean = false;
 
+  constructor(autoStart: boolean = true) {
     if (autoStart) {
       this.start();
     }
   }
 
-  start() {
+  start(): void {
     if (this._isRunning) {
       console.warn("Timer is already running");
       return;
     }
-    console.log(`output->开始计时`);
     this._startTime = performance.now();
     this._endTime = 0;
     this._isRunning = true;
   }
 
-  stop() {
+  stop(): number {
     if (!this._isRunning) {
       console.warn("Timer is not running");
       return 0;
     }
-    console.log(`output->计时结束`);
     this._endTime = performance.now();
     this._isRunning = false;
     return this.duration;
@@ -34,35 +36,32 @@ export class Timer {
   /**
    * 停止计时并返回秒数（四舍五入）
    */
-  stopSecondsRounded() {
-    const seconds = Math.round(this.stop() / 1000);
-    console.log(`output->获取时间`, seconds);
-    return seconds;
+  stopSecondsRounded(): number {
+    return Math.round(this.stop() / 1000);
   }
 
-  reset() {
+  reset(): void {
     this._startTime = 0;
     this._endTime = 0;
     this._isRunning = false;
   }
 
-  restart() {
+  restart(): void {
     this.reset();
     this.start();
   }
 
-  get duration() {
+  get duration(): number {
     if (!this._startTime) return 0;
-
     const endTime = this._isRunning ? performance.now() : this._endTime;
     return endTime - this._startTime;
   }
 
-  get durationSeconds() {
-    return Math.round(this.stop() / 1000); // 返回整秒数
+  get durationSeconds(): number {
+    return Math.round(this.stop() / 1000);
   }
 
-  get isRunning() {
+  get isRunning(): boolean {
     return this._isRunning;
   }
 }

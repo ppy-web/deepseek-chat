@@ -1,55 +1,34 @@
 <!-- 消息列表 -->
-<script setup>
-import { nextTick, onMounted, onUnmounted, provide } from "vue";
+<script setup lang="ts">
+import { onMounted, onUnmounted, provide } from "vue";
 import { useEventListener } from "@vueuse/core";
 import { useMitt } from "@/hooks/useMitt";
 import { useRefs } from "@/hooks/useRefs";
 import { useChatStore } from "@/store";
-import { useBrowser } from "@/hooks/useBrowser";
 import { Nodes } from "./Nodes";
 import EVENT_TYPE from "@/constants/event_type";
+import { CHAT_CONFIG } from "@/constants";
 import Navbar from "@/components/Common/Navbar.vue";
 
 const mitt = useMitt();
-const { browser } = useBrowser();
 const { refs, setRefs } = useRefs();
 const chat = useChatStore();
-const component = (item) => {
-  return Nodes.value.find((e) => e.type == item.type).component;
+
+const component = (item: { type: string }) => {
+  return Nodes.value.find((e) => e.type === item.type)?.component;
 };
 
 provide("evaluate", chat.evaluateMessage);
-let autoScroll;
+
+let autoScroll: (() => void) | undefined;
+
 onMounted(() => {
-  nextTick(() => {
-    if (document.querySelector(".chat-box .chat-component")) {
-      if (browser.width - 300 < 800) {
-        document.querySelector(".chat-box .chat-component").style.padding =
-          "0 16px";
-        document.querySelector(".chat-box .input-container").style.padding =
-          "0 16px";
-      } else {
-        let p = (browser.width - 300 - 960) / 2;
-        p = p < 16 ? 16 : p;
-        document.querySelector(
-          ".chat-box .chat-component"
-        ).style.padding = `0px ${p}px`;
-        document.querySelector(
-          ".chat-box .input-container"
-        ).style.padding = `0px ${p}px`;
-      }
-    }
-  });
-  // 取消回答
   mitt.on(EVENT_TYPE.CANCEL_ANSWER, () => {
     chat.cancelAnswer();
   });
-  // 显示对话记录
-  // mitt.on(EVENT_TYPE.SHOW_CHAT_HISTORY, (id) => {
-  //   switchSession(id);
-  // });
+
   autoScroll = useEventListener(
-    refs.messageBoxRef,
+    refs.messageBoxRef as unknown as HTMLElement,
     "wheel",
     () => {
       chat.setAutoScroll(false);
@@ -57,6 +36,7 @@ onMounted(() => {
     { passive: true }
   );
 });
+
 onUnmounted(() => {
   chat.checkToStopMessage();
   mitt.off(EVENT_TYPE.CANCEL_ANSWER);
@@ -67,28 +47,42 @@ onUnmounted(() => {
 
 <template>
   <Navbar />
-  <el-scrollbar class="chat-component" :ref="setRefs('messageBoxRef')">
-    <template v-for="item in chat.chatList" :key="item.mid">
-      <component class="message-wrap" :is="component(item)" :msg="item" />
-    </template>
-  </el-scrollbar>
+  <div class="chat-component" :ref="setRefs('messageBoxRef') as any">
+    <div class="messages-content">
+      <template v-for="item in chat.chatList" :key="item.mid">
+        <component class="message-wrap" :is="component(item)" :msg="item" />
+      </template>
+    </div>
+  </div>
 </template>
-<style lang="scss">
+
+<style>
 .chat-component {
   position: relative;
   width: 100%;
   min-width: 350px;
   flex: 1;
-  overflow-y: hidden !important;
+  overflow-y: auto;
   margin-bottom: 40px;
+}
 
-  .message-wrap {
-    display: flex;
-    margin-bottom: 12px;
+.messages-content {
+  width: 100%;
+  max-width: v-bind('CHAT_CONFIG.MAX_CONTENT_WIDTH + "px"');
+  min-height: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
 
-    .message {
-      word-wrap: break-word;
-    }
-  }
+.message-wrap {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.message-wrap .message {
+  word-wrap: break-word;
 }
 </style>

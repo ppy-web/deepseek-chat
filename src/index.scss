@@ -1,10 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-// 主题变量定义
+/* 主题变量定义 */
 :root {
-  // 日间模式颜色
+  /* 日间模式颜色 */
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
   --bg-tertiary: #eeeeee;
@@ -26,7 +22,7 @@
 }
 
 :root.dark {
-  // 夜间模式颜色
+  /* 夜间模式颜色 */
   --bg-primary: #050505;
   --bg-secondary: #2d2d2d;
   --bg-tertiary: #3a3a3a;
@@ -47,10 +43,6 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
-.noisy {
-  @apply absolute inset-0 size-full;
-}
-
 * {
   box-sizing: border-box;
   -webkit-touch-callout: none;
@@ -61,21 +53,18 @@ img {
   -webkit-touch-callout: default !important;
 }
 
-input,
-textarea {
+input, textarea {
   -webkit-user-select: auto !important;
   user-select: auto !important;
 }
 
-html,
-body {
+html, body {
   width: 100%;
   height: 100%;
   -webkit-overflow-scrolling: touch;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
-  // @apply bg-gray-400; /* 换成你喜欢的颜色 */
 }
 
 body {
@@ -96,300 +85,40 @@ input::-webkit-input-placeholder {
   color: var(--text-placeholder);
 }
 
-.oneline {
+/* 表格样式 */
+.message table,
+.content table {
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  word-break: break-all;
-}
-
-.twoline {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-all;
-}
-
-@mixin table-style {
-  table {
-    overflow: hidden;
-    // border-spacing: 0;
-    // border: 1px solid var(--table-border-color);
-    border-radius: 10px;
-    // overflow-x: auto;
-    // display: block;
-    white-space: nowrap;
-  }
-  table tr {
-    display: table-row;
-  }
-
-  table th {
-    background-color: var(--table-header-bg);
-    padding: 12px;
-    min-width: 200px;
-    white-space: nowrap;
-    display: table-cell;
-  }
-  table td {
-    border-top: 1px solid var(--table-border-color);
-    background-color: var(--table-row-bg);
-    padding: 12px;
-    white-space: nowrap;
-    display: table-cell;
-  }
-  table th:not(:last-child),
-  table td:not(:last-child) {
-    border-right: 1px solid var(--table-border-color);
-  }
-}
-
-// 消息里面的富文本样式
-.message,
-.content {
-  @include table-style;
-}
-
-.dialog-header {
-  padding-bottom: 0 !important;
-  .dialog-title-close {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    background: var(--bg-secondary);
-    border-radius: 8px;
-  }
-  .close {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    &:hover {
-      background: var(--hover-bg);
-    }
-  }
-}
-// 居中的圆角弹窗
-.dialog-round {
-  border-radius: 12px !important;
-  min-width: 350px;
-  min-height: 300px;
-}
-// 居中的圆角确认弹窗
-.dialog-round-confirm {
-  border-radius: 12px !important;
-  .header-container {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    .header-l {
-      display: flex;
-      align-items: center;
-      img {
-        width: 23px;
-        height: 23px;
-        margin-right: 8px;
-      }
-      .title {
-        font-weight: bold;
-        font-size: 18px;
-        color: var(--text-primary);
-        line-height: 23px;
-        letter-spacing: 1px;
-      }
-    }
-    .header-r {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
-      text-align: center;
-      border-radius: 8px;
-      &:hover {
-        background: var(--hover-bg);
-      }
-    }
-  }
-  .confirm-content {
-    font-weight: 400;
-    font-size: 16px;
-    color: var(--text-tertiary);
-    margin-top: 20px;
-    margin-bottom: 25px;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: center;
-}
-.exchange-model-popover {
-  padding: 0 !important;
-  border-radius: 16px !important;
-  .popover-content {
-    border-radius: 16px;
-    overflow-y: auto;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    max-height: 300px;
-    overflow-y: auto;
-    position: relative;
-    // 隐藏滚动条
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    .exchange-text {
-      position: -webkit-sticky;
-      /* Safari */
-      padding-bottom: 5px;
-      padding-left: 12px;
-      padding-top: 10px;
-      background-color: var(--bg-primary);
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--text-tertiary);
-      // 固定在父元素顶部
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .model-item {
-      margin: 0 10px;
-      display: flex;
-      padding: 5px;
-      border-radius: 8px;
-      position: relative;
-      padding-right: 35px;
-
-      &-info {
-        flex: 1;
-        cursor: pointer;
-      }
-
-      &-text {
-        font-size: 15px;
-        color: var(--text-primary);
-        font-weight: 500;
-      }
-
-      &-des {
-        font-size: 12px;
-        color: var(--text-tertiary);
-        // 超过两行省略
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        line-clamp: 2;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-      }
-
-      .check {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-      }
-
-      img {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        margin-right: 10px;
-        // border-radius: 50%;
-      }
-    }
-
-    .active {
-      background-color: var(--hover-bg);
-
-      .model-item-text {
-        color: var(--text-primary);
-      }
-
-      .model-item-des {
-        color: var(--text-secondary);
-      }
-    }
-  }
-}
-
-.history-item-popover {
-  border-radius: 8px !important;
-  box-shadow: 0px 6px 40px 0px var(--shadow-color) !important;
-  background-color: var(--bg-primary) !important;
-  border: 1px solid var(--border-color) !important;
-  .history-item-popover-content {
-    .options-item {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      cursor: pointer;
-      user-select: none;
-      border-radius: 5px;
-      color: var(--text-primary);
-      transition: background-color 0.3s ease;
-      &:hover {
-        background-color: var(--hover-bg);
-      }
-    }
-  }
-}
-
-.el-popper.is-customized {
   border-radius: 10px;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-.el-popper.is-customized .el-popper__arrow::before {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  right: 0;
-  top: -2px;
+  white-space: nowrap;
 }
 
-// Element Plus 对话框主题支持
-.el-dialog {
-  background-color: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
+.message table tr,
+.content table tr {
+  display: table-row;
 }
 
-.el-dialog__header {
-  color: var(--text-primary) !important;
+.message table th,
+.content table th {
+  background-color: var(--table-header-bg);
+  padding: 12px;
+  min-width: 200px;
+  white-space: nowrap;
+  display: table-cell;
 }
 
-.el-dialog__body {
-  color: var(--text-primary) !important;
+.message table td,
+.content table td {
+  border-top: 1px solid var(--table-border-color);
+  background-color: var(--table-row-bg);
+  padding: 12px;
+  white-space: nowrap;
+  display: table-cell;
 }
 
-// Element Plus 弹窗主题支持
-.el-popover {
-  background-color: var(--bg-primary) !important;
-  border: 1px solid var(--border-color) !important;
-  color: var(--text-primary) !important;
-}
-
-.el-popover__arrow::before {
-  background-color: var(--bg-primary) !important;
-  border: 1px solid var(--border-color) !important;
-}
-
-.el-input__inner::placeholder {
-  color: var(--text-placeholder) !important;
+.message table th:not(:last-child),
+.message table td:not(:last-child),
+.content table th:not(:last-child),
+.content table td:not(:last-child) {
+  border-right: 1px solid var(--table-border-color);
 }

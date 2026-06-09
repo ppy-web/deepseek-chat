@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useAppStore, useCallwordStore } from "@/store";
 import CallWord from "./CallWord.vue";
 
@@ -10,15 +10,13 @@ const toggleSideBar = () => {
     isSideBarVisible: false,
   });
 };
-
 </script>
 
 <template>
-  <div class="flex row-auto items-center pb-4">
-    <img class="w-12  rounded-full" :src="app.logo" />
+  <div class="flex items-center pb-4">
+    <img class="w-12 rounded-full" :src="app.logo" />
     <span class="flex-1 h-15 pl-2 text-xl font-bold">{{ callword.name }}</span>
     <CallWord />
-    <i-streamline-stickies-color:cancel-2-duo @click="toggleSideBar" class="ml-2" />
-
+    <i-streamline-stickies-color:cancel-2-duo @click="toggleSideBar" class="ml-2 cursor-pointer" />
   </div>
 </template>

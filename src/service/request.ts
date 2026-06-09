@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { API_CONFIG } from "@/constants/index";
 import { showError } from "./errorHandler";
 
-const service = axios.create({
+const service: AxiosInstance = axios.create({
   baseURL: API_CONFIG.baseURL,
   timeout: 30000,
   headers: {
@@ -13,11 +13,9 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 添加 Authorization 头
-    config.headers["Authorization"] = `Bearer ${API_CONFIG.apiKey}`;
-    // 请求超时处理
+    config.headers["Authorization"] =
+      config.headers["Authorization"] || `Bearer ${API_CONFIG.apiKey}`;
     config.timeout = config.timeout || 30000;
-
     return config;
   },
   (error) => {
@@ -28,10 +26,8 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     const res = response.data;
-
-    // 处理业务错误
     if (res.error) {
       showError(res.error);
       return Promise.reject(new Error(res.error.message || "请求失败"));
@@ -39,7 +35,6 @@ service.interceptors.response.use(
     return res;
   },
   (error) => {
-    // 处理 HTTP 错误
     if (error.response) {
       switch (error.response.status) {
         case 401:
@@ -60,7 +55,6 @@ service.interceptors.response.use(
     } else {
       showError(error);
     }
-
     return Promise.reject(error);
   }
 );

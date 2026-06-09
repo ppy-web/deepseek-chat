@@ -1,43 +1,51 @@
 <!-- 新对话的欢迎语 -->
-<script setup>
-import Typed from "typed.js";
-import { onMounted } from "vue";
-import { useCallwordStore } from "@/store"
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useCallwordStore } from "@/store";
 
-const callword = useCallwordStore()
+const callword = useCallwordStore();
 const desc = `Hi，我是${callword.name} 今天想聊些什么？`;
+const displayText = ref('');
+const showCursor = ref(true);
+
 onMounted(() => {
-  new Typed("#desc", {
-    strings: [desc],
-    typeSpeed: 50,
-    loop: false,
-    cursorChar: '1', // 光标字符
-  });
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i < desc.length) {
+      displayText.value += desc[i];
+      i++;
+    } else {
+      clearInterval(timer);
+      setTimeout(() => {
+        showCursor.value = false;
+      }, 1000);
+    }
+  }, 50);
 });
 </script>
 
 <template>
-  <div class="desc" id="desc"></div>
+  <div class="desc select-none cursor-pointer font-medium text-2xl leading-8 h-8 break-words">
+    {{ displayText }}<span v-if="showCursor" class="cursor-blink">|</span>
+  </div>
 </template>
 
-<style>
+<style scoped>
 .desc {
-  transition: all .3s ease-in-out;
-  background: linear-gradient(to right, #21f05f, #21aef0 50%,
-      #cd85f7 100%);
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(to right, #21f05f, #21aef0 50%, #cd85f7 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  user-select: none;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 26px;
-  line-height: 32px;
-  height: 32px;
-  word-wrap: break-word;
 }
 
-.typed-cursor {
-  display: none;
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s infinite;
+  font-weight: 100;
 }
 </style>

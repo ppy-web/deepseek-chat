@@ -1,84 +1,29 @@
 <!-- 用于统一修改弹窗标题和关闭按钮 -->
-<script setup>
-import { CloseBold } from "@element-plus/icons-vue";
+<script setup lang="ts">
 const emit = defineEmits(["close"]);
-const props = defineProps({
-  title: {
-    type: String,
-    default: "提示",
-  },
-  showClose: {
-    type: Boolean,
-    default: true,
-  },
-  fontSize: {
-    type: String,
-    default: "18px",
-  },
-  icon: {
-    type: String,
-    default: "",
-  },
+
+withDefaults(defineProps<{
+  title?: string;
+  showClose?: boolean;
+  fontSize?: string;
+  icon?: string;
+}>(), {
+  title: "提示",
+  showClose: true,
+  fontSize: "18px",
+  icon: "",
 });
 </script>
 
 <template>
-  <div class="header-container">
-    <div class="hot-header-l">
-      <img v-if="icon" :src="icon" />
-      <span class="title" :style="`font-size:${fontSize};`">{{ title }}</span>
+  <div class="header-container w-full flex items-center justify-between mb-2.5">
+    <div class="hot-header-l flex items-center">
+      <img v-if="icon" :src="icon" class="w-5 h-5 mr-1.5" />
+      <span class="title font-bold text-[var(--text-primary)]" :style="`font-size:${fontSize};`">{{ title }}</span>
     </div>
-    <div class="hot-header-r" v-if="props.showClose">
-      <span class="close" @click="emit('close')"
-        ><el-icon><CloseBold /></el-icon
-      ></span>
+    <div class="hot-header-r" v-if="showClose">
+      <span class="close inline-block w-10 h-10 leading-10 text-center rounded-lg cursor-pointer hover:bg-gray-100"
+        @click="emit('close')">×</span>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.header-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  .hot-header-l {
-    display: flex;
-    align-items: center;
-    img {
-      width: 20px;
-      height: 20px;
-      margin-right: 5px;
-    }
-    .title {
-      font-weight: bold;
-      color: --var(--text-primary);
-    }
-  }
-  .hot-header-r {
-    .more {
-      font-size: 14px;
-      font-weight: 400;
-      color: #999999;
-      cursor: pointer;
-      margin-left: 10px;
-      &:hover {
-        color: #333;
-      }
-    }
-    .close {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
-      text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      &:hover {
-        background: #f4f9fd;
-      }
-    }
-  }
-}
-</style>

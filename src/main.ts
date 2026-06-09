@@ -1,17 +1,14 @@
 import { createApp } from "vue"
-import "normalize.css"
-import "highlight.js/styles/github-dark.css"
-import "animate.css"
+import "./tailwind.css"
 import "./index.scss"
 import 'katex/dist/katex.min.css'
-import "modern-css-reset";
 import "markstream-vue/index.css";
 
 import pinia from '@/store'
 import { useAppStore } from '@/store'
 
 import App from "./App.vue"
-import router from "./router.js"
+import router from "./router"
 
 const app = createApp(App)
 app.use(pinia)

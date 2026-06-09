@@ -1,49 +1,39 @@
 <!-- 用于展示试着问问 推荐问题 -->
 <template>
-  <div class="try-container">
-    <div class="try-item animate__animated animate__zoomInLeft" v-for="(item, index) in list" :key="index"
-      @click="emit('send', item)">
-      <img class="try-item-img" :src="turnImg" alt="" />
-      <span class="try-item-text" v-html="item"></span>
+  <div class="try-container mt-2.5 mb-2.5 flex flex-col items-start">
+    <div class="try-item my-1 text-sm py-2 px-3.5 rounded bg-gray-100 text-gray-600 flex items-center cursor-pointer animate-slide-in"
+      v-for="(item, index) in list" :key="index" @click="emit('send', item)">
+      <img class="w-5 h-3.5 mr-2" :src="turnImg as string" alt="" />
+      <span v-html="item"></span>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import turnImg from "@/assets/img/turnrightdown.png";
+
 const emit = defineEmits(["send"]);
-const props = defineProps({
-  list: {
-    type: Array,
-    default: () => [],
-  },
+
+withDefaults(defineProps<{
+  list?: string[];
+}>(), {
+  list: () => [],
 });
 </script>
 
-<style lang="scss" scoped>
-.try-container {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  .try-item {
-    margin: 4px 0;
-    font-size: 14px;
-    padding: 8px 14px;
-    border-radius: 5px;
-    background-color: #f4f4f4;
-    color: #666666;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-
-    &-img {
-      width: 20px;
-      height: 15px;
-      margin-right: 8px;
-    }
+<style scoped>
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
 }
 </style>
