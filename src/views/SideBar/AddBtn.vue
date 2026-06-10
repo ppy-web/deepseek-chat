@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { NButton } from "naive-ui";
+import { IconNewChat } from "@/icons";
 import { useChatStore, useAppStore } from "@/store";
 
 const chat = useChatStore();
@@ -18,7 +19,7 @@ const handleClick = () => {
   <div class="sidebar-add-wrap">
     <NButton class="sidebar-add-btn" block size="large" type="primary" strong @click="handleClick">
       <template #icon>
-        <i-streamline-stickies-color:mail />
+        <IconNewChat />
       </template>
       发起新对话
     </NButton>

@@ -21,15 +21,6 @@ declare module 'unplugin-auto-import/vite' {
   export default function AutoImport(options?: Record<string, unknown>): Plugin
 }
 
-declare module 'unplugin-icons/vite' {
-  import type { Plugin } from 'vite'
-  export default function Icons(options?: Record<string, unknown>): Plugin
-}
-
-declare module 'unplugin-icons/resolver' {
-  export const IconsResolver: (options?: Record<string, unknown>) => unknown
-}
-
 declare module '@tailwindcss/vite' {
   import type { Plugin } from 'vite'
   export default function tailwindcss(): Plugin

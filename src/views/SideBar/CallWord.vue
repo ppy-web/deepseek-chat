@@ -11,6 +11,7 @@ import {
   NRadioGroup,
   NTooltip,
 } from "naive-ui";
+import { IconClose, IconPersonalize, IconPrivacy } from '@/icons';
 import { useCallwordStore } from '@/store';
 import { CHARACTHER } from '@/constants';
 
@@ -68,7 +69,7 @@ function showCallWord() {
         @click="showCallWord"
       >
         <template #icon>
-          <i-streamline-stickies-color:control />
+          <IconPersonalize />
         </template>
       </NButton>
     </template>
@@ -80,7 +81,7 @@ function showCallWord() {
       <template #header-extra>
         <NButton quaternary circle size="small" aria-label="关闭个性化设置" @click="callVisible = false">
           <template #icon>
-            <i-streamline-stickies-color:cancel-2 />
+            <IconClose />
           </template>
         </NButton>
       </template>
@@ -118,7 +119,7 @@ function showCallWord() {
       </NForm>
 
       <div class="privacy-note">
-        <i-streamline-stickies-color:android-setting-duo />
+        <IconPrivacy class="privacy-icon" />
         <span>您设置的数据只储存在本机，不必担心隐私泄露</span>
       </div>
 
@@ -155,6 +156,10 @@ function showCallWord() {
   line-height: 1.2;
 }
 
+:deep(.n-form-item) {
+  margin-bottom: 16px;
+}
+
 :deep(.character-group) {
   display: flex;
   flex-wrap: wrap;
@@ -170,6 +175,12 @@ function showCallWord() {
   color: var(--text-tertiary);
   font-size: 12px;
   text-align: center;
+}
+
+.privacy-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .modal-actions {

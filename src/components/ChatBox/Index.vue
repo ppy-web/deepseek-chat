@@ -20,24 +20,29 @@ const component = (item: { type: string }) => {
 
 provide("evaluate", chat.evaluateMessage);
 
-let autoScroll: (() => void) | undefined;
+let stopAutoScrollSync: (() => void) | undefined;
 
 onMounted(() => {
   mitt.on(EVENT_TYPE.CANCEL_ANSWER, () => {
     chat.cancelAnswer();
   });
 
-  autoScroll = useEventListener(
-    refs.messageBoxRef as unknown as HTMLElement,
-    "wheel",
-    () => {
-      chat.setAutoScroll(false);
-    },
-    { passive: true }
-  );
+  const messageBox = refs.messageBoxRef;
+  if (messageBox) {
+    stopAutoScrollSync = useEventListener(
+      messageBox,
+      "scroll",
+      () => {
+        chat.updateAutoScrollByPosition();
+      },
+      { passive: true }
+    );
+    chat.updateAutoScrollByPosition();
+  }
 });
 
 onUnmounted(() => {
+  stopAutoScrollSync?.();
   chat.checkToStopMessage();
   mitt.off(EVENT_TYPE.CANCEL_ANSWER);
   mitt.off(EVENT_TYPE.SEND_MESSAGE);
@@ -74,7 +79,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 0 16px;
+  padding: 0 50px;
 }
 
 .message-wrap {

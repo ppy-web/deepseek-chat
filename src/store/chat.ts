@@ -19,6 +19,7 @@ import { storage } from "@/utils";
 import { getTalkTitle } from "@/service/api";
 
 const { refs } = useRefs();
+const AUTO_SCROLL_BOTTOM_THRESHOLD = 80;
 
 export interface ChatMessage {
   mid: string;
@@ -53,6 +54,11 @@ const useChatStore = defineStore("chat", () => {
   const autoScroll = ref(true);
   let controller: AbortController | null = null;
   let timer: Timer | null = null;
+  let scrollFrameId: number | null = null;
+
+  const getMessageBox = (): HTMLElement | null => {
+    return refs.messageBoxRef || document.querySelector<HTMLElement>(".chat-component");
+  };
 
   function initMessages(newId?: string): void {
     if (newId) {
@@ -70,7 +76,7 @@ const useChatStore = defineStore("chat", () => {
       const savedMessages = storage.get(`chat-messages-${id}`);
       messages.value = savedMessages ? JSON.parse(savedMessages) : [];
       nextTick(() => {
-        scrollMessageBox(500);
+        scrollMessageBox(500, true);
       });
     } catch (error) {
       console.log(error);
@@ -126,15 +132,29 @@ const useChatStore = defineStore("chat", () => {
     autoScroll.value = val;
   };
 
-  const scrollMessageBox = (duration: number = 20): void => {
-    if (refs.messageBoxRef && autoScroll.value) {
+  const updateAutoScrollByPosition = (): void => {
+    const el = getMessageBox();
+    if (!el) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    autoScroll.value = distanceToBottom <= AUTO_SCROLL_BOTTOM_THRESHOLD;
+  };
+
+  const scrollMessageBox = (duration: number = 20, force = false): void => {
+    if (!force && !autoScroll.value) return;
+
+    if (scrollFrameId !== null) {
+      cancelAnimationFrame(scrollFrameId);
+    }
+
+    scrollFrameId = requestAnimationFrame(() => {
+      scrollFrameId = null;
       nextTick(() => {
-        const el = document.querySelector(".chat-component") as HTMLElement;
-        if (el) {
+        const el = getMessageBox();
+        if (el && (force || autoScroll.value)) {
           scrollTop(el, duration);
         }
       });
-    }
+    });
   };
 
   const handleStreamMessage = (parsed: DeepSeekStreamChunk): void => {
@@ -369,6 +389,7 @@ const useChatStore = defineStore("chat", () => {
     sendMessage,
     cancelAnswer,
     setAutoScroll,
+    updateAutoScrollByPosition,
     evaluateMessage,
     checkToStopMessage,
   };

@@ -7,28 +7,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    'ILucide:copy': typeof import('~icons/lucide/copy')['default']
-    'ILucide:heart': typeof import('~icons/lucide/heart')['default']
-    'ILucide:heartCrack': typeof import('~icons/lucide/heart-crack')['default']
-    ILucideArrowUp: typeof import('~icons/lucide/arrow-up')['default']
-    ILucideBrain: typeof import('~icons/lucide/brain')['default']
-    ILucideCpu: typeof import('~icons/lucide/cpu')['default']
-    ILucideSquare: typeof import('~icons/lucide/square')['default']
-    ILucideZap: typeof import('~icons/lucide/zap')['default']
-    'IStreamlineStickiesColor:androidSettingDuo': typeof import('~icons/streamline-stickies-color/android-setting-duo')['default']
-    'IStreamlineStickiesColor:appWindow': typeof import('~icons/streamline-stickies-color/app-window')['default']
-    'IStreamlineStickiesColor:cancel2': typeof import('~icons/streamline-stickies-color/cancel2')['default']
-    'IStreamlineStickiesColor:cancel2Duo': typeof import('~icons/streamline-stickies-color/cancel2-duo')['default']
-    'IStreamlineStickiesColor:control': typeof import('~icons/streamline-stickies-color/control')['default']
-    'IStreamlineStickiesColor:mail': typeof import('~icons/streamline-stickies-color/mail')['default']
-    'IStreamlineStickiesColor:pileOfMoney': typeof import('~icons/streamline-stickies-color/pile-of-money')['default']
-    'IStreamlineStickiesColor:sun': typeof import('~icons/streamline-stickies-color/sun')['default']
-    'IStreamlineStickiesColor:sunCloundWeather': typeof import('~icons/streamline-stickies-color/sun-clound-weather')['default']
-    'IStreamlineStickiesColor:time': typeof import('~icons/streamline-stickies-color/time')['default']
-    'IStreamlineStickiesColor:wrench': typeof import('~icons/streamline-stickies-color/wrench')['default']
-    'ISvgSpinners:blocksShuffle3': typeof import('~icons/svg-spinners/blocks-shuffle3')['default']
-    'ISvgSpinners:blocksWave': typeof import('~icons/svg-spinners/blocks-wave')['default']
-    NSelect: typeof import('naive-ui')['NSelect']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

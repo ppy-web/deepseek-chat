@@ -1,18 +1,17 @@
 <!-- 大模型回答的消息 -->
 <template>
   <div class="bot max-w-full relative pb-5">
-    <div class="avatar">
-      <AiLoading :pending="msg.isPending" />
-    </div>
     <div class="message" :class="{ 'not-pending': !msg.isPending }">
+      <NDivider title-placement="left" dashed>
+        <AiLoading :pending="msg.isPending" />
+      </NDivider>
       <ThinkingWrap :html="msg.thinking" :finished="msg.thinkFinished" :second="msg.thinkTime" />
-      <MarkdownRender :content="msg.content" :final="msg.isTextStreamEnd"
-        code-block-light-theme="vs" code-block-dark-theme="vs"
-        :code-block-props="{ showHeader: false, showFontSizeButtons: false }" />
+      <MarkdownRender :content="msg.content" :final="msg.isTextStreamEnd" code-block-light-theme="vs"
+        code-block-dark-theme="vs" :code-block-props="{ showHeader: false, showFontSizeButtons: false }"
+        custom-id="bot-msg" />
     </div>
-    <ActionBar class="action-bar" v-if="!msg.isPending && msg.isTextStreamEnd"
-      :content="msg.content" :status="msg.opsStatus"
-      @like="onHandleLike" @unlike="onHandleUnlike" />
+    <ActionBar class="action-bar" v-if="!msg.isPending && msg.isTextStreamEnd" :content="msg.content"
+      :speech-id="msg.mid" :status="msg.opsStatus" @like="onHandleLike" @unlike="onHandleUnlike" />
   </div>
 </template>
 
@@ -24,6 +23,7 @@ import ActionBar from "../Bot/ActionBar.vue";
 import ThinkingWrap from "../Bot/ThinkingWrap.vue";
 import MarkdownRender from 'markstream-vue';
 import { enableKatex } from 'markstream-vue';
+import { NDivider } from "naive-ui";
 import 'katex/dist/katex.min.css';
 
 enableKatex();
@@ -56,6 +56,10 @@ const onHandleUnlike = () => {
 </script>
 
 <style scoped>
+[data-custom-id='bot-msg'] {
+  --ms-flow-paragraph-y: .8em;
+}
+
 .bot .message {
   border-radius: 8px;
   padding-left: 5px;
@@ -65,17 +69,10 @@ const onHandleUnlike = () => {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.bot .message.not-pending {
-  border-top: 1px solid var(--border-color);
-  margin-left: 12px;
-}
-
 .bot .action-bar {
-  opacity: 0;
   transition: opacity 0.4s ease;
   position: absolute;
   bottom: -5px;
-  left: 66px;
   z-index: 2;
 }
 

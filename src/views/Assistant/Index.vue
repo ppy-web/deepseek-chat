@@ -44,10 +44,19 @@ const app = useAppStore();
 }
 
 .assistant:not(.dark-bg) {
-  background: linear-gradient(to bottom,
-      hsl(210, 15%, 92%) 0%,
-      #c1d5f0 60%,
-      #F0F8FF 100%);
+  background: var(--light-theme-bg);
+}
+
+.assistant:not(.dark-bg)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.38), transparent 70%);
 }
 
 .dark-bg {

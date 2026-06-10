@@ -9,8 +9,8 @@
         @click="handleToggle"
       >
         <template #icon>
-          <i-streamline-stickies-color:sun v-if="app.isDark" class="text-lg" />
-          <i-streamline-stickies-color:sun-clound-weather v-else class="text-lg" />
+          <IconLightMode v-if="app.isDark" class="text-lg" />
+          <IconDarkMode v-else class="text-lg" />
         </template>
       </NButton>
     </template>
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { NButton, NTooltip } from "naive-ui";
+import { IconDarkMode, IconLightMode } from "@/icons";
 import { useAppStore } from "@/store";
 
 const app = useAppStore();

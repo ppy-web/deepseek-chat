@@ -2,92 +2,42 @@
 <template>
   <div class="input-container">
     <div class="input-wrapper" :class="{ 'is-focused': isFocused }" @click="focusInput">
-      <div
-        ref="inputRef"
-        class="textarea"
-        contenteditable="true"
-        role="textbox"
-        aria-multiline="true"
-        :aria-label="inputAriaLabel"
-        :data-placeholder="placeHolder"
-        @input="onInput"
-        @keydown="handleKeydown"
-        @focus="isFocused = true"
-        @blur="onBlur"
-        @paste="handlePaste"
-        @compositionstart="isComposing = true"
-        @compositionend="handleCompositionEnd"
-      ></div>
+      <div ref="inputRef" class="textarea" contenteditable="true" role="textbox" aria-multiline="true"
+        :aria-label="inputAriaLabel" :data-placeholder="placeHolder" @input="onInput" @keydown="handleKeydown"
+        @focus="isFocused = true" @blur="onBlur" @paste="handlePaste" @compositionstart="isComposing = true"
+        @compositionend="handleCompositionEnd"></div>
 
       <div class="input-bottom-wrapper">
         <div class="mode-area">
           <div class="mode-switch" role="group" aria-label="模型模式">
-            <button
-              type="button"
-              class="mode-option quick-mode"
-              :class="{ active: !app.isDeepseek }"
-              :aria-pressed="!app.isDeepseek"
-              title="快速模式"
-              @click.stop="setThinking(false)"
-            >
-              <i-lucide-zap class="mode-icon" />
+            <button type="button" class="mode-option quick-mode" :class="{ active: !app.isDeepseek }"
+              :aria-pressed="!app.isDeepseek" title="快速模式" @click.stop="setThinking(false)">
+              <IconQuickMode class="mode-icon" />
               <span>快速</span>
             </button>
-            <button
-              type="button"
-              class="mode-option deep-mode"
-              :class="{ active: app.isDeepseek }"
-              :aria-pressed="app.isDeepseek"
-              title="深度模式"
-              @click.stop="setThinking(true)"
-            >
-              <i-lucide-brain class="mode-icon" />
+            <button type="button" class="mode-option deep-mode" :class="{ active: app.isDeepseek }"
+              :aria-pressed="app.isDeepseek" title="深度模式" @click.stop="setThinking(true)">
+              <IconDeepMode class="mode-icon" />
               <span>深度</span>
             </button>
           </div>
-          <div
-            class="model-pill"
-            :class="{ 'is-disabled': chat.isRunning }"
-            aria-live="polite"
-            @click.stop
-          >
-            <i-lucide-cpu class="model-icon" />
-            <NSelect
-              class="model-select"
-              aria-label="切换模型"
-              :value="app.useModel"
-              :options="modelOptions"
-              :disabled="chat.isRunning"
-              :bordered="false"
-              :consistent-menu-width="false"
-              size="small"
-              @update:value="selectModel"
-            />
+          <div class="model-pill" :class="{ 'is-disabled': chat.isRunning }" aria-live="polite" @click.stop>
+            <IconModel class="model-icon" />
+            <NSelect class="model-select" aria-label="切换模型" :value="app.useModel" :options="modelOptions"
+              :disabled="chat.isRunning" :bordered="false" :consistent-menu-width="false" size="small"
+              @update:value="selectModel" />
           </div>
         </div>
 
         <div class="action-area">
-          <button
-            v-if="chat.isRunning"
-            type="button"
-            class="stop-button"
-            aria-label="停止生成"
-            title="停止生成"
-            @click.stop="cancelAnswer"
-          >
-            <i-lucide-square class="action-icon" />
+          <SpeechButton :disabled="chat.isRunning" @recognized="handleVoiceRecognized" />
+          <button v-if="chat.isRunning" type="button" class="stop-button" aria-label="停止生成" title="停止生成"
+            @click.stop="cancelAnswer">
+            <IconStop class="action-icon" />
           </button>
-          <button
-            v-else
-            type="button"
-            class="send-button"
-            :class="{ 'is-ready': canSend }"
-            :disabled="!canSend"
-            aria-label="发送消息"
-            title="发送"
-            @click.stop="sendInput"
-          >
-            <i-lucide-arrow-up class="action-icon" />
+          <button v-else type="button" class="send-button" :class="{ 'is-ready': canSend }" :disabled="!canSend"
+            aria-label="发送消息" title="发送" @click.stop="sendInput">
+            <IconSend class="action-icon" />
           </button>
         </div>
       </div>
@@ -96,17 +46,16 @@
     <div v-if="showKeyDialog" class="key-dialog-backdrop" @click.self="cancelKeyDialog">
       <div class="key-dialog" role="dialog" aria-modal="true" aria-labelledby="key-dialog-title">
         <div class="key-dialog-title" id="key-dialog-title">配置{{ pendingProviderName }} API Key</div>
-        <input
-          v-model="apiKeyInput"
-          class="key-input"
-          type="password"
-          autocomplete="off"
-          :placeholder="apiKeyPlaceholder"
-          @keydown.enter="saveApiKey"
-        />
+        <input v-model="apiKeyInput" class="key-input" type="password" autocomplete="off"
+          :placeholder="apiKeyPlaceholder" @keydown.enter="saveApiKey" />
         <div class="key-dialog-actions">
-          <button type="button" class="key-button ghost" @click="cancelKeyDialog">取消</button>
-          <button type="button" class="key-button primary" @click="saveApiKey">保存</button>
+          <button type="button" class="key-button default" :disabled="!hasDefaultApiKey" @click="importDefaultApiKey">
+            导入默认值
+          </button>
+          <div class="key-dialog-main-actions">
+            <button type="button" class="key-button ghost" @click="cancelKeyDialog">取消</button>
+            <button type="button" class="key-button primary" @click="saveApiKey">保存</button>
+          </div>
         </div>
       </div>
     </div>
@@ -114,12 +63,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { NSelect, type SelectOption } from "naive-ui";
+import { IconDeepMode, IconModel, IconQuickMode, IconSend, IconStop } from "@/icons";
+import SpeechButton from "./SpeechButton.vue";
 import { useMitt } from "@/hooks/useMitt";
 import EVENT_TYPE from "@/constants/event_type";
 import { useChatStore, useAppStore } from "@/store";
-import { CHAT_CONFIG, MODELS } from "@/constants";
+import { CHAT_CONFIG, DEFAULT_API_KEY, MODELS } from "@/constants";
 import {
   getModelConfig,
   getProviderBaseURL,
@@ -155,6 +106,11 @@ const providerNames: Record<AIProvider, string> = {
   [PROVIDERS.XIAOMI]: "小米 MiMo",
 };
 
+const defaultApiKeys: Record<AIProvider, string> = {
+  [PROVIDERS.DEEPSEEK]: DEFAULT_API_KEY.DEEPSEEK,
+  [PROVIDERS.XIAOMI]: DEFAULT_API_KEY.XIAOMI,
+};
+
 const canSend = computed(() => {
   return inputVal.value.trim().length > 0 && !chat.isRunning;
 });
@@ -167,6 +123,15 @@ const apiKeyPlaceholder = computed(() => {
   return pendingProvider.value === PROVIDERS.XIAOMI
     ? "请输入 MIMO_API_KEY"
     : "请输入 DeepSeek API Key";
+});
+
+const currentDefaultApiKey = computed(() => {
+  const provider = pendingProvider.value || app.provider;
+  return (defaultApiKeys[provider] || "").trim().replace(/^['"]|['"]$/g, "");
+});
+
+const hasDefaultApiKey = computed(() => {
+  return currentDefaultApiKey.value.length > 0;
 });
 
 const placeHolder = computed(() => {
@@ -245,6 +210,11 @@ const saveApiKey = () => {
   apiKeyInput.value = "";
 };
 
+const importDefaultApiKey = () => {
+  if (!hasDefaultApiKey.value) return;
+  apiKeyInput.value = currentDefaultApiKey.value;
+};
+
 const cancelKeyDialog = () => {
   showKeyDialog.value = false;
   pendingProvider.value = null;
@@ -258,6 +228,28 @@ const syncInputValue = () => {
 
 const focusInput = () => {
   inputRef.value?.focus();
+};
+
+const moveCaretToEnd = () => {
+  const el = inputRef.value;
+  if (!el) return;
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+};
+
+const setInputText = async (text: string) => {
+  const normalizedText = text.trim();
+  inputVal.value = normalizedText;
+  if (!inputRef.value) return;
+  inputRef.value.innerText = normalizedText;
+  await nextTick();
+  focusInput();
+  moveCaretToEnd();
+  inputRef.value.scrollTop = inputRef.value.scrollHeight;
 };
 
 const onInput = (e: Event) => {
@@ -292,6 +284,10 @@ const handlePaste = (e: ClipboardEvent) => {
   if (inputRef.value) {
     inputRef.value.scrollTop = inputRef.value.scrollHeight;
   }
+};
+
+const handleVoiceRecognized = (text: string) => {
+  void setInputText(text);
 };
 
 const sendInput = () => {
@@ -333,7 +329,7 @@ onUnmounted(() => {
   max-width: v-bind('CHAT_CONFIG.MAX_CONTENT_WIDTH + "px"');
   margin-left: auto;
   margin-right: auto;
-  padding: 0 16px;
+  padding: 0 50px;
   z-index: 8;
 }
 
@@ -540,6 +536,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 8px;
 }
 
 .send-button,
@@ -660,9 +657,18 @@ onUnmounted(() => {
 
 .key-dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
+}
+
+.key-dialog-main-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .key-button {
@@ -675,9 +681,20 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
+.key-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .key-button.ghost {
   color: var(--text-tertiary);
   background: var(--bg-secondary);
+}
+
+.key-button.default {
+  border-color: rgba(20, 184, 166, 0.32);
+  color: #0f9f8f;
+  background: rgba(20, 184, 166, 0.09);
 }
 
 .key-button.primary {

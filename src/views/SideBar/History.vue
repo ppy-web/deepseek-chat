@@ -6,10 +6,12 @@ import {
   NDropdown,
   NEmpty,
   NInput,
+  NIcon,
   NModal,
   NScrollbar,
   NText,
 } from "naive-ui";
+import { IconHistory, IconSessionAction } from "@/icons";
 import { getDayjsCategory } from "@/utils/index";
 import { useChatStore, useHistoryStore, useAppStore } from "@/store";
 import { successMsg, errorMsg, warningMsg } from "@/hooks/useMsg";
@@ -158,10 +160,11 @@ const handleConfirmDelete = async () => {
   <section class="history-panel">
     <header class="history-header">
       <div>
-        <div class="history-title">历史会话</div>
-        <div class="history-count">{{ sessionCount }} 个会话</div>
+        <div class="history-title"> <span v-if="sessionCount > 0"> {{ sessionCount }}个</span>历史会话</div>
       </div>
-      <i-streamline-stickies-color:time class="history-icon" />
+      <NIcon class="history-icon" size="18">
+        <IconHistory />
+      </NIcon>
     </header>
 
     <div v-if="sessionCount === 0" class="history-empty">
@@ -178,15 +181,11 @@ const handleConfirmDelete = async () => {
             <button class="history-name" type="button" @click.stop="handleClickDialog(item)">
               {{ item.name }}
             </button>
-            <NDropdown
-              trigger="click"
-              placement="bottom-end"
-              :options="actionOptions"
-              @select="(key) => handleSelectAction(key, item)"
-            >
+            <NDropdown trigger="click" placement="bottom-end" :options="actionOptions"
+              @select="(key) => handleSelectAction(key, item)">
               <NButton class="history-more" quaternary circle size="tiny" aria-label="会话操作">
                 <template #icon>
-                  <i-streamline-stickies-color:wrench />
+                  <IconSessionAction />
                 </template>
               </NButton>
             </NDropdown>
@@ -198,15 +197,8 @@ const handleConfirmDelete = async () => {
 
     <NModal v-model:show="showRename" preset="dialog" title="编辑对话名称" :show-icon="false">
       <div class="rename-body">
-        <NInput
-          v-model:value="renameValue"
-          type="text"
-          placeholder="请输入对话名称"
-          :maxlength="20"
-          show-count
-          autofocus
-          @keyup.enter="handleConfirm"
-        />
+        <NInput v-model:value="renameValue" type="text" placeholder="请输入对话名称" :maxlength="20" show-count autofocus
+          @keyup.enter="handleConfirm" />
       </div>
       <template #action>
         <NButton @click="closeRename">取消</NButton>
@@ -248,16 +240,9 @@ const handleConfirmDelete = async () => {
   line-height: 1.2;
 }
 
-.history-count {
-  margin-top: 3px;
-  color: var(--text-tertiary);
-  font-size: 12px;
-  line-height: 1.2;
-}
-
 .history-icon {
+  flex: 0 0 auto;
   color: var(--text-tertiary);
-  font-size: 18px;
 }
 
 .history-empty {

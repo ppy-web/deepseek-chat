@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { NAvatar, NButton, NTooltip } from "naive-ui";
+import { IconSidebarCollapse } from "@/icons";
 import { useAppStore, useCallwordStore } from "@/store";
 import CallWord from "./CallWord.vue";
 
@@ -23,15 +24,9 @@ const toggleSideBar = () => {
     <CallWord />
     <NTooltip trigger="hover">
       <template #trigger>
-        <NButton
-          class="sidebar-icon-button"
-          quaternary
-          size="small"
-          aria-label="收起侧边栏"
-          @click="toggleSideBar"
-        >
+        <NButton class="sidebar-icon-button" quaternary size="small" aria-label="收起侧边栏" @click="toggleSideBar">
           <template #icon>
-            <i-streamline-stickies-color:cancel-2-duo />
+            <IconSidebarCollapse />
           </template>
         </NButton>
       </template>
@@ -47,7 +42,6 @@ const toggleSideBar = () => {
   gap: 10px;
   min-height: 56px;
   padding: 2px 0 8px;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .assistant-meta {

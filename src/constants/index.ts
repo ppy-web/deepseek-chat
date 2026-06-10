@@ -14,6 +14,11 @@ import {
 /** 窄屏宽度 */
 export const NARROW_SCREEN_WIDTH = 768;
 
+export const DEFAULT_API_KEY = {
+  XIAOMI: '"sk-cp0t34ggdgtlfx33swx1dyeaxarlxvu9jz1kmml014igasr4"',
+  DEEPSEEK: 'sk-858ee51df95e456fa5e74fcde3e478e7',
+}
+
 export const CHAT_CONFIG = {
   MAX_CONTENT_WIDTH: 960,
 } as const;

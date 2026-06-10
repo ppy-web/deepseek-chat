@@ -31,8 +31,6 @@ import { NARROW_SCREEN_WIDTH } from "@/constants/index";
 
 import SideBar from "@/views/SideBar/Index.vue";
 import Assistant from "@/views/Assistant/Index.vue";
-import * as service from "@/service/api";
-import { PROVIDERS } from "@/constants/llm";
 
 const app = useAppStore();
 const callword = useCallwordStore();
@@ -49,8 +47,13 @@ const naiveThemeOverrides = computed<GlobalThemeOverrides>(() => ({
     borderRadius: "8px",
     borderColor: app.isDark ? "#404040" : "#e0e0e0",
     textColorBase: app.isDark ? "#e0e0e0" : "#222222",
-    bodyColor: app.isDark ? "#050505" : "#ffffff",
+    bodyColor: app.isDark ? "#050505" : "#fbfcfd",
     popoverColor: app.isDark ? "#1f1f1f" : "#ffffff",
+    scrollbarColor: app.isDark ? "rgba(148, 163, 184, 0.28)" : "rgba(100, 116, 139, 0.26)",
+    scrollbarColorHover: app.isDark ? "rgba(45, 212, 191, 0.58)" : "rgba(20, 184, 166, 0.58)",
+    scrollbarWidth: "8px",
+    scrollbarHeight: "8px",
+    scrollbarBorderRadius: "999px",
   },
   Button: {
     heightSmall: "32px",
@@ -71,21 +74,6 @@ watch(() => app.theme, (newTheme) => {
     document.documentElement.classList.remove('dark');
   }
 }, { immediate: true });
-
-const getInitParam = async () => {
-  if (app.provider !== PROVIDERS.DEEPSEEK || !app.currentApiKey) {
-    return;
-  }
-  const { is_available, balance_infos } = await service.getUserBalance({
-    apiKey: app.currentApiKey,
-  });
-  app.set({
-    isAvailable: is_available,
-    balanceInfo: balance_infos[0],
-  });
-};
-
-getInitParam();
 
 onMounted(() => {
   onScreenChange(() => {
@@ -126,10 +114,10 @@ onMounted(() => {
 .sidebar-light {
   border-right: 1px solid var(--border-color);
   margin-right: -1px;
-  background: linear-gradient(to bottom,
-      hsl(210, 15%, 92%) 0%,
-      #c1d5f0 60%,
-      #F0F8FF 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(245, 249, 251, 0.86)),
+    var(--light-theme-bg);
+  backdrop-filter: blur(18px);
 }
 
 .main-area {

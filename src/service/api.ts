@@ -37,14 +37,6 @@ interface ChatCompletionResponse {
   }>;
 }
 
-interface BalanceResponse {
-  is_available: boolean;
-  balance_infos: Array<{
-    total_balance: number;
-    [key: string]: unknown;
-  }>;
-}
-
 interface ModelsResponse {
   data: Array<{
     id: string;
@@ -71,21 +63,6 @@ export function getTalkTitle(
       ...buildChatRequestHeaders(options?.provider || PROVIDERS.DEEPSEEK, options?.apiKey || ""),
     },
     data: data,
-  });
-}
-
-/**
- * 获取用户余额
- */
-export function getUserBalance(options?: {
-  apiKey?: string;
-}): Promise<BalanceResponse> {
-  return request({
-    url: '/user/balance',
-    method: "get",
-    headers: {
-      ...buildChatRequestHeaders(PROVIDERS.DEEPSEEK, options?.apiKey || ""),
-    },
   });
 }
 

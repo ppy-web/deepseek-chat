@@ -23,11 +23,9 @@ interface AppInfo {
   isSmallPage: boolean;
   isSidebarFixed: boolean;
   isPageHide: boolean;
-  isAvailable: boolean;
   deepseek: boolean;
   localDateTime: Date;
   showWatermark: boolean;
-  balanceInfo: Record<string, unknown>;
   theme: 'light' | 'dark';
 }
 
@@ -69,11 +67,9 @@ const useAppStore = defineStore("app", function () {
     isSmallPage: false,
     isSidebarFixed: false,
     isPageHide: true,
-    isAvailable: true,
     deepseek: parsedInsistance?.deepseek || false,
     localDateTime: new Date(),
       showWatermark: parsedInsistance?.showWatermark || false,
-      balanceInfo: {},
       theme: parsedInsistance?.theme || 'light',
   });
 
@@ -173,7 +169,6 @@ const useAppStore = defineStore("app", function () {
   return {
     logo: computed(() => info.logo),
     apiInfo: computed(() => apiConfig),
-    balanceInfo: computed(() => info.balanceInfo),
     isSideBarVisible: computed(() => info.isSideBarVisible),
     isSidebarFixed: computed(() => info.isSidebarFixed),
     isSmallPage: computed(() => info.isSmallPage),

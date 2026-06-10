@@ -1,14 +1,20 @@
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
-import Icons from 'unplugin-icons/vite';
-import IconsResolver from 'unplugin-icons/resolver';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
+  const https =
+    mode === "https"
+      ? {
+          key: readFileSync(fileURLToPath(new URL("./cert/server.key", import.meta.url))),
+          cert: readFileSync(fileURLToPath(new URL("./cert/server.crt", import.meta.url))),
+        }
+      : undefined;
   const plugins = [
     tailwindcss(),
     vue(),
@@ -17,10 +23,7 @@ export default defineConfig(({ mode }) => {
       dts: false,
     }),
     Components({
-      resolvers: [NaiveUiResolver(), IconsResolver({ prefix: 'i' })],
-    }),
-    Icons({
-      autoInstall: true,
+      resolvers: [NaiveUiResolver()],
     }),
   ];
   return {
@@ -34,7 +37,23 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
+      https,
       port: 3010,
+      proxy: {
+        "/speech-api": {
+          target: "https://tts.lideyong.fun",
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/speech-api/, ""),
+        },
+        "/tts-ws": {
+          target: "wss://tts.lideyong.fun",
+          changeOrigin: true,
+          secure: true,
+          ws: true,
+          rewrite: (path) => path.replace(/^\/tts-ws/, ""),
+        },
+      },
     },
     resolve: {
       alias: {
