@@ -22,3 +22,5 @@ cert/
 *.sw?
 
 .reasonix
+.vite
+.codegraph

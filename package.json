@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "homepage": "https://github.com/ppy-web/deepseek-chat",
+  "homepage": "https://ppy-web.github.io/deepseek-chat/",
   "scripts": {
     "dev": "vite",
     "dev:https": "vite --mode https",
     "build": "vite build --emptyOutDir --mode prod",
     "typecheck": "vue-tsc --noEmit",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist --nojekyll"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
